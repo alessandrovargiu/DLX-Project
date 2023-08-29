@@ -26,27 +26,30 @@ entity CU_dlx is
         --decode
         rf1: out std_logic; --read port A of register file
         rf2: out std_logic; --read port B of reg file
-        en1: out std_logic; -- decode register??
-        mux_sel: out std_logic: --to choose 16 o 26 bit (extender?)
+        en1: out std_logic; -- enables decode pipeline reg and reg file
+        mux_sel: out std_logic: --to choose 16 o 26 bit extender to 32
+
         --execution
         s1 : out std_logic;               -- input selection of the first multiplexer (PC/A)
         s2 : out std_logic;               -- input selection of the second multiplexer (IMM/B)
-        s3 : out std_logic;               -- input selection of the third multplexer   (Rt itype/ Rd rtype)
-        en2: out std_logic;               -- exe regs
-        alu: out std_logic_vector (1 downto 0);
+        s3 : out std_logic;               -- input selection of the third multplexer   (Rt itype/ Rd rtype) if address is 15-19 Rtype o Itype 10-14
+        en2: out std_logic;               -- exe pipe regs
+        alu: out std_logic_vector (1 downto 0); -- da vedere in base a ALU vera
+
         -- vedere hazard e pc
 
         --memory
         wm: out std_logic; -- enables the write-in of the memory
-        en3: out std_logic; -- enables mem regs
+        en3: out std_logic; -- enables mem regs and datamemory
         rm: out std_logic; -- enables the read-out of the memory
-        wrf: out std_logic; --if writes in RF
+        --wrf: out std_logic; --if writes in RF
         
         --Write back
-        en4: out std_logic;  --write port rf
-        en5: out std_logic;  --writeback regs
+        wf1: out std_logic;  --write port rf
+        en4: out std_logic;  --writeback regs - rf 
         s4: out std_logic;  -- ALU/MEM
-        s5: out std_logic -- 1 if writes back on RF
+        s5: out std_logic -- VAL/PC+4
+        mux_sel1: out std_logic --address rf for jump and link
     );
     architecture behavioral of CU_dlx is
         type mem_array is array (integer range 0 to MICROCODE_MEM_SIZE - 1) of std_logic_vector(CW_SIZE - 1 downto 0);  --rivedere size
