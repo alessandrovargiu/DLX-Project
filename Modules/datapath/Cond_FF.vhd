@@ -1,14 +1,14 @@
 library ieee;
 library ieee.std_logic_1164.all;
 
-entity register is
+entity Cond_FF is
     generic ( RegNbit: integer := Nbit);
     port (  clk:    in std_logic;
             rst:    in std_logic;
             en:     in std_logic;
-            I:      in std_logic_vector(Nbit-1 downto 0);
-            Q:      out ts_logic_vector(Nbit-1 downto 0) );
-end register;
+            I:      in std_logic;
+            Q:      out std_logic);
+end Cond_FF;
 
 architecture behavioral of register is
 begin
@@ -17,10 +17,10 @@ begin
     begin
         if( rising_edge(clk) ) then
             if( rst = '1' ) then --synchronous reset 
-                Q <= (others => '0') ;
+                Q <= '0' ;
             else
                 if( en = '1' ) then
-                Q <= I ;
+                    Q <= I ;
                 end if;
             end if;
         end if;

@@ -10,7 +10,8 @@ use WORK.alu_type.all;
 entity ALU is
 
   generic (N : integer := numBit);
-  port (FUNC: IN TYPE_OP;
+  port (--FUNC: IN TYPE_OP;
+        FUNC: IN std_logic_vector(1 downto 0);
         DATA1, DATA2: IN std_logic_vector(N-1 downto 0);
         OUTALU: OUT std_logic_vector(N-1 downto 0) );
 end ALU;
@@ -22,32 +23,32 @@ begin
 P_ALU: process (FUNC, DATA1, DATA2)
 
   constant SHIFT_bits: integer := integer(ceil(log2(real(N))));    -- log2(N) is the number of bits that contains the range in
-
+  
                                                                 -- which DATA1 can be shifted
   begin
 
     case FUNC is
 
-    when ADD =>
+    when "00" => --ADD
         OUTALU <= std_logic_vector(unsigned(DATA1)+unsigned(DATA2));
-    when SUB     =>
+    when "01"     => --SUB
         OUTALU <= std_logic_vector(unsigned(DATA1)-unsigned(DATA2));
-    when MULT     =>
-        OUTALU <= std_logic_vector(unsigned(DATA1((N/2)-1 downto 0)) * unsigned(DATA2((N/2)-1 downto 0)));
-    when BITAND     =>
+    --when MULT     =>
+    --    OUTALU <= std_logic_vector(unsigned(DATA1((N/2)-1 downto 0)) * unsigned(DATA2((N/2)-1 downto 0)));
+    when "10"     => --BITAND
         OUTALU <= DATA1 and DATA2; -- bitwise operations
-    when BITOR     =>
+    when "11"     => --BITOR
         OUTALU <= DATA1 or DATA2;
-    when BITXOR     =>
-        OUTALU <= DATA1 xor DATA2;
-    when FUNCLSL     =>
-        OUTALU <= std_logic_vector(shift_left(unsigned(DATA1), to_integer(unsigned(DATA2(SHIFT_bits downto 0))))); -- logical shift left, HELP: use the concatenation operator &
-    when FUNCLSR     =>
-        OUTALU <= std_logic_vector(shift_right(unsigned(DATA1), to_integer(unsigned(DATA2(SHIFT_bits downto 0))))); -- logical shift right
-    when FUNCRL     =>
-        OUTALU <= std_logic_vector(rotate_left(unsigned(DATA1), to_integer(unsigned(DATA2(SHIFT_bits downto 0))))); -- rotate left
-    when FUNCRR     =>
-        OUTALU <= std_logic_vector(rotate_right(unsigned(DATA1), to_integer(unsigned(DATA2(SHIFT_bits downto 0))))); -- toate right
+    --when BITXOR     =>
+    --    OUTALU <= DATA1 xor DATA2;
+    --when FUNCLSL     =>
+    --   OUTALU <= std_logic_vector(shift_left(unsigned(DATA1), to_integer(unsigned(DATA2(SHIFT_bits downto 0))))); -- logical shift left, HELP: use the concatenation operator &
+    --when FUNCLSR     =>
+    --    OUTALU <= std_logic_vector(shift_right(unsigned(DATA1), to_integer(unsigned(DATA2(SHIFT_bits downto 0))))); -- logical shift right
+    --when FUNCRL     =>
+    --    OUTALU <= std_logic_vector(rotate_left(unsigned(DATA1), to_integer(unsigned(DATA2(SHIFT_bits downto 0))))); -- rotate left
+    --when FUNCRR     =>
+    --    OUTALU <= std_logic_vector(rotate_right(unsigned(DATA1), to_integer(unsigned(DATA2(SHIFT_bits downto 0))))); -- toate right
     when others => null;
 
     end case;

@@ -3,7 +3,7 @@ use IEEE.std_logic_1164.all; --  libreria IEEE con definizione tipi standard log
 --use WORK.constants.all; -- libreria WORK user-defined
 
 entity MUX21 is
-	Generic ( MuxNbit:	integer);
+	Generic ( MuxNbit:	integer); --number of bits of the input
 	Port (	input1:		In	std_logic_vector(MuxNbit-1 downto 0);
 			input2:		In	std_logic_vector(MuxNbit-1 downto 0);
 			Sel:		In	std_logic;
@@ -18,15 +18,13 @@ begin
 
 	begin
 
-	case (Sel) is
+		if( Sel = '1') then
+			Y <= input2;
+		else 
+			Y <= input1;
+		end if;
 
-		when "0" =>	Y <= input1;
-		when "1" =>	Y <= input2;
-		when others =>	Y <= (others => 0);
-
-	end case;
-
-end process;
+	end process;
 
 end BEHAVIORAL;
 
