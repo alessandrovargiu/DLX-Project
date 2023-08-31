@@ -30,7 +30,7 @@ entity CU_dlx is
         mux_sel: out std_logic_vector (1 downto 0): --to choose 16 o 26 bit extender to 32
 
         --execution
-        s1 : out std_logic;               -- input selection of the first multiplexer (PC/A)
+        s1 : out std_logic;               -- input selection of the first multiplexer (PC+4/A)
         s2 : out std_logic;               -- input selection of the second multiplexer (IMM/B)
         s3 : out std_logic;               -- input selection of the third multplexer   (Rt itype/ Rd rtype) if address is 15-19 Rtype o Itype 10-14
         en2: out std_logic;               -- exe pipe regs
