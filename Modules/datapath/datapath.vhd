@@ -129,32 +129,31 @@ constant NbitImmidiate    integer := 16;
 
 ---------------------------------------------------Fetch Unit related internal signals and instances-----------------------------------------------
 signal PCinput: std_logic_vector(addressNbit-1 downto 0);
-signal IRoutputIF: std_logic_vector(Nbit-1 downto 0);
-signal NPCinputIF: std_logic_vector(addressNbit-1 downto 0);
-signal NPCoutputIF:std_logic_vector(addressNbit-1 downto 0);
+signal IR_OUT: std_logic_vector(Nbit-1 downto 0);
+signal PC_OUT: std_logic_vector(addressNbit-1 downto 0);
+signal NPC_IN: std_logic_vector(addressNbit-1 downto 0);
+signal NPC_OUT:std_logic_vector(addressNbit-1 downto 0);
 signal co: std_logic;
 
-PC: register --contains current address
-generic map(IMaddressNbit)
-port map( clk, rst, enable, PCinput, IMAddress) ;
+    PC: register --contains current address
+    generic map(IMaddressNbit)
+    port map(clk, rst, enable, PC_IN, PC_OUT) ;
 
-NextAddressGenerator: rca
-generic map(IMaddressNbit)
-port map (IMAddress, std_logic_vector(4) , '0', NPCinputIF, co);
+    PC_Adder: rca
+    generic map(IMaddressNbit)
+    port map (PC_OUT, std_logic_vector(4) , '0', NPC_IN, co);
 
----registers part of the IF/ID pipe stage
+    IR_0: register      --contains current instruction
+    generic map(Nbit);
+    port map( clk, rst, enable, IMdata, IR_OUT);
 
-IR_0: register --contains current instruction
-generic map(Nbit);
-port map( clk, rst, enable, IMdata,  IRoutputIF );
+    NPC_0: register     --stores subsequent instruction address (PC)
+    generic map(IMaddressNbit)
+    port map(clk, rst, enable, NPC_IN, NPC_OUT); 
 
-NPC_0: register --stores subsequent instruction address
-generic map(IMaddressNbit)
-port map(clk, rst, enable, NPCinputIF, NPCoutputIF ); 
-
-NextPCchoice: Mux21
-generic map(Nbit)
-port map( NPCoutputIF, ALURegOut, branchStatus, PCinput );
+    NextPCchoice: Mux21
+    generic map(Nbit)
+    port map( NPC_OUT, ALURegOut, branchStatus, PC_IN );
 
 ---------------------------------------------------Decode Unit related internal signals and instances----------------------------------------------
 
