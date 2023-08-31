@@ -27,21 +27,22 @@ entity CU_dlx is
         rf1: out std_logic; --read port A of register file
         rf2: out std_logic; --read port B of reg file
         en1: out std_logic; -- enables decode pipeline reg and reg file
-        mux_sel: out std_logic: --to choose 16 o 26 bit extender to 32
+        mux_sel: out std_logic_vector (1 downto 0): --to choose 16 o 26 bit extender to 32
 
         --execution
         s1 : out std_logic;               -- input selection of the first multiplexer (PC/A)
         s2 : out std_logic;               -- input selection of the second multiplexer (IMM/B)
         s3 : out std_logic;               -- input selection of the third multplexer   (Rt itype/ Rd rtype) if address is 15-19 Rtype o Itype 10-14
         en2: out std_logic;               -- exe pipe regs
-        alu: out std_logic_vector (1 downto 0); -- da vedere in base a ALU vera
-
+        alu: out std_logic_vector (5 downto 0); -- da vedere in base a ALU vera
+        
         -- vedere hazard e pc
 
         --memory
         wm: out std_logic; -- enables the write-in of the memory
         en3: out std_logic; -- enables mem regs and datamemory
         rm: out std_logic; -- enables the read-out of the memory
+        j_en: out std_logic_vector (1 downto 0);
         --wrf: out std_logic; --if writes in RF
         
         --Write back

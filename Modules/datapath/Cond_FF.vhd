@@ -1,16 +1,15 @@
 library ieee;
-library ieee.std_logic_1164.all;
+use ieee.std_logic_1164.all;
 
-entity Cond_FF is
-    generic ( RegNbit: integer := Nbit);
+entity FlipFlop is
     port (  clk:    in std_logic;
             rst:    in std_logic;
             en:     in std_logic;
             I:      in std_logic;
             Q:      out std_logic);
-end Cond_FF;
+end FlipFlop;
 
-architecture behavioral of register is
+architecture behavioral of FlipFlop is
 begin
 
     general_ref: process (clk, rst)
