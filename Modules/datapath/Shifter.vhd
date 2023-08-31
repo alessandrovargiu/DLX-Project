@@ -7,7 +7,7 @@ entity Shifter is
         -- Nbit 32 bit
     );
 	Port (	A:	In	std_logic_vector(Nbit-1 downto 0); --input
-			B:	In	std_logic_vector(5-1 downto 0); --input bits shift , 5 o 6 bit?
+			B:	In	std_logic_vector(5-1 downto 0); --input bits shift 
             OP:  In  std_logic_vector(2-1 downto 0); -- input left or right
             S:  Out std_logic_vector(Nbit-1 downto 0) --output 
     );
@@ -29,10 +29,10 @@ begin
                          mask08 <= "0000000000000000" & A(Nbit - 1 downto 8) ;
                          mask16 <= "000000000000000000000000" & A(Nbit - 1 downto 16);
                          mask24 <= "00000000000000000000000000000000" & A(Nbit - 1 downto 24);
-            when "10" => mask00 <= (7 downto 0 => A(Nbit-1)) & A;  --Nbit-1 downto (Nbit-8)
-                         mask08 <= (15 downto 0 => A(Nbit-1)) & A(Nbit-1 downto 8);
-                         mask16 <= (23 downto 0 => A(Nbit-1)) & A(Nbit-1 downto 16);
-                         mask24 <= (31 downto 0 => A(Nbit-1)) & A(Nbit-1 downto 24);
+            when "10" => mask00 <= (39 downto 32 => A(Nbit-1)) & A;  --arith right
+                         mask08 <= (39 downto 24 => A(Nbit-1)) & A(Nbit-1 downto 8);
+                         mask16 <= (39 downto 16 => A(Nbit-1)) & A(Nbit-1 downto 16);
+                         mask24 <= (39 downto 8 => A(Nbit-1)) & A(Nbit-1 downto 24);
             when others => mask00 <= (others=>'0');
                            mask08 <= (others=>'0');
                            mask16 <= (others=>'0');
