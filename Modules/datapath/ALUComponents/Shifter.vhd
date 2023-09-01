@@ -1,10 +1,11 @@
 library ieee; 
 use ieee.std_logic_1164.all;
-use iee.numeric_std.all; 
+use ieee.numeric_std.all;
+use work.constants.all;
 
 entity Shifter is 
     generic (
-        Nbit: integer;-- Nbit 32 bit
+        Nbit: integer     -- Nbit 32 bit
     );
 	Port (	A:	In	std_logic_vector(Nbit-1 downto 0); --input
 			B:	In	std_logic_vector(5-1 downto 0); --input bits shift , 5 o 6 bit?
@@ -14,10 +15,10 @@ entity Shifter is
 			
 end Shifter; 
 
-architecture beh of Logic is
-
-begin
+architecture beh of Shifter is
     signal mask00,mask08,mask16,mask24,mask : std_logic_vector (Nbit-1+8 downto 0);
+begin
+    
     level1 : process (A,OP)
     begin
         case OP is
@@ -52,14 +53,14 @@ begin
     level3: process (B,mask)
     begin
         case B(2 downto 0) is
-            when "000" => S <= A((Nbit - 1) + 8 downto 8);
-            when "001" => S <= A((Nbit - 1) + 7 downto 7);
-            when "010" =>S <= A((Nbit - 1) + 6 downto 6);
-            when "011" => S <= A((Nbit - 1) + 5 downto 5);
-            when "100" =>S <= A((Nbit - 1) + 4 downto 4);
-            when "101" =>S <= A((Nbit 1) + 3 downto 3);
-            when "110" =>S <= A((Nbit - 1) + 2 downto 2);
-            when "111" => S <= A((Nbit - 1) + 1 downto 1);
+            when "000" => S <= mask((Nbit - 1) + 8 downto 8);
+            when "001" => S <= mask((Nbit - 1) + 7 downto 7);
+            when "010" => S <= mask((Nbit - 1) + 6 downto 6);
+            when "011" => S <= mask((Nbit - 1) + 5 downto 5);
+            when "100" => S <= mask((Nbit - 1) + 4 downto 4);
+            when "101" => S <= mask((Nbit - 1) + 3 downto 3);
+            when "110" => S <= mask((Nbit - 1) + 2 downto 2);
+            when "111" => S <= mask((Nbit - 1) + 1 downto 1);
             when others => S <= (others => 'X');
         end case;
     end process;
