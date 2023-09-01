@@ -10,7 +10,7 @@ entity sgn_extender is
          );
 end sgn_extender ;
 
-architecture Behavioral of sgn_exteder is
+architecture Behavioral of sgn_extender is
 
 begin 
 

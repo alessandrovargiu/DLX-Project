@@ -3,7 +3,7 @@ use IEEE.std_logic_1164.all;
 use IEEE.std_logic_unsigned.all;
 --use WORK.all;
 USE ieee.numeric_std.ALL;
-use WORK.constants.all;
+--use WORK.constants.all;
 
 entity register_file is
  generic(
@@ -27,10 +27,9 @@ end register_file;
 architecture Behavioral of register_file is
 
         subtype REG_ADDR is natural range 0 to 31; -- using natural type
-	type REG_ARRAY is array(REG_ADDR) of std_logic_vector(nbit-1 downto 0); 
-	signal REGISTERS : REG_ARRAY; 
-
-	
+		type REG_ARRAY is array(REG_ADDR) of std_logic_vector(nbit-1 downto 0); 
+		signal REGISTERS : REG_ARRAY; 
+		
 begin 
 -- write your RF code 
 	WrProc: PROCESS (Clk, reset, enable, WR, RD1, RD2, ADD_WR, ADD_RD1, ADD_RD2, DATAIN) 
