@@ -80,85 +80,98 @@ constant XNORop:      std_logic_vector(4-1 downto 0) := "1001";
 signal resultAdd:       std_logic_vector(Nbit-1 downto 0);
 signal cin4sub:         std_logic; --if 0, we do an addition if 1 we do a subtraction.
 signal Bcomplement:     std_logic_vector(Nbit-1 downto 0);
-signal intermidiateB:   std_logic_vector(Nbit-1 downto 0);
+signal intermediateB:   std_logic_vector(Nbit-1 downto 0);
 
 signal resultLogic:     std_logic_vector(Nbit-1 downto 0);
-signal logicOp:         std_logic_vector(4-1 downto 0);
+signal LogicOp:         std_logic_vector(4-1 downto 0);
+
+signal ShifterOp:       std_logic_vector(2-1 downto 0);
+signal resultShifter:   std_logic_vector(Nbit-1 downto 0);
 
 signal resultMul:       std_logic_vector(Nbit-1 downto 0);
 
+begin
 
-Addition: p4_adder
+    Addition: p4_adder
     generic map(Nbit, 3)   --need to figure out what to put for nbit per block generic parameter
-    port map(A => OperandA, B => , intermediateB , Cin => cin4sub, S => resultAdd, open);
+    port map(A => OperandA, B => intermediateB , Cin => cin4sub, S => resultAdd, open);
     
-BComplement : for i in 0 to Nbit-1 generate
+    BComplement : for i in 0 to Nbit-1 generate
     inverterI : iv
     port map( B(i), Bcomplement(i));
-end generate BComplement;
+    end generate BComplement;
 
-LogicalStuff: Logic
+    LogicalStuff: Logic
     generic map(Nbit)
-    port map(A => operandA, B => operandB, OperationSel => LogicOp, C => resultLogic );
+    port map(A => operandA, B => operandB, OperationSel => LogicOp, C => resultLogic);
+    -- SHIFTER: B takes 5 LSBs, 
+    Shifter: shifter
+    generic map(Nbit)
+    port map(A => OperandA, B => operandB(5-1 downto 0), OP => ShifterOp, S => resultShifter);
 
-Multiplication: BOOTHMUL
+    Multiplication: BOOTHMUL
     generic map(Nbit/2) --i think that operands cant be greater then size 16 for the multiplication to make sense (since result has only 32 bits to be stored in)
     port map(A => OperandA, B => OperandB, P => resultMul);
 
 
-OpSelection: process( OperationSel, Bcomplement, resultAdd, resultMul, resultLogical) --controllare se la sensitivity e' giusta
-
-begin
-
-    case OperationSel is --signal OperationSel comes from the CU to select the proper alu result to output
-
+    OpSelection: process(OperationSel, OperandB, resultAdd, resultLogic) 
+    case OperationSel is
     begin
-        when "0000" =>  --when the CW bits ALU1=0,ALU2=0, ALU3=0, ALu4=0 it means we perform and addition
-
+        when "0000" =>  -- ADD
+        
         intermediateB <= OperandB; --we use the original B as second operand
         cin4sub <= '0';
         AluOut <= resultAdd;
 
-        when "0001" =>  --when the CW bits ALU1=0, ALU2=0, ALU3=0, ALU4=1 it means we perform a subtraction
+        when "0001" =>  -- SUB
 
         intermediateB <= Bcomplement;
         cin4sub <= '1';
         AluOut <= resultAdd;
 
-        when "0010" =>  --when the CW bits ALU1=0, ALU2=0, ALU3=1, ALU4=0 it means we perform a logical AND
+        when "0010" =>  -- AND
 
         LogicOp <= ANDop;  --dont forget, ANDOp is a constant seen above it is 1000.
         AluOut <= resultLogic;
 
 
-        when "0011" =>  --when the CW bits ALU1=0, ALU2=0, ALU3=1, ALU4=1 it means we perform a logical NAND
+        when "1110" =>  -- NAND
 
         LogicOp <= NANDop;
         AluOut <= resultLogic;
 
-        when "0100" =>  --when the CW bits ALU1=0, ALU2=1, ALU3=0, ALU4=0 it means we perform a logical OR
+        when "0011" =>  -- OR
 
         LogicOp <= ORop;
         AluOut <= resultLogic;
 
-        when "0101" =>  --when the CW bits ALU1=0, ALU2=1, ALU3=0, ALU4=1 it means we perform a logical XOR
+        when "1010" =>  -- XOR
 
         LogicOp <= XORop;
         AluOut <= resultLogic;
 
-        when "0110" =>  --when the CW bits ALU1=0, ALU2=1, ALU3=1, ALU4=0 it means we perform a shift left logical
+        when "0110" =>  -- XNOR
 
-        when "0111" =>  --when the CW bits ALU1=0, ALU2=1, ALU3=1, ALU4=1 it means we perform a shift right logical
+        LogicOp <= XNORop;
+        AluOut <= resultLogic;
 
-        when "1000" =>  --when the CW bits ALU1=0, ALU2=1, ALU3=1, ALU4=1 it means we perform a multiplication operation
+        when "1001" =>  -- logical shift left
 
-        AluOut <= resultMul;
+        ShifterOp <= "00";
+        AluOut <= resultShifter; 
 
-        --probably more stuff to be added like compare instructions. 
+        when "0111" =>  -- logical shift right
 
+        ShifterOp <= "01";
+        AluOut <= resultShifter;
 
-end case;
+        when "1000" =>  -- Shift Right Arithmetic
 
-end OperationSelection;
+        ShifterOp <= "10";
+        AluOut <= resultShifter;
 
+        -- MUL to be added
+
+    end case;
+    end process Opselection;
 end struct;
