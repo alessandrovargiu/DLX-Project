@@ -1,13 +1,13 @@
 library ieee; 
 use ieee.std_logic_1164.all;
-use iee.numeric_std.all;
+use ieee.numeric_std.all;
 
 entity Comparator is 
     generic (
 
     );
 	Port (	Sum:	In	std_logic_vector(Nbit-1 downto 0); --input from p4adder
-			Cout:	In	std_logic --input from p4 adder
+			Cout:	In	std_logic; --input from p4 adder
             A:      In std_logic_vector (Nbit-1 downto 0);
             B:      In std_logic_vector (Nbit-1 downto 0);
             res:    Out std_logic_vector(4 downto 0) --output
@@ -15,9 +15,10 @@ entity Comparator is
 			
 end Comparator; 
 
+
+architecture beh of Comparator is 
 signal Z: std_logic;
 signal C: std_logic;
-architecture beh of Comparator is 
 begin
     Stage1: process(Cout,A,B,Sum)
     begin 
