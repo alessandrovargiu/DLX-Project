@@ -3,10 +3,10 @@ use IEEE.std_logic_1164.all; --  libreria IEEE con definizione tipi standard log
 --use WORK.constants.all; -- libreria WORK user-defined
 
 entity oneBitMux21 is
-	Port (	input1:		In	std_logic;
-			input2:		In	std_logic;
-			Sel:		In	std_logic;
-			Y:			Out	std_logic );
+	Port (	in1:		In	std_logic;
+			in2:		In	std_logic;
+			sel:		In	std_logic;
+			oneBitOut:			Out	std_logic );
 end oneBitMux21;
 
 architecture BEHAVIORAL of oneBitMux21 is
@@ -18,9 +18,9 @@ begin
 	begin
 
 		if( Sel = '1') then
-			Y <= input2;
+			oneBitOut <= in2;
 		else 
-			Y <= input1;
+			oneBitOut <= in1;
 		end if;
 
 	end process;
