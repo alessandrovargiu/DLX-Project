@@ -40,6 +40,8 @@ signal IRoutputID:     std_logic_vector(Nbit-1 downto 0);        --signal of out
 signal NPCoutputID:    std_logic_vector(Nbit-1 downto 0); --signal of out from the IF/ID pipe reg
 signal co: std_logic;
 
+signal adder1Out: std_logic_vector(Nbit-1 downto 0);
+
 ---------------------------------------------------Decode Unit related internal signals---------------------------------------------------------------
 
 --signal RFWritePortAddress:    std_logic_vector(RFaddrNbit-1 downto 0);
@@ -103,7 +105,7 @@ signal fromMemOrFromAlu:     std_logic_vector(Nbit-1 downto 0);
              oneBitOut: out std_logic);
     end component;
 
-    component MUX21 is
+    component Mux21 is
 	    Generic ( MuxNbit:	integer := Nbit);
 	    Port (	input1:		In	std_logic_vector(MuxNbit-1 downto 0);
 			    input2:		In	std_logic_vector(MuxNbit-1 downto 0);
@@ -244,6 +246,7 @@ begin
 
 --------------------------------------------------Fetch Unit related component instances-------------------------------------------------------------
 
+
 --contains current address
 PC: myregister 
 generic map(Nbit)
@@ -251,25 +254,25 @@ port map( clk, rst, enable, PCinput, PCout ) ; --storage of current address
 
 NextAddressGenerator: rca
 generic map(Nbit)
-port map (PCout, x"00000004" , '0', NPCinputIF, co );  --generates NPC
+port map (PCout, x"00000004" , '0', Adder1Out, co );  --generates NPC
 
 NextPCchoice: Mux21
 generic map(Nbit)
-port map( NPCoutputID, ALUOutEX, branchStatus, PCinput ); 
+port map( Adder1Out, ALUOutEX, branchStatus, PCinput ); 
 
 ---registers part of the IF/ID pipe 
 
 --contains current instruction
 IR_0: myregister 
 generic map(Nbit)
-port map( clk, rst, enable, IMdata,  IRoutputID ); 
+port map( clk, rst, enable, IMdata,  IRoutputID );  --called IRoutputID because the output of the content of the IR stage is going to the Instruction decode stage
 
 --stores subsequent instruction address
 NPC_0: myregister 
 generic map(Nbit)
-port map(clk, rst, enable, NPCinputIF, NPCoutputID ); 
+port map(clk, rst, enable, Adder1Out, NPCoutputID ); 
 
-IMAddress <= PCout ;
+IMAddress <= PCinput ;
 
 ---------------------------------------------------Decode Unit related component instances--------------------------------------------------------
 

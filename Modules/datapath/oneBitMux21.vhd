@@ -13,15 +13,18 @@ architecture BEHAVIORAL of oneBitMux21 is
 
 begin
 
-	process(Sel)
+	process(Sel, in1, in2)
 
 	begin
 
-		if( Sel = '1') then
-			oneBitOut <= in2;
-		else 
-			oneBitOut <= in1;
-		end if;
+		case Sel is
+			when '1' =>
+				oneBitOut <= in1;
+			when '0' =>
+				oneBitOut <= in2;
+			when others =>
+				oneBitOut <= 'U';
+		end case;
 
 	end process;
 
