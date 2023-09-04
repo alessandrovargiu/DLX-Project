@@ -40,6 +40,8 @@ signal IRoutputID:     std_logic_vector(Nbit-1 downto 0);        --signal of out
 signal NPCoutputID:    std_logic_vector(Nbit-1 downto 0); --signal of out from the IF/ID pipe reg
 signal co: std_logic;
 
+signal adder1Out: std_logic_vector(Nbit-1 downto 0);
+
 ---------------------------------------------------Decode Unit related internal signals---------------------------------------------------------------
 
 --signal RFWritePortAddress:    std_logic_vector(RFaddrNbit-1 downto 0);
@@ -51,8 +53,8 @@ signal RegBoutEX:             std_logic_vector(Nbit-1 downto 0); --signal which 
 
 signal NPCoutputEX:           std_logic_vector(Nbit-1 downto 0); --NPC signal which is output from the NPC register of the ID/EX register bank
 signal IRoutputEX:            std_logic_vector(Nbit-1 downto 0); --IR signal whic is output from the IR register of the ID/EX register bank
-signal rt_dest:                std_logic_vector(RFaddrNbit downto 0); --signal used as output to the rt register to be then used during execution phase
-signal rd_dest:                std_logic_vector(RFaddrNbit downto 0); --signal used as output of the rd pipe register. it will be used during execution phase
+signal rt_dest:                std_logic_vector(RFaddrNbit-1 downto 0); --signal used as output to the rt register to be then used during execution phase
+signal rd_dest:                std_logic_vector(RFaddrNbit-1 downto 0); --signal used as output of the rd pipe register. it will be used during execution phase
 signal NPCoutputMEM:           std_logic_vector(Nbit-1 downto 0); ----NPC signal which is output from the NPC register of the EX/MEM register bank
 
 signal unsignedImmfrom16:     std_logic_vector(Nbit-1 downto 0);
@@ -103,7 +105,7 @@ signal fromMemOrFromAlu:     std_logic_vector(Nbit-1 downto 0);
              oneBitOut: out std_logic);
     end component;
 
-    component MUX21 is
+    component Mux21 is
 	    Generic ( MuxNbit:	integer := Nbit);
 	    Port (	input1:		In	std_logic_vector(MuxNbit-1 downto 0);
 			    input2:		In	std_logic_vector(MuxNbit-1 downto 0);
@@ -244,6 +246,7 @@ begin
 
 --------------------------------------------------Fetch Unit related component instances-------------------------------------------------------------
 
+
 --contains current address
 PC: myregister 
 generic map(Nbit)
@@ -251,25 +254,25 @@ port map( clk, rst, enable, PCinput, PCout ) ; --storage of current address
 
 NextAddressGenerator: rca
 generic map(Nbit)
-port map (PCout, "1001" , '0', NPCinputIF, co );  --generates NPC
+port map (PCout, x"00000004" , '0', Adder1Out, co );  --generates NPC
 
 NextPCchoice: Mux21
 generic map(Nbit)
-port map( NPCoutputID, ALUOutEX, branchStatus, PCinput ); 
+port map( Adder1Out, ALUOutEX, branchStatus, PCinput ); 
 
 ---registers part of the IF/ID pipe 
 
 --contains current instruction
 IR_0: myregister 
 generic map(Nbit)
-port map( clk, rst, enable, IMdata,  IRoutputID ); 
+port map( clk, rst, enable, IMdata,  IRoutputID );  --called IRoutputID because the output of the content of the IR stage is going to the Instruction decode stage
 
 --stores subsequent instruction address
 NPC_0: myregister 
 generic map(Nbit)
-port map(clk, rst, enable, NPCinputIF, NPCoutputID ); 
+port map(clk, rst, enable, Adder1Out, NPCoutputID ); 
 
-IMAddress <= PCout ;
+IMAddress <= PCinput ;
 
 ---------------------------------------------------Decode Unit related component instances--------------------------------------------------------
 
@@ -298,8 +301,8 @@ port map (  CLK => clk,
             RD2 => controlWord(CwNbit-2), --enable Read port 2 of RF
             WR => controlWord(CWNbit-21), --enables write port
             ADD_WR => finalAddressWB, 
-            ADD_RD1 => IRoutputID(Nbit-1-OpcodeNbit downto Nbit-1-OpcodeNbit-RFaddrNbit), --address of source register 1
-            ADD_RD2 => IRoutputID(Nbit-1-OpcodeNbit-RFaddrNbit downto Nbit-1-OpcodeNbit-RFaddrNbit-RFaddrNbit), --address of source register 2
+            ADD_RD1 => IRoutputID(Nbit-1-OpcodeNbit downto Nbit-OpcodeNbit-RFaddrNbit), --address of source register 1
+            ADD_RD2 => IRoutputID(Nbit-1-OpcodeNbit-RFaddrNbit downto Nbit-OpcodeNbit-RFaddrNbit-RFaddrNbit), --address of source register 2
             DATAIN => RFDataIn,
             OUT1 => RFOutRegAIN,
             OUT2 => RFOutRegBIN ); 
@@ -361,7 +364,7 @@ port map( clk => clk, rst => rst, en => controlWord(CWNbit-3), I => IRoutputID(N
 --rd is the convention for expressing the destination address of an immidiate Itype instruction
 rd: myregister 
 generic map(RFaddrNbit)
-port map(clk => clk, rst => rst, en => controlWord(CWNbit-3), I => IRoutputID(Nbit-1-OpcodeNbit-RFaddrNbit downto Nbit-1-OpcodeNbit-RFaddrNbit-RFaddrNbit), Q => rd_dest );
+port map(clk => clk, rst => rst, en => controlWord(CWNbit-3), I => IRoutputID(Nbit-1-OpcodeNbit-RFaddrNbit downto Nbit-OpcodeNbit-RFaddrNbit-RFaddrNbit), Q => rd_dest );
 
 
 ------------------------------------------------------Execution Unit related component instances------------------------------------------------------------
@@ -423,7 +426,7 @@ generic map(Nbit)
 port map(clk, rst, controlWord(CWNbit-9), regBoutEX, regBoutMEM);
 
 destinationAddressReg1: myregister
-generic map(addressNbit)
+generic map(RFaddrNbit)
 port map(clk, rst, controlWord(CWNbit-9), RFWritePortAddressEX, RFWritePortAddressMEM);
 
 -----------------------------------------------------Memory Unit component instances----------------------------------------------------------------------------
@@ -459,7 +462,7 @@ generic map(Nbit)
 port map( clk, rst, controlWord(CWNbit-17), ALUregOutMEM, ALUregOutWB);
 
 destinationAddressReg2: myregister
-generic map(addressNbit)
+generic map(RFaddrNbit)
 port map(clk, rst, controlWord(CWNbit-17), RFWritePortAddressMEM, RFWritePortAddressWB);
 
 -----------------------------------------------------Write Back component instances---------------------------------------------------------------------------
@@ -467,7 +470,7 @@ port map(clk, rst, controlWord(CWNbit-17), RFWritePortAddressMEM, RFWritePortAdd
 --choosing if writing back a value that was obtained from dataMem (in case of load instruction) or a value obtained from the result from the ALU.
 RFinChoice: Mux21
 generic map(Nbit)
-port map( LMDRegOutWB, ALURegOutWB, controlWord(CWNbit-23), fromMemOrFromAlu );
+port map( ALURegOutWB, LMDRegOutWB, controlWord(CWNbit-23), fromMemOrFromAlu );
 
 -- costruire un mux per ricollegare questo punto: val se sel = 0, se no se sel e 1 PC+4 (che serve per mettere il PC+4 nel R31 se e' una jal) 
 StoresNPCorValue: Mux21

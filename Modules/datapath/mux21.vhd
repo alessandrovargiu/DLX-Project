@@ -14,15 +14,16 @@ architecture BEHAVIORAL of MUX21 is
 
 begin
 
-	process(Sel)
+	process(Sel, input1, input2)
 
 	begin
 
-		if( Sel = '1') then
-			Y <= input2;
-		else 
-			Y <= input1;
-		end if;
+		case Sel is
+			when '1' =>
+				Y <= input2;
+			when others =>
+				Y <= input1;
+		end case;
 
 	end process;
 

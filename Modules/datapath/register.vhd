@@ -14,7 +14,7 @@ end myregister;
 architecture behavioral of myregister is
 begin
 
-    general_ref: process (clk)
+    general_ref: process (clk,I)
     begin
         if( rising_edge(clk) ) then
             if( rst = '1' ) then --synchronous reset 
