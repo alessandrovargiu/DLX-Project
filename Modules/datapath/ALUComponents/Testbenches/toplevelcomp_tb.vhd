@@ -17,18 +17,19 @@ component topLevelcomparator is
 	     OP: IN std_logic_vector(2 downto 0));
 end component;																		
 
-constant N: integer := NumBit;
-signal A,B: std_logic_vector(3 DOWNTO 0);
+constant N: integer := NBit;
+signal A,B,SUB: std_logic_vector(3 DOWNTO 0);
 signal C: std_logic;
 signal Sel: std_logic_vector(2 DOWNTO 0);
-signal Res: std_logic_vector(N-1 DOWNTO 0);
+--signal Res: std_logic_vector(N-1 DOWNTO 0);
 
 begin
-	UUT: topLevelCMP generic map (N) port map(SUB,C,Sel,Res);
+	UUT: topLevelCMP generic map (N) port map(A,B,SUB,C,Sel);
 	PROCESS
 		begin
-		A<= 0001
-		B<= 0001
+		A<= 0001;
+		B<= 0001;
+		SUB <= "0000";
 		C <= '1';
 		Sel<="000";
 		wait for 5 ns;
@@ -44,6 +45,7 @@ begin
 		wait for 5 ns;
 		A<="0010";
 		B<="0011";
+		SUB <= "1111";
 		C <= '0';
 		Sel<="000";
 		wait for 5 ns;
@@ -57,8 +59,9 @@ begin
 		wait for 5 ns;
 		Sel<="101";
 		wait for 5 ns;
-		A<=0111
-		B<= 0011
+		A<=0111;
+		B<= 0011;
+		SUB <= "0100";
 		C <= '1';
 		Sel<="000";
 		wait for 5 ns;

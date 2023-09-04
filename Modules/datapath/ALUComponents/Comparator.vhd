@@ -6,7 +6,7 @@ entity Comparator is
     generic (
 
     );
-	Port (	Sum:	In	std_logic_vector(Nbit-1 downto 0); --input from p4adder
+	Port (	Sub:	In	std_logic_vector(Nbit-1 downto 0); --input from p4adder
 			Cout:	In	std_logic; --input from p4 adder
             A:      In std_logic_vector (Nbit-1 downto 0);
             B:      In std_logic_vector (Nbit-1 downto 0);
@@ -20,7 +20,7 @@ architecture beh of Comparator is
 signal Z: std_logic;
 signal C: std_logic;
 begin
-    Stage1: process(Cout,A,B,Sum)
+    Stage1: process(Cout,A,B,Sub)
     begin 
         Z <= nor Sum;   --oppure loop if not work as only nor
         C <= Cout xor (A[31] xor B[31]);  -- if not signed int don t work
