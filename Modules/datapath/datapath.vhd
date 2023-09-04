@@ -470,7 +470,7 @@ port map(clk, rst, controlWord(CWNbit-17), RFWritePortAddressMEM, RFWritePortAdd
 --choosing if writing back a value that was obtained from dataMem (in case of load instruction) or a value obtained from the result from the ALU.
 RFinChoice: Mux21
 generic map(Nbit)
-port map( LMDRegOutWB, ALURegOutWB, controlWord(CWNbit-23), fromMemOrFromAlu );
+port map( ALURegOutWB, LMDRegOutWB, controlWord(CWNbit-23), fromMemOrFromAlu );
 
 -- costruire un mux per ricollegare questo punto: val se sel = 0, se no se sel e 1 PC+4 (che serve per mettere il PC+4 nel R31 se e' una jal) 
 StoresNPCorValue: Mux21

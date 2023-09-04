@@ -86,7 +86,7 @@ begin
         
         Clock <= not Clock after 1 ns;
 	    Reset <= '1', '0' after 2.5 ns;
-        enable_i <= '1' after 0.5 ns;
+        enable_i <= '1' after 1.5 ns;
 
         DPSampleSignals: process
 
@@ -100,232 +100,223 @@ begin
 
         begin
 
-        --nota per me: note about instruction memory Immidiate value provided at input of IR reg. when we reset, the output of PC is for sure x"00000000", this means that at that same clk cylce the input of the register IR is available. hence at the following clock cycle (when rst = 0) ir will contain the instruciton
-
         wait for 1 ns;  
-                       
-        --in questo colpo di clock si e' appena notato che il reset e' ancora 0 e all ingresso di IR si sa gia l istruzione che dovra essere incapsulata in IR
 
-        IMdata_i <= "00000100000000010000000000000001" ; -- instruction bits corresponding to -addi r1, r0, 1- (the opcode assumed for addi is 000001)
-
-        --at this point in time, the CU has not received any OPCODE yet so there are still no control bits sent to DP
         ControlWord_i<= (others => '0');
 
-        --added for better understanding of waveform
-        currentControlBitsID <= (others => '0');
-        currentControlBitsEX <= (others => '0');
-        currentControlBitsMem <=(others => '0');
-        currentControlBitsWB <= (others => '0');
-
         wait for 2 ns;
-		
-        --in questo istante di tempo, il reset non e' piu a 0, l IR trova l istruzione -addi rq, r0, 1- e procede al fetchamentro: fetch of 1st instruction
+
+        IMdata_i <= "00000100000000010000000000000001"; -- instruction bits corresponding to -addi r1, r0, 1- (the opcode assumed for addi is 000001)
+
        
-        --contemporaneamente, l IR avra' al suo ingresso la seconda istruzione:
 
-        IMdata_i <= "00000100000000100000000000000010"; -- instruction bits corresponding to -addi r2, r0, 2- 
+        	ControlWord_i<= (others => '0');
 
-                ControlWord_i<= (others => '0');
-
-        --added for better understanding of waveform
-        currentControlBitsID <= (others => '0');
-        currentControlBitsEX <= (others => '0');
-        currentControlBitsMem <=(others => '0');
-        currentControlBitsWB <= (others => '0');
-        
+        --at this point in time, la CU sente il cambiamento alle porte della LUT e di conseguenza riesce a pescare la control word associata. I control bits propagati al dp sono solo quelli correlati alla decode della prima istruzione fetchata 
+                --ControlWord_i(controlNbit-1 downto controlNbit-CWNBitsID) <= CWIdBitsADDI ;
         
 
         wait for 2 ns;
+	IMdata_i <= "00000100000000100000000000000010"; -- instruction bits corresponding to -addi r2, r0, 2- 	       
 
-        --fetch of 2nd instruction, IR has 3rd instruction at its input
 
-		IMdata_i <= "00001100000000110000000000000001"; -- instruction bits corresponding to -subi r3, r0, 1- (opcode assumed for subi is 00011)
+        --fetch of 2nd instruction
+        
 
---ControlWord Of the first instruction is formed by CU and control bits related to decode phase of 1st are given to DP
-        ControlWord_i(controlNbit-1 downto controlNbit-CWNBitsID) <= CWIdBitsADDI ;
+                ControlWord_i(controlNbit-1 downto controlNbit-CWNBitsID) <= CWIdBitsADDI ;
 
-        --added for better understanding of waveform
-        currentControlBitsID <= CWIdBitsADDI;
-        currentControlBitsEX <= (others => '0');
-        currentControlBitsMem <=(others => '0');
-        currentControlBitsWB <= (others => '0');
+        --control bits sent to ports of decode unit at this time instant 
+                --ControlWord_i(controlNbit-1 downto controlNbit-CWNBitsID) <= CWIdBitsADDI ;
+        --controlbits sent to execute unit at this time instannt
+                --controlWord_i(controlNbit-1-CWNbitsID downto controlNbit-CWNBitsID-CWNBitsEX) <= CWExBitsADDI;
+
+        -- in questo istante di tempo, la CU forma la controlWord della seconda istruzione del programma. I control bits propagati al datapath in quest istante di tempo saranno:
 
         
 
         wait for 2 ns;
-		
-        --fetch of 3rd instruction, IR register has 4th instruction at its input port
-		IMdata_i <= "00010100000001000000000000000010"; -- instruction bits corresponding to -or r4, r0, 2- 
+               IMdata_i <= "00001100000000110000000000000001"; -- instruction bits corresponding to -subi r3, r0, 1- (opcode assumed for subi is 00011)
 
---controlbits sent to decode unit at this time instnat
-        controlWord_i(controlNbit-1 downto controlNbit-CWNBitsID) <= CWIdBitsADDI ;
+        --fetch of 3rd instruction,
+	
+        
+        --control bits sent to ports of decode unit at this time instant 
+                ControlWord_i(controlNbit-1 downto controlNbit-CWNBitsID) <= CWIdBitsADDI ;
+        --controlbits sent to execute unit at this time instannt
+                controlWord_i(controlNbit-1-CWNbitsID downto controlNbit-CWNBitsID-CWNBitsEX) <= CWExBitsADDI;
+        
+        --controlbits sent to decode unit at this time instant
+                --controlWord_i(controlNbit-1 downto controlNbit-CWNBitsID) <= CWIdBitsSUBI ;
 
         --controlbits sent to execute unit at this time instannt
-        controlWord_i(controlNbit-1-CWNbitsID downto controlNbit-CWNBitsID-CWNBitsEX) <= CWExBitsADDI;
+                --controlWord_i(controlNbit-1-CWNBitsID downto controlNbit-CWNBitsID-CWNBitsEX) <= CWExBitsADDI;
 
-        --added for better understanding of waveform
-        currentControlBitsID <= CWIdBitsADDI;
-        currentControlBitsEX <= CWExBitsADDI;
-        currentControlBitsMem <=(others => '0');
-        currentControlBitsWB <= (others => '0');
+        --controlbits sent to memory unit at this time instant
+                --controlWord_i(controlNbit-1-CWNBitsID-CWNBitsEX downto controlNbit-CWNBitsID-CWNBitsEX-CWNBitsMEM) <= CWMemBitsADDI;
 
  
 
         wait for 2 ns;
+	IMdata_i <= "00010100000001000000000000000010"; -- instruction bits corresponding to -or r4, r0, 2- 	
 
-		--fetch of 4th instruction, and simultanously IR reg has 5th instruction at its input
 
-        IMdata_i <= "00000000001000100010100000000000"; --instruction bits corresponding to 5th instruction: -add r5, r1, r2-  (opcode assumed for the add Rtype is 000000 and related FUNC is 00000000000 )
-      
-       --controlbits sent to decode unit at this time instant
-        controlWord_i(controlNbit-1 downto controlNbit-CWNBitsID) <= CWIdBitsSUBI ;
-
-        --controlbits sent to execute unit at this time instannt
-        controlWord_i(controlNbit-1-CWNBitsID downto controlNbit-CWNBitsID-CWNBitsEX) <= CWExBitsADDI;
-
-        --controlbits sent to memory unit at this time instant
-        controlWord_i(controlNbit-1-CWNBitsID-CWNBitsEX downto controlNbit-CWNBitsID-CWNBitsEX-CWNBitsMEM) <= CWMemBitsADDI;
-
-    --added for better understanding of waveform
-        currentControlBitsID <= CWIdBitsSUBI;
-        currentControlBitsEX <= CWExBitsADDI;
-        currentControlBitsMem <= CWMemBitsADDI;
-        currentControlBitsWB <= (others => '0');
-
-       
+        --fetch of 4th instruction
         
-        wait for 2 ns;
-		
-        --in this time instant there is the fetch of the 5th instruction. Additionally there...
-        --...is no more instruction at the input port of IR as program is finished
+
 
         --controlbits sent to decode unit at this time instant
-        controlWord_i(controlNbit-1 downto controlNbit-CWNBitsID) <= CWIdBitsORI ;
+                controlWord_i(controlNbit-1 downto controlNbit-CWNBitsID) <= CWIdBitsSUBI ;
 
         --controlbits sent to execute unit at this time instannt
-        controlWord_i(controlNbit-1-CWNBitsID downto controlNbit-CWNBitsID-CWNBitsEX) <= CWExBitsSUBI;
+                controlWord_i(controlNbit-1-CWNBitsID downto controlNbit-CWNBitsID-CWNBitsEX) <= CWExBitsADDI;
 
         --controlbits sent to memory unit at this time instant
-        controlWord_i(controlNbit-1-CWNBitsID-CWNBitsEX downto controlNbit-CWNBitsID-CWNBitsEX-CWNBitsMEM) <= CWMemBitsADDI;
+                controlWord_i(controlNbit-1-CWNBitsID-CWNBitsEX downto controlNbit-CWNBitsID-CWNBitsEX-CWNBitsMEM) <= CWMemBitsADDI;
+
+       --controlbits sent to decode unit at this time instant
+                --controlWord_i(controlNbit-1 downto controlNbit-CWNBitsID) <= CWIdBitsORI ;
+
+        --controlbits sent to execute unit at this time instannt
+                --controlWord_i(controlNbit-1-CWNBitsID downto controlNbit-CWNBitsID-CWNBitsEX) <= CWExBitsSUBI;
+
+        --controlbits sent to memory unit at this time instant
+                --controlWord_i(controlNbit-1-CWNBitsID-CWNBitsEX downto controlNbit-CWNBitsID-CWNBitsEX-CWNBitsMEM) <= CWMemBitsADDI;
 
         --controlbits sent to writeBack unit at this time instant
-        controlWord_i(controlNbit-1-CWNBitsID-CWNBitsEX-CWNBitsMEM downto controlNbit-CWNBitsID-CWNBitsEX-CWNBitsMEM-CWNbitsWB) <= CWWBBitsADDI;
+                --controlWord_i(controlNbit-1-CWNBitsID-CWNBitsEX-CWNBitsMEM downto controlNbit-CWNBitsID-CWNBitsEX-CWNBitsMEM-CWNbitsWB) <= CWWBBitsADDI;
 
-        currentControlBitsID <= CWIdBitsORI;
-        currentControlBitsEX <= CWExBitsSUBI;
-        currentControlBitsMem <= CWMemBitsADDI;
-        currentControlBitsWB <= CWMemBitsADDI;
+        wait for 2 ns;
+		        IMdata_i <= "00000000001000100010100000000000"; --instruction bits corresponding to 5th instruction: -add r5, r1, r2-  (opcode assumed for the add Rtype is 000000 and related FUNC is 00000000000 )
 
+        --fetch of the 5th instruction
         
+        --controlbits sent to decode unit at this time instant
+                controlWord_i(controlNbit-1 downto controlNbit-CWNBitsID) <= CWIdBitsORI ;
+
+        --controlbits sent to execute unit at this time instannt
+                controlWord_i(controlNbit-1-CWNBitsID downto controlNbit-CWNBitsID-CWNBitsEX) <= CWExBitsSUBI;
+
+        --controlbits sent to memory unit at this time instant
+                controlWord_i(controlNbit-1-CWNBitsID-CWNBitsEX downto controlNbit-CWNBitsID-CWNBitsEX-CWNBitsMEM) <= CWMemBitsADDI;
+
+        --controlbits sent to writeBack unit at this time instant
+                controlWord_i(controlNbit-1-CWNBitsID-CWNBitsEX-CWNBitsMEM downto controlNbit-CWNBitsID-CWNBitsEX-CWNBitsMEM-CWNbitsWB) <= CWWBBitsADDI;
+        
+        
+        --controlbits sent to decode unit at this time instant:
+                --controlWord_i(controlNbit-1 downto controlNbit-CWNBitsID) <= CWIdBitsADD ;
+        --controlbits sent to execute unit at this time instannt:
+                --controlWord_i(controlNbit-1-CWNBitsID downto controlNbit-CWNBitsID-CWNBitsEX) <= CWExBitsORI;
+        --controlbits sent to memory unit at this time instant:
+                --controlWord_i(controlNbit-1-CWNBitsID-CWNBitsEX downto controlNbit-CWNBitsID-CWNBitsEX-CWNBitsMEM) <= CWMemBitsSUBI;
+        --controlbits sent to writeBack unit at this time instant:
+                --controlWord_i(controlNbit-1-CWNBitsID-CWNBitsEX-CWNBitsMEM downto controlNbit-CWNBitsID-CWNBitsEX-CWNBitsMEM-CWNbitsWB) <= CWWBBitsADDI;
 
         wait for 2 ns;
 
-        --no more instructions to be fetched, an no new instruction is felt at the IR input port
+        --no more instructions to be fetched
 
         --controlbits sent to decode unit at this time instant:
-        controlWord_i(controlNbit-1 downto controlNbit-CWNBitsID) <= CWIdBitsADD ;
+                controlWord_i(controlNbit-1 downto controlNbit-CWNBitsID) <= CWIdBitsADD ;
+        --controlbits sent to execute unit at this time instannt:
+                controlWord_i(controlNbit-1-CWNBitsID downto controlNbit-CWNBitsID-CWNBitsEX) <= CWExBitsORI;
+        --controlbits sent to memory unit at this time instant:
+                controlWord_i(controlNbit-1-CWNBitsID-CWNBitsEX downto controlNbit-CWNBitsID-CWNBitsEX-CWNBitsMEM) <= CWMemBitsSUBI;
+        --controlbits sent to writeBack unit at this time instant:
+                controlWord_i(controlNbit-1-CWNBitsID-CWNBitsEX-CWNBitsMEM downto controlNbit-CWNBitsID-CWNBitsEX-CWNBitsMEM-CWNbitsWB) <= CWWBBitsADDI;
+
+        --controlbits sent to decode unit at this time instant:
+                --controlWord_i(controlNbit-1 downto controlNbit-1-CWNBitsID) <= (others => '0') ;
 
         --controlbits sent to execute unit at this time instannt
-        controlWord_i(controlNbit-1-CWNBitsID downto controlNbit-CWNBitsID-CWNBitsEX) <= CWExBitsORI;
+                --controlWord_i(controlNbit-1-CWNBitsID downto controlNbit-CWNBitsID-CWNBitsEX) <= CWExBitsADD;
 
         --controlbits sent to memory unit at this time instant
-        controlWord_i(controlNbit-1-CWNBitsID-CWNBitsEX downto controlNbit-CWNBitsID-CWNBitsEX-CWNBitsMEM) <= CWMemBitsSUBI;
+                --controlWord_i(controlNbit-1-CWNBitsID-CWNBitsEX downto controlNbit-CWNBitsID-CWNBitsEX-CWNBitsMEM) <= CWMemBitsORI;
 
         --controlbits sent to writeBack unit at this time instant
-        controlWord_i(controlNbit-1-CWNBitsID-CWNBitsEX-CWNBitsMEM downto controlNbit-CWNBitsID-CWNBitsEX-CWNBitsMEM-CWNbitsWB) <= CWWBBitsADDI;
-
-        currentControlBitsID <= CWIdBitsADD;
-        currentControlBitsEX <= CWExBitsORI;
-        currentControlBitsMem <= CWMemBitsSUBI;
-        currentControlBitsWB <= CWMemBitsADDI;
-
-        
+                --controlWord_i(controlNbit-1-CWNBitsID-CWNBitsEX-CWNBitsMEM downto controlNbit-CWNBitsID-CWNBitsEX-CWNBitsMEM-CWNbitsWB) <= CWWBBitsSUBI;   
 		
         wait for 2 ns;
 
-        --no more instructions to be fetched,  and no new instruction is felt at the IR input port
+        --no more instructions to be fetched
 
         --controlbits sent to decode unit at this time instant:
-        controlWord_i(controlNbit-1 downto controlNbit-1-CWNBitsID) <= (others => '0') ;
+                controlWord_i(controlNbit-1 downto controlNbit-1-CWNBitsID) <= (others => '0') ;
 
         --controlbits sent to execute unit at this time instannt
-        controlWord_i(controlNbit-1-CWNBitsID downto controlNbit-CWNBitsID-CWNBitsEX) <= CWExBitsADD;
+                controlWord_i(controlNbit-1-CWNBitsID downto controlNbit-CWNBitsID-CWNBitsEX) <= CWExBitsADD;
 
         --controlbits sent to memory unit at this time instant
-        controlWord_i(controlNbit-1-CWNBitsID-CWNBitsEX downto controlNbit-CWNBitsID-CWNBitsEX-CWNBitsMEM) <= CWMemBitsORI;
+                controlWord_i(controlNbit-1-CWNBitsID-CWNBitsEX downto controlNbit-CWNBitsID-CWNBitsEX-CWNBitsMEM) <= CWMemBitsORI;
 
         --controlbits sent to writeBack unit at this time instant
-        controlWord_i(controlNbit-1-CWNBitsID-CWNBitsEX-CWNBitsMEM downto controlNbit-CWNBitsID-CWNBitsEX-CWNBitsMEM-CWNbitsWB) <= CWWBBitsSUBI;
-
-        currentControlBitsID <= (others => '0');
-        currentControlBitsEX <= CWExBitsADD;
-        currentControlBitsMem <= CWMemBitsORI;
-        currentControlBitsWB <= CWMemBitsSUBI;
-
-        wait for 2 ns;
-
-        --no more instructions to be fetched, and no new instruction is felt at the IR input port
-
---controlbits sent to decode unit at this time instant:
-        controlWord_i(controlNbit-1 downto controlNbit-CWNBitsID) <= (others => '0') ;
+                controlWord_i(controlNbit-1-CWNBitsID-CWNBitsEX-CWNBitsMEM downto controlNbit-CWNBitsID-CWNBitsEX-CWNBitsMEM-CWNbitsWB) <= CWWBBitsSUBI;   
 
         --controlbits sent to execute unit at this time instant
-        controlWord_i(controlNbit-1-CWNBitsID downto controlNbit-CWNBitsID-CWNBitsEX) <= (others => '0');
+                --controlWord_i(controlNbit-1-CWNBitsID downto controlNbit-CWNBitsID-CWNBitsEX) <= (others => '0');
 
         --controlbits sent to memory unit at this time instant
-        controlWord_i(controlNbit-1-CWNBitsID-CWNBitsEX downto controlNbit-CWNBitsID-CWNBitsEX-CWNBitsMEM) <= CWMemBitsADD;
+                --controlWord_i(controlNbit-1-CWNBitsID-CWNBitsEX downto controlNbit-CWNBitsID-CWNBitsEX-CWNBitsMEM) <= CWMemBitsADD;
 
         --controlbits sent to writeBack unit at this time instant
-        controlWord_i(controlNbit-1-CWNBitsID-CWNBitsEX-CWNBitsMEM downto controlNbit-CWNBitsID-CWNBitsEX-CWNBitsMEM-CWNbitsWB) <= CWWBBitsORI;
-
-        currentControlBitsID <= (others => '0');
-        currentControlBitsEX <= (others => '0');
-        currentControlBitsMem <= CWMemBitsADD;
-        currentControlBitsWB <= CWMemBitsORI;
-
-        
+                --controlWord_i(controlNbit-1-CWNBitsID-CWNBitsEX-CWNBitsMEM downto controlNbit-CWNBitsID-CWNBitsEX-CWNBitsMEM-CWNbitsWB) <= CWWBBitsORI;
 
         wait for 2 ns;
 
-        --no more instructions to be fetched, and no new instruction is felt at the IR input port
+        --no more instructions to be fetched,
 
---controlbits sent to decode unit at this time instant:
-        controlWord_i(controlNbit-1 downto controlNbit-CWNBitsID) <= (others => '0') ;
+        --controlbits sent to execute unit at this time instant
+                controlWord_i(controlNbit-1-CWNBitsID downto controlNbit-CWNBitsID-CWNBitsEX) <= (others => '0');
 
-        --controlbits sent to execute unit at this time instannt:
-        controlWord_i(controlNbit-1-CWNBitsID downto controlNbit-CWNBitsID-CWNBitsEX) <= (others => '0');
+        --controlbits sent to memory unit at this time instant
+                controlWord_i(controlNbit-1-CWNBitsID-CWNBitsEX downto controlNbit-CWNBitsID-CWNBitsEX-CWNBitsMEM) <= CWMemBitsADD;
 
-        --controlbits sent to memory unit at this time instant:
-        controlWord_i(controlNbit-1-CWNBitsID-CWNBitsEX downto controlNbit-CWNBitsID-CWNBitsEX-CWNBitsMEM) <= (others => '0');
-
-        --controlbits sent to writeBack unit at this time instant:
-        controlWord_i(controlNbit-1-CWNBitsID-CWNBitsEX-CWNBitsMEM downto controlNbit-CWNBitsID-CWNBitsEX-CWNBitsMEM-CWNbitsWB) <= CWWBBitsADD;
-
-        currentControlBitsID <= (others => '0');
-        currentControlBitsEX <= (others => '0');
-        currentControlBitsMem <= (others => '0');
-        currentControlBitsWB <= CWMemBitsADD;
-
-        wait for 2 ns ;
-
-        --no more instructions to be fetched, and no new instruction is felt at the IR input port
+        --controlbits sent to writeBack unit at this time instant
+                controlWord_i(controlNbit-1-CWNBitsID-CWNBitsEX-CWNBitsMEM downto controlNbit-CWNBitsID-CWNBitsEX-CWNBitsMEM-CWNbitsWB) <= CWWBBitsORI;
 
         --controlbits sent to decode unit at this time instant:
-        controlWord_i(controlNbit-1 downto controlNbit-CWNBitsID) <= (others => '0') ;
+                --controlWord_i(controlNbit-1 downto controlNbit-CWNBitsID) <= (others => '0') ;
 
         --controlbits sent to execute unit at this time instannt:
-        controlWord_i(controlNbit-1-CWNBitsID downto controlNbit-CWNBitsID-CWNBitsEX) <= (others => '0');
+                --controlWord_i(controlNbit-1-CWNBitsID downto controlNbit-CWNBitsID-CWNBitsEX) <= (others => '0');
 
         --controlbits sent to memory unit at this time instant:
-        controlWord_i(controlNbit-1-CWNBitsID-CWNBitsEX downto controlNbit-CWNBitsID-CWNBitsEX-CWNBitsMEM) <= (others => '0');
+                --controlWord_i(controlNbit-1-CWNBitsID-CWNBitsEX downto controlNbit-CWNBitsID-CWNBitsEX-CWNBitsMEM) <= (others => '0');
 
         --controlbits sent to writeBack unit at this time instant:
-        controlWord_i(controlNbit-1-CWNBitsID-CWNBitsEX-CWNBitsMEM downto controlNbit-CWNBitsID-CWNBitsEX-CWNBitsMEM-CWNbitsWB) <= (others => '0');
+                --controlWord_i(controlNbit-1-CWNBitsID-CWNBitsEX-CWNBitsMEM downto controlNbit-CWNBitsID-CWNBitsEX-CWNBitsMEM-CWNbitsWB) <= CWWBBitsADD;
 
-        currentControlBitsID <= (others => '0');
-        currentControlBitsEX <= (others => '0');
-        currentControlBitsMem <= (others => '0');
-        currentControlBitsWB <= (others => '0');
+        wait for 2 ns;
+
+        --no more instructions to be fetched
+
+        --controlbits sent to decode unit at this time instant:
+                controlWord_i(controlNbit-1 downto controlNbit-CWNBitsID) <= (others => '0') ;
+
+        --controlbits sent to execute unit at this time instannt:
+                controlWord_i(controlNbit-1-CWNBitsID downto controlNbit-CWNBitsID-CWNBitsEX) <= (others => '0');
+
+        --controlbits sent to memory unit at this time instant:
+                controlWord_i(controlNbit-1-CWNBitsID-CWNBitsEX downto controlNbit-CWNBitsID-CWNBitsEX-CWNBitsMEM) <= (others => '0');
+
+        --controlbits sent to writeBack unit at this time instant:
+                controlWord_i(controlNbit-1-CWNBitsID-CWNBitsEX-CWNBitsMEM downto controlNbit-CWNBitsID-CWNBitsEX-CWNBitsMEM-CWNbitsWB) <= CWWBBitsADD;
+
+        --controlbits sent to decode unit at this time instant:
+                --controlWord_i(controlNbit-1 downto controlNbit-CWNBitsID) <= (others => '0') ;
+
+        --controlbits sent to decode unit at this time instant:
+                --controlWord_i(controlNbit-1 downto controlNbit-CWNBitsID) <= (others => '0') ;
+
+        --controlbits sent to execute unit at this time instannt:
+                --controlWord_i(controlNbit-1-CWNBitsID downto controlNbit-CWNBitsID-CWNBitsEX) <= (others => '0');
+
+        --controlbits sent to memory unit at this time instant:
+                --controlWord_i(controlNbit-1-CWNBitsID-CWNBitsEX downto controlNbit-CWNBitsID-CWNBitsEX-CWNBitsMEM) <= (others => '0');
+
+        --controlbits sent to writeBack unit at this time instant:
+                --controlWord_i(controlNbit-1-CWNBitsID-CWNBitsEX-CWNBitsMEM downto controlNbit-CWNBitsID-CWNBitsEX-CWNBitsMEM-CWNbitsWB) <= (others => '0');
 
         wait;
 

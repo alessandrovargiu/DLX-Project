@@ -31,13 +31,13 @@ P_ALU: process (FUNC, DATA1, DATA2)
 
     when "000000" => --ADD
         OUTALU <= std_logic_vector(unsigned(DATA1)+unsigned(DATA2));
-    when "000001"     => --SUB
+    when "000100"     => --SUB
         OUTALU <= std_logic_vector(unsigned(DATA1)-unsigned(DATA2));
     --when MULT     =>
     --    OUTALU <= std_logic_vector(unsigned(DATA1((N/2)-1 downto 0)) * unsigned(DATA2((N/2)-1 downto 0)));
-    when "000010"     => --BITAND
+    when "000010"     => --BITAND  --func bits di bitand probably wrong
         OUTALU <= DATA1 and DATA2; -- bitwise operations
-    when "000011"     => --BITOR
+    when "011111"     => --BITOR
         OUTALU <= DATA1 or DATA2;
     --when BITXOR     =>
     --    OUTALU <= DATA1 xor DATA2;

@@ -12,20 +12,51 @@ end sgn_extender ;
 
 architecture Behavioral of sgn_extender is
 
+signal extension1: std_logic_vector(NbitImm-NbitIn-1 downto 0);
+signal extension0: std_logic_vector(NbitImm-NbitIn-1 downto 0);
+
 begin 
 
+MsbsOfSignalAre1: for i in 0 to (NbitImm-NbitIn-1) generate
+    MsbBits1: extension1(i) <= '1';
+end generate MsbsOfSignalAre1;
 
-FormingOutput : for i in 0 to (NbitImm-1) generate  
-    
-    LSBsOfOut : if i < NbitIn generate
-        LSBs : se_out(i) <= se_in(i);
-    end generate LSBsOfOut;
-    
-    MSBsOfOut:  if NbitIn-1 < i and i< NbitImm generate 
-        MSBs : se_out(i) <= signedOrUnsigned; --se e' signed , gli MSBs li metto a 1. 
-    end generate MSBsOfOut;
+MsbsOfSignalAre0: for i in 0 to (NbitImm-NbitIn-1) generate
+    MsbBits0: extension0(i) <= '0';
+end generate MsbsOfSignalAre0;
 
-end generate FormingOutput;
+
+process( signedOrUnsigned, se_in )
+
+begin 
+
+    if(signedOrUnsigned = '1') then  --if 1, the values is to be interpreted as signed
+        if( se_in(NbitIn-1) = '1' ) then
+            se_out <= extension1 & se_in ;
+        else
+            se_out <= extension0 & se_in ;
+        end if;
+    else 
+            se_out <= extension0 & se_in ;
+    end if ;
+
+end process;
+
+
+--OLD not quite right version
+
+--FormingOutput : for i in 0 to (NbitImm-1) generate  
+    
+--    LSBsOfOut : if i < NbitIn generate
+
+--        LSBs : se_out(i) <= se_in(i);
+--    end generate LSBsOfOut;
+    
+--    MSBsOfOut:  if NbitIn-1 < i and i< NbitImm generate 
+--        MSBs : se_out(i) <= signedOrUnsigned; --se e' signed , gli MSBs li metto a 1. 
+--    end generate MSBsOfOut;
+
+-- end generate FormingOutput;
 
 
 end Behavioral ;
