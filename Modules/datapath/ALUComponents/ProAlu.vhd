@@ -8,7 +8,7 @@ entity ProAlu is
              OperationSelNbit: integer);
     port( OperandA:     in std_logic_vector(Nbit-1 downto 0);
           OperandB:     in std_logic_vector(Nbit-1 downto 0);
-          OperationSel: in std_logic_vector(4-1 downto 0);
+          OperationSel: in std_logic_vector(6-1 downto 0);
           ALUOut:       in std_logic_vector(Nbit-1 downto 0);
           );
 end ProAlu;
@@ -42,6 +42,7 @@ component Shifter is
 end component;
 
 --component used for multiplication instructions (T2 methodology (booth algo))
+--vedere se togliere
 component BOOTHMUL is 
   generic(Nbit : integer := 16);
   port( A : in  std_logic_vector(Nbit-1 downto 0);
@@ -61,57 +62,101 @@ component p4_adder is
 end component; 
 
 --needed for the subtraction
-component IV is
-    Port (A:	In	std_logic;
-		  Y:	Out	std_logic);
+--in teoria sta gia nel p4 la sottrazione
+--component IV is
+   -- Port (A:	In	std_logic;
+	--	  Y:	Out	std_logic);
+--end component;
+
+component ToplevelComparator is 
+    generic (
+            Nbit:integer;
+    );
+	Port (	Sum:	In	std_logic_vector(Nbit-1 downto 0); --input from p4adder
+			Cout:	In	std_logic --input from p4 adder
+            A:      In std_logic_vector (Nbit-1 downto 0);
+            B:      In std_logic_vector (Nbit-1 downto 0);
+            res:    Out std_logic_vector(Nbit-1 downto 0); --output
+            op:     In std_logic_vector (2 downto 0)
+    );
+    end component;
+
+component mux41_Generic is
+    port(
+         A: In std_logic_vector (Nbit-1 downto 0);
+         B: In std_logic_vector (Nbit-1 downto 0);
+         C: In std_logic_vector (Nbit-1 downto 0);
+         D: In std_logic_vector (Nbit-1 downto 0);
+         sel: In std_logic_vector(2-1 downto 0);
+         E: Out std_logic_vector (Nbit-1 downto 0)
+
+    );
 end component;
 
 --comparatore forse da includere , per le istruzioni che chiedono di saltare al confronto di due valori di 2 operandi o semplici instruzioni di cmp
 
 constant Nbit: integer := 32;
 
-constant ANDop:       std_logic_vector(4-1 downto 0) := "1000";
-constant NANDop:      std_logic_vector(4-1 downto 0) := "0111";
-constant ORop:        std_logic_vector(4-1 downto 0) := "1110";
-constant NORop:       std_logic_vector(4-1 downto 0) := "0001";
-constant XORop:       std_logic_vector(4-1 downto 0) := "0110";
-constant XNORop:      std_logic_vector(4-1 downto 0) := "1001";
+--constant ANDop:       std_logic_vector(4-1 downto 0) := "1000";
+--constant NANDop:      std_logic_vector(4-1 downto 0) := "0111";
+--constant ORop:        std_logic_vector(4-1 downto 0) := "1110";
+--constant NORop:       std_logic_vector(4-1 downto 0) := "0001";
+--constant XORop:       std_logic_vector(4-1 downto 0) := "0110";
+--constant XNORop:      std_logic_vector(4-1 downto 0) := "1001";
 
 signal resultAdd:       std_logic_vector(Nbit-1 downto 0);
-signal cin4sub:         std_logic; --if 0, we do an addition if 1 we do a subtraction.
-signal Bcomplement:     std_logic_vector(Nbit-1 downto 0);
-signal intermediateB:   std_logic_vector(Nbit-1 downto 0);
+--signal cin4sub:         std_logic; --if 0, we do an addition if 1 we do a subtraction.
+--signal Bcomplement:     std_logic_vector(Nbit-1 downto 0);
+--signal intermediateB:   std_logic_vector(Nbit-1 downto 0);
 
 signal resultLogic:     std_logic_vector(Nbit-1 downto 0);
-signal LogicOp:         std_logic_vector(4-1 downto 0);
+--signal LogicOp:         std_logic_vector(4-1 downto 0);
 
-signal ShifterOp:       std_logic_vector(2-1 downto 0);
+--signal ShifterOp:       std_logic_vector(2-1 downto 0);
 signal resultShifter:   std_logic_vector(Nbit-1 downto 0);
 
-signal resultMul:       std_logic_vector(Nbit-1 downto 0);
+signal resultComparator:   std_logic_vector(Nbit-1 downto 0);
+
+--signal resultMul:       std_logic_vector(Nbit-1 downto 0);
 
 begin
 
     Addition: p4_adder
     generic map(Nbit, 3)   --need to figure out what to put for nbit per block generic parameter
-    port map(A => OperandA, B => intermediateB , Cin => cin4sub, S => resultAdd, open);
+    port map(A => OperandA, B => intermediateB , Cin => Operationsel(2), S => resultAdd, Cout => cout_s);
     
-    BComplement : for i in 0 to Nbit-1 generate
-    inverterI : iv
-    port map( B(i), Bcomplement(i));
-    end generate BComplement;
+    --BComplement : for i in 0 to Nbit-1 generate
+    --inverterI : iv
+    --port map( B(i), Bcomplement(i));
+    --end generate BComplement;
 
     LogicalStuff: Logic
     generic map(Nbit)
-    port map(A => operandA, B => operandB, OperationSel => LogicOp, C => resultLogic);
+    port map(A => operandA, B => operandB, S => Operationsel (5 downto 2), C => resultLogic);
     -- SHIFTER: B takes 5 LSBs, 
     Shifter: shifter
     generic map(Nbit)
-    port map(A => OperandA, B => operandB(5-1 downto 0), OP => ShifterOp, S => resultShifter);
+    port map(A => OperandA, B => operandB(5-1 downto 0), OP => Operationsel (3 downto 2), S => resultShifter);
 
-    Multiplication: BOOTHMUL
-    generic map(Nbit/2) --i think that operands cant be greater then size 16 for the multiplication to make sense (since result has only 32 bits to be stored in)
-    port map(A => OperandA, B => OperandB, P => resultMul);
+    Comp: Toplevelcomparator
+    generic map(Nbit)
+    port map(Sum => resultAdd, Cout => cout_s, A => OperandA, B => OperandB, res => resultComparator, op => Operationsel (5 downto 3) );
+
+    Mux: Mux41_Generic
+    generic map (Nbit)
+    port map(A => resultAdd, B => resultShifter , C =>  resultComparator, D => resultLogic, sel => Operationsel (1 downto 0), E => ALUOut)
+
+    end struct;
+
+    --Multiplication: BOOTHMUL
+    --generic map(Nbit/2) --i think that operands cant be greater then size 16 for the multiplication to make sense (since result has only 32 bits to be stored in)
+    --port map(A => OperandA, B => OperandB, P => resultMul);
+
+
+
+
+
+    ----------- parte sotto non la userei
 
 
     OpSelection: process(OperationSel, OperandB, resultAdd, resultLogic) 

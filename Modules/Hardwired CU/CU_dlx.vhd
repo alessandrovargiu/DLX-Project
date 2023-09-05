@@ -121,7 +121,7 @@ ENTITY CU_dlx IS
             ELSE
                 opcode_s <= IR_in(31 DOWNTO 26);
                 func_s <= "00000000000";
-            END IF ;
+            END IF;
         END PROCESS;
 
         PROCESS (rst, opcode_s, func_s)
