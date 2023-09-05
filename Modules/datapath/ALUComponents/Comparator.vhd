@@ -4,9 +4,9 @@ use ieee.numeric_std.all;
 
 entity Comparator is 
     generic (
-        Nbit: integer
+        Nbit: integer := 4
     );
-	Port (	Inp:	In	std_logic_vector(Nbit-1 downto 0); --input from p4adder
+	Port (	SUB:	In	std_logic_vector(Nbit-1 downto 0); --input from p4adder
 			Cout:	In	std_logic; --input from p4 adder
             A_31:      In std_logic; 
             B_31:      In std_logic; 
@@ -19,18 +19,19 @@ architecture beh of Comparator is
     signal Z,C: std_logic;
     signal tmp: std_logic_vector(Nbit-1 downto 0); 
 begin
+    	
+   -- Stage1: process(SUB)
+    	--begin 
+      --  tmp(0) <= SUB(0);
+    	--nor_loop: for i in 1 to Nbit-1 loop
+        --    tmp(i) <= tmp(i-1) nor SUB(i);
+       -- end loop;
+    --end process;
+    		Z <= '1' when SUB = std_logic_vector(to_unsigned(0, Nbit)) else '0';
+                       -- 1 bit output of NOR gate
+    		C <= Cout xor (A_31 xor B_31);  -- if not signed int don t work
+	--end process;
 
-    Stage1: process(Cout, A_31, B_31, Inp)
-    begin 
-        tmp(0) <= Inp(0);
-        nor_loop: for i in 1 to Nbit-1 loop
-            tmp(i) <= tmp(i-1) nor Inp(i);
-        end loop;
-
-    end process;
-
-    Z <= tmp(Nbit-1);                    -- 1 bit output of NOR gate
-    C <= Cout xor (A_31 xor B_31);  -- if not signed int don t work
             
     Stage2: process(Z,C)
     begin 
@@ -42,6 +43,3 @@ begin
         res(4) <= (not C) or Z;     -- A<=B
     end process;
 end architecture beh;
-
-
-

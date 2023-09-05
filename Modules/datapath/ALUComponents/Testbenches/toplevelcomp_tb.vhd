@@ -8,8 +8,8 @@ end tb;
 architecture test of tb is
 
 component topLevelcomparator is
-	GENERIC (Nbit: integer := 4);								--THIS TESTBENCH WAS MADE ON N = 4 bits, for simplicity
-	PORT(SUM: IN std_logic_vector(Nbit-1 downto 0);
+	GENERIC (Nbit: integer := 4);								--only 4 bits
+	PORT(SUB: IN std_logic_vector(Nbit-1 downto 0);
 	     Cout: IN std_logic;
          A:	In std_logic_vector (Nbit-1 downto 0);	
 	     B:  In std_logic_vector (Nbit-1 downto 0);				 
@@ -17,18 +17,20 @@ component topLevelcomparator is
 	     OP: IN std_logic_vector(2 downto 0));
 end component;																		
 
-constant N: integer := NBit;
-signal A,B,SUB: std_logic_vector(3 DOWNTO 0);
+constant Nbit: integer := 4;
+signal SUB,A,B: std_logic_vector(3 DOWNTO 0);
 signal C: std_logic;
 signal Sel: std_logic_vector(2 DOWNTO 0);
---signal Res: std_logic_vector(N-1 DOWNTO 0);
+signal Res: std_logic_vector(Nbit-1 DOWNTO 0);
 
 begin
-	UUT: topLevelCMP generic map (N) port map(A,B,SUB,C,Sel);
+	UUT: topLevelComparator generic map (Nbit) port map(SUB,C,A,B,res,Sel);
 	PROCESS
 		begin
-		A<= 0001;
-		B<= 0001;
+		A<= "0001";
+		B<= "0001";
+		--A_31<= '0';
+		--B_31<= '0';
 		SUB <= "0000";
 		C <= '1';
 		Sel<="000";
@@ -45,6 +47,8 @@ begin
 		wait for 5 ns;
 		A<="0010";
 		B<="0011";
+		--A_31<= '0';
+		--B_31<= '0';
 		SUB <= "1111";
 		C <= '0';
 		Sel<="000";
@@ -59,8 +63,10 @@ begin
 		wait for 5 ns;
 		Sel<="101";
 		wait for 5 ns;
-		A<=0111;
-		B<= 0011;
+		A<="0111";
+		B<= "0011";
+		--A_31<= '0';
+		--B_31<= '0';
 		SUB <= "0100";
 		C <= '1';
 		Sel<="000";
@@ -75,6 +81,5 @@ begin
 		wait for 5 ns;
 		Sel<="101";
 		wait;
-
   END PROCESS;
 end test;
