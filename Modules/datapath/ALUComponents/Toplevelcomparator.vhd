@@ -37,7 +37,7 @@ begin
         when "100" => res_s1 <= res_s5(4);
         when others => res_s1 <= 'X';
     end case;
+    end process;
     res(Nbit-1 downto 1)<=(others=>'0'); -- to extend to Nbit
 	res(0)<=res_s1;
-    end process;
 end beh;

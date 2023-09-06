@@ -1,27 +1,27 @@
 library ieee;
 use ieee.std_logic_1164.all;
-use iee.numeric_std.all; 
+use ieee.numeric_std.all; 
 
 entity ProAlu is
 
-    generic( Nbit: integer;
-             OperationSelNbit: integer);
+    generic( Nbit: integer := 32;
+             OperationSelNbit: integer := 6);
     port( OperandA:     in std_logic_vector(Nbit-1 downto 0);
           OperandB:     in std_logic_vector(Nbit-1 downto 0);
           OperationSel: in std_logic_vector(6-1 downto 0);
-          ALUOut:       in std_logic_vector(Nbit-1 downto 0);
+          ALUOut:       out std_logic_vector(Nbit-1 downto 0)
           );
 end ProAlu;
 
 architecture struct of ProAlu is
 
-begin
+
 
 ----components used
 
 --Logical operations component (T2 method)
 component Logic is 
-    generic ( Nbit: integer;
+    generic ( Nbit: integer := 32
     );
 	Port(A:	In	std_logic_vector(Nbit-1 downto 0); --input
 		 B:	In	std_logic_vector(Nbit-1 downto 0); --input
@@ -32,7 +32,7 @@ end component;
 --component used for shifting instructions (T2 methodology)
 component Shifter is 
     generic (
-        Nbit: integer;-- Nbit 32 bit
+        Nbit: integer := 32-- Nbit 32 bit
         );
 	Port(A:	In	std_logic_vector(Nbit-1 downto 0); --input
 		 B:	In	std_logic_vector(5-1 downto 0); --input bits shift , 5 o 6 bit?
@@ -43,16 +43,16 @@ end component;
 
 --component used for multiplication instructions (T2 methodology (booth algo))
 --vedere se togliere
-component BOOTHMUL is 
-  generic(Nbit : integer := 16);
-  port( A : in  std_logic_vector(Nbit-1 downto 0);
-        B : in  std_logic_vector(Nbit-1 downto 0);
-        P : out std_logic_vector(2*Nbit-1 downto 0)); 
-end component;
+--component BOOTHMUL is 
+ -- generic(Nbit : integer := 16);
+ -- port( A : in  std_logic_vector(Nbit-1 downto 0);
+  --      B : in  std_logic_vector(Nbit-1 downto 0);
+  --      P : out std_logic_vector(2*Nbit-1 downto 0)); 
+--end component;
 
 --component used for addition and subtraction instructions (P4 sparse tree structure)
 component p4_adder is
-  generic (NBIT:integer;
+  generic (NBIT:integer :=32;
            NBIT_PER_BLOCK: integer);
   port(A : in std_logic_vector(NBIT-1 downto 0);
        B : in std_logic_vector(NBIT-1 downto 0);
@@ -70,10 +70,10 @@ end component;
 
 component ToplevelComparator is 
     generic (
-            Nbit:integer;
+            Nbit:integer := 32
     );
 	Port (	Sum:	In	std_logic_vector(Nbit-1 downto 0); --input from p4adder
-			Cout:	In	std_logic --input from p4 adder
+			Cout:	In	std_logic; --input from p4 adder
             A:      In std_logic_vector (Nbit-1 downto 0);
             B:      In std_logic_vector (Nbit-1 downto 0);
             res:    Out std_logic_vector(Nbit-1 downto 0); --output
@@ -95,7 +95,7 @@ end component;
 
 --comparatore forse da includere , per le istruzioni che chiedono di saltare al confronto di due valori di 2 operandi o semplici instruzioni di cmp
 
-constant Nbit: integer := 32;
+--constant Nbit: integer := 32;
 
 --constant ANDop:       std_logic_vector(4-1 downto 0) := "1000";
 --constant NANDop:      std_logic_vector(4-1 downto 0) := "0111";
@@ -116,6 +116,7 @@ signal resultLogic:     std_logic_vector(Nbit-1 downto 0);
 signal resultShifter:   std_logic_vector(Nbit-1 downto 0);
 
 signal resultComparator:   std_logic_vector(Nbit-1 downto 0);
+signal Cout_s: std_logic;
 
 --signal resultMul:       std_logic_vector(Nbit-1 downto 0);
 
@@ -123,7 +124,7 @@ begin
 
     Addition: p4_adder
     generic map(Nbit, 3)   --need to figure out what to put for nbit per block generic parameter
-    port map(A => OperandA, B => intermediateB , Cin => Operationsel(2), S => resultAdd, Cout => cout_s);
+    port map(A => OperandA, B => operandB , Cin => Operationsel(2), S => resultAdd, Cout => cout_s);
     
     --BComplement : for i in 0 to Nbit-1 generate
     --inverterI : iv
@@ -134,7 +135,7 @@ begin
     generic map(Nbit)
     port map(A => operandA, B => operandB, S => Operationsel (5 downto 2), C => resultLogic);
     -- SHIFTER: B takes 5 LSBs, 
-    Shifter: shifter
+    Shift: shifter
     generic map(Nbit)
     port map(A => OperandA, B => operandB(5-1 downto 0), OP => Operationsel (3 downto 2), S => resultShifter);
 
@@ -144,7 +145,7 @@ begin
 
     Mux: Mux41_Generic
     generic map (Nbit)
-    port map(A => resultAdd, B => resultShifter , C =>  resultComparator, D => resultLogic, sel => Operationsel (1 downto 0), E => ALUOut)
+    port map(A => resultAdd, B => resultShifter , C =>  resultComparator, D => resultLogic, sel => Operationsel (1 downto 0), E => ALUOut);
 
     end struct;
 
