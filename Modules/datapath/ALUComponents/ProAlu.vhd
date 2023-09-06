@@ -72,7 +72,7 @@ component ToplevelComparator is
     generic (
             Nbit:integer := 32
     );
-	Port (	Sum:	In	std_logic_vector(Nbit-1 downto 0); --input from p4adder
+	Port (	Sub:	In	std_logic_vector(Nbit-1 downto 0); --input from p4adder
 			Cout:	In	std_logic; --input from p4 adder
             A:      In std_logic_vector (Nbit-1 downto 0);
             B:      In std_logic_vector (Nbit-1 downto 0);
@@ -123,7 +123,7 @@ signal Cout_s: std_logic;
 begin
 
     Addition: p4_adder
-    generic map(Nbit, 3)   --need to figure out what to put for nbit per block generic parameter
+    generic map(Nbit, 4)   --need to figure out what to put for nbit per block generic parameter
     port map(A => OperandA, B => operandB , Cin => Operationsel(2), S => resultAdd, Cout => cout_s);
     
     --BComplement : for i in 0 to Nbit-1 generate
@@ -141,19 +141,13 @@ begin
 
     Comp: Toplevelcomparator
     generic map(Nbit)
-    port map(Sum => resultAdd, Cout => cout_s, A => OperandA, B => OperandB, res => resultComparator, op => Operationsel (5 downto 3) );
+    port map(Sub => resultAdd, Cout => cout_s, A => OperandA, B => OperandB, res => resultComparator, op => Operationsel (5 downto 3) );
 
     Mux: Mux41_Generic
     generic map (Nbit)
     port map(A => resultAdd, B => resultShifter , C =>  resultComparator, D => resultLogic, sel => Operationsel (1 downto 0), E => ALUOut);
 
     end struct;
-
-    --Multiplication: BOOTHMUL
-    --generic map(Nbit/2) --i think that operands cant be greater then size 16 for the multiplication to make sense (since result has only 32 bits to be stored in)
-    --port map(A => OperandA, B => OperandB, P => resultMul);
-
-
 
 
 
