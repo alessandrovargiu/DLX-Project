@@ -68,7 +68,7 @@ begin
 		OPERANDB_s <= (OTHERS=>'0');
 		Operationsel_s <=   (OTHERS=>'0');
 		wait for 10 ns;
-		--SGE test
+		--SGE 
 		OPERANDA_s <= x"00000000";
 		OPERANDB_s <= x"00000001";
 		Operationsel_s <=   "001110";
