@@ -2,7 +2,7 @@ LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
 USE ieee.std_logic_unsigned.ALL;
 USE ieee.std_logic_arith.ALL;
-USE work.myTypes.ALL;
+USE work.INSTR_CODES.ALL;
 
 ENTITY CU_dlx IS
     GENERIC (
@@ -115,7 +115,7 @@ ENTITY CU_dlx IS
     BEGIN
         PROCESS (IR_IN)
         BEGIN
-            IF (IR_in(31 DOWNTO 26) == "000000") THEN
+            IF (IR_in(31 DOWNTO 26) = "000000") THEN
                 opcode_s <= "000000";
                 func_s <= IR_in(10 DOWNTO 0);
             ELSE
@@ -223,10 +223,16 @@ ENTITY CU_dlx IS
             BEGIN
                 --reset messo prima da capire se giusto
                 IF Clk'event AND Clk = '1' THEN
-                    decode_cwd <= cw_s(CW_SIZE - 1 DOWNTO 0);
-                    execute_cwd <= decode_cwd(CW_SIZE - 1 - 5 DOWNTO 0);
-                    memory_cwd <= execute_cwd(CW_SIZE - 1 - 15 DOWNTO 0);
-                    wb_cwd <= memory_cwd(CW_SIZE - 1 - 20 DOWNTO 0);
+                    if (hzd_sig = '1') then  --- da aggiungere come input all entity
+                        decode_cwd <= "000000000000000000000000";
+                        execute_cwd <= decode_cwd(CW_SIZE - 1 - 5 DOWNTO 0);
+                        memory_cwd <= execute_cwd(CW_SIZE - 1 - 15 DOWNTO 0);
+                        wb_cwd <= memory_cwd(CW_SIZE - 1 - 20 DOWNTO 0);
+                    else
+                        decode_cwd <= cw_s(CW_SIZE - 1 DOWNTO 0);
+                        execute_cwd <= decode_cwd(CW_SIZE - 1 - 5 DOWNTO 0);
+                        memory_cwd <= execute_cwd(CW_SIZE - 1 - 15 DOWNTO 0);
+                        wb_cwd <= memory_cwd(CW_SIZE - 1 - 20 DOWNTO 0);
                 END IF
             END PROCESS
 
