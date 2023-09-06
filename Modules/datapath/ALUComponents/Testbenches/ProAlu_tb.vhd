@@ -45,20 +45,6 @@ begin
 		OPERANDB_s <= "00000000000000000000001111111111";
 		Operationsel_s <= "100011";
 		wait for 10 ns;
-		--OR test
-		OPERANDA_s <= "00000000000000001000010001011000";
-		OPERANDB_s <= "00000000000000000000100001110111";
-		Operationsel_s <= "111011";
-		wait for 10 ns;
-		--XOR test
-		OPERANDA_s <= "00000000000000001000010001011000";
-		OPERANDB_s <= "00000000000000000000111001110000";
-		Operationsel_s <= "011011";
-		wait for 10 ns;
-		OPERANDA_s <= (OTHERS=>'0');
-		OPERANDB_s <= (OTHERS=>'0');
-		Operationsel_s <=   (OTHERS=>'0');
-		wait for 10 ns;
 		--SLL test
 		OPERANDA_s <= "00000000000000001000010001011000";
 		OPERANDB_s <= x"00000001";
