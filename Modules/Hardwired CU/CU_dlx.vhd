@@ -20,15 +20,15 @@ ENTITY CU_dlx IS
         -- opcode : IN  std_logic_vector(OP_CODE_SIZE - 1 downto 0);
         --func  : IN  std_logic_vector(FUNC_SIZE - 1 downto 0);
         IR_in : IN STD_LOGIC_VECTOR(Nbit - 1 DOWNTO 0);
-
-        stall : IN STD_LOGIC;
-        jump : IN STD_LOGIC;
+        hzd_sing: in std_logic;
+        --stall : IN STD_LOGIC;
+        --jump : IN STD_LOGIC;
         --control_wrd: OUT std_logic_vector (totbit downto 0)
 
-        decode_cwd : OUT STD_LOGIC_VECTOR(4 DOWNTO 0);
-        execute_cwd : STD_LOGIC_VECTOR (9 DOWNTO 0);
-        memory_cwd : STD_LOGIC_VECTOR (4 DOWNTO 0);
-        wb_cwd : OUT STD_LOGIC_VECTOR (4 DOWNTO 0);
+        decode_cwd : OUT STD_LOGIC_VECTOR(CW_SIZE-1 DOWNTO 0);
+        execute_cwd : OUT STD_LOGIC_VECTOR (CW_SIZE-1-5 DOWNTO 0);
+        memory_cwd : out STD_LOGIC_VECTOR (CW_SIZE-1-15 DOWNTO 0);
+        wb_cwd : OUT STD_LOGIC_VECTOR (CW_SIZE-1-20 DOWNTO 0);
 
         --decode
         --rf1: out std_logic; --read port A of register file
@@ -219,7 +219,7 @@ ENTITY CU_dlx IS
                     cw_s <= cw_mem(19); --nop
                 END IF
             END PROCESS;
-            PROCESS (cw_s, clk)
+            PROCESS (clk) --cw_s
             BEGIN
                 --reset messo prima da capire se giusto
                 IF Clk'event AND Clk = '1' THEN
