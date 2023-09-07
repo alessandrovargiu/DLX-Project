@@ -7,7 +7,7 @@ use work.constants.all;
 
 ENTITY CU_dlx IS
     GENERIC (
-        MICROCODE_MEM_SIZE : INTEGER := 41; -- Microcode Memory Size
+        MICROCODE_MEM_SIZE : INTEGER := 39; -- Microcode Memory Size
         FUNC_SIZE : INTEGER := 11; -- Func Field Size for R-Type Ops
         OP_CODE_SIZE : INTEGER := 6; -- Op Code Size
         CW_SIZE : INTEGER := 25 -- output signals of CU
@@ -84,9 +84,9 @@ ARCHITECTURE behavioral OF CU_dlx IS
             SRA_CWD,
             NOP_CWD,
             ADDI_CWD,
-            ADDUI_CWD,
+            --ADDUI_CWD,
             SUBI_CWD,
-            SUBUI_CWD,
+            --SUBUI_CWD,
             ANDI_CWD,
             ORI_CWD,
             XORI_CWD,
@@ -106,6 +106,7 @@ ARCHITECTURE behavioral OF CU_dlx IS
             STW_CWD,
             JMP_CWD,
             JAL_CWD
+            --INSERIRE BRANCH
         );
 
         SIGNAL opcode_s : STD_LOGIC_VECTOR (OP_CODE_SIZE - 1 DOWNTO 0);
@@ -142,85 +143,93 @@ BEGIN
                         cw_s <= cw_mem(2);
                     ELSIF (func_s = RTYPE_OR) THEN
                         cw_s <= cw_mem(3);
-                    ELSIF (func_s = RTYPE_SGE) THEN
-                        cw_s <= cw_mem(4);
-                    ELSIF (func_s = RTYPE_SLE) THEN
-                        cw_s <= cw_mem(5);
-                    ELSIF (func_s = RTYPE_SEQ) THEN
-                        cw_s <= cw_mem(6);
-                    ELSIF (func_s = RTYPE_SNE) THEN
-                        cw_s <= cw_mem(7);
-                    ELSIF (func_s = RTYPE_SRL) THEN
-                        cw_s <= cw_mem(8);
-                    ELSIF (func_s = RTYPE_SRA) THEN
-                        cw_s <= cw_mem(9);
-                    ELSIF (func_s = RTYPE_SLL) THEN
-                        cw_s <= cw_mem(10);
                     ELSIF (func_s = RTYPE_XOR) THEN
+                        cw_s <= cw_mem(4);
+                    ELSIF (func_s = RTYPE_XNOR) THEN
+                        cw_s <= cw_mem(5);
+                    ELSIF (func_s = RTYPE_NOR) THEN
+                        cw_s <= cw_mem(6);
+                    ELSIF (func_s = RTYPE_NAND) THEN
+                        cw_s <= cw_mem(7);
+                    ELSIF (func_s = RTYPE_SGE) THEN
+                        cw_s <= cw_mem(8);
+                    ELSIF (func_s = RTYPE_SLE) THEN
+                        cw_s <= cw_mem(9);
+                    ELSIF (func_s = RTYPE_SEQ) THEN
+                        cw_s <= cw_mem(10);
+                    ELSIF (func_s = RTYPE_SNE) THEN
                         cw_s <= cw_mem(11);
-                    ELSIF (func_s = RTYPE_SLT) THEN
+                     ELSIF (func_s = RTYPE_SLT) THEN
                         cw_s <= cw_mem(12);
                     ELSIF (func_s = RTYPE_SGT) THEN
                         cw_s <= cw_mem(13);
-                    ELSIF (func_s = RTYPE_XNOR) THEN
+                    ELSIF (func_s = RTYPE_SRL) THEN
                         cw_s <= cw_mem(14);
-                    ELSIF (func_s = RTYPE_NAND) THEN
+                    ELSIF (func_s = RTYPE_SLL) THEN
                         cw_s <= cw_mem(15);
-                    ELSIF (func_s = RTYPE_NOR) THEN
+                    ELSIF (func_s = RTYPE_SRA) THEN
                         cw_s <= cw_mem(16);
                     ELSIF (func_s = RTYPE_ADDU) THEN
-                        cw_s <= cw_mem(17);
+                        cw_s <= cw_mem(0);
                     ELSIF (func_s = RTYPE_SUBU) THEN
-                        cw_s <= cw_mem(18);
+                        cw_s <= cw_mem(1);
                     ELSE
-                        cw_s <= cw_mem(19); --nop
+                        cw_s <= cw_mem(17); --nop
                     END IF;
                 ELSIF (opcode_s = NOP) THEN
-                    cw_s <= cw_mem(19);
+                    cw_s <= cw_mem(17);
                 ELSIF (opcode_s = ITYPE_ADDI1) THEN
-                    cw_s <= cw_mem(20);
+                    cw_s <= cw_mem(18);
+                ELSIF (opcode_s = ITYPE_ADDUI) THEN
+                    cw_s <= cw_mem(18);
                 ELSIF (opcode_s = ITYPE_SUBI1) THEN
-                    cw_s <= cw_mem(21);
+                    cw_s <= cw_mem(19);
+                ELSIF (opcode_s = ITYPE_SUBUI) THEN
+                    cw_s <= cw_mem(19);
                 ELSIF (opcode_s = ITYPE_ANDI1) THEN
-                    cw_s <= cw_mem(22);
+                    cw_s <= cw_mem(20);
                 ELSIF (opcode_s = ITYPE_ORI1) THEN
-                    cw_s <= cw_mem(23);
-                ELSIF (opcode_s = ITYPE_BEQZ) THEN
-                    cw_s <= cw_mem(24);
-                ELSIF (opcode_s = ITYPE_BNEZ) THEN
-                    cw_s <= cw_mem(25);
-                ELSIF (opcode_s = ITYPE_LDW) THEN
-                    cw_s <= cw_mem(26);
+                    cw_s <= cw_mem(21);
                 ELSIF (opcode_s = ITYPE_XORI) THEN
-                    cw_s <= cw_mem(27);
+                    cw_s <= cw_mem(22);
+                ELSIF (opcode_s = ITYPE_XNORI) THEN
+                    cw_s <= cw_mem(23);
+                ELSIF (opcode_s = ITYPE_NORI) THEN
+                    cw_s <= cw_mem(24);
+                ELSIF (opcode_s = ITYPE_NANDI) THEN
+                    cw_s <= cw_mem(25);
                 ELSIF (opcode_s = ITYPE_SGEI) THEN
-                    cw_s <= cw_mem(28);
+                    cw_s <= cw_mem(26);
                 ELSIF (opcode_s = ITYPE_SLEI) THEN
-                    cw_s <= cw_mem(29);
-                ELSIF (opcode_s = ITYPE_SLLI) THEN
-                    cw_s <= cw_mem(30);
+                    cw_s <= cw_mem(27);
+                ELSIF (opcode_s = ITYPE_SEQI) THEN
+                    cw_s <= cw_mem(28);
                 ELSIF (opcode_s = ITYPE_SNEI) THEN
+                    cw_s <= cw_mem(29);
+                ELSIF (opcode_s = ITYPE_SLTI) THEN
+                    cw_s <= cw_mem(30);
+                  ELSIF (opcode_s = ITYPE_SGTI) THEN
                     cw_s <= cw_mem(31);
                 ELSIF (opcode_s = ITYPE_SRLI) THEN
                     cw_s <= cw_mem(32);
-                ELSIF (opcode_s = ITYPE_SEQI) THEN
+                ELSIF (opcode_s = ITYPE_SLLI) THEN
                     cw_s <= cw_mem(33);
                 ELSIF (opcode_s = ITYPE_SRAI) THEN
                     cw_s <= cw_mem(34);
-                ELSIF (opcode_s = ITYPE_SLTI) THEN
+                ELSIF (opcode_s = ITYPE_LDW) THEN
                     cw_s <= cw_mem(35);
-                ELSIF (opcode_s = ITYPE_SGTI) THEN
+                ELSIF (opcode_s = ITYPE_STW) THEN
                     cw_s <= cw_mem(36);
-                ELSIF (opcode_s = ITYPE_ADDUI) THEN
-                    cw_s <= cw_mem(37);
-                ELSIF (opcode_s = ITYPE_SUBUI) THEN
-                    cw_s <= cw_mem(38);
                 ELSIF (opcode_s = JTYPE_JMP) THEN
-                    cw_s <= cw_mem(39);
+                    cw_s <= cw_mem(37);
                 ELSIF (opcode_s = JTYPE_JAL) THEN
-                    cw_s <= cw_mem(40);
+                    cw_s <= cw_mem(38);
+               -- ELSIF (opcode_s = ITYPE_BEQZ) THEN
+                --    cw_s <= cw_mem(39);
+               -- ELSIF (opcode_s = ITYPE_BNEZ) THEN
+                  --  cw_s <= cw_mem(40);
                 ELSE
-                    cw_s <= cw_mem(19); --nop
+                    cw_s <= cw_mem(17); --nop
                 END IF;
             end if;
             END PROCESS;
@@ -228,11 +237,9 @@ BEGIN
             PROCESS (clk) --cw_s
             BEGIN
                 --reset messo prima da capire se giusto
-                decode_cwd <= decode_cwd_s;
-                execute_cwd <= execute_cwd_s;
-                memory_cwd <= memory_cwd_s;
-                wb_cwd <= wb_cwd_s;
-                IF Clk'event AND Clk = '1' THEN
+                
+                --IF Clk'event AND Clk = '1' THEN
+                if (rising_edge(clk)) then
                     if (hzd_sig = '1') then  --- da aggiungere come input all entity
                         decode_cwd_s <= "000000000000000000000000";
                         execute_cwd_s <= decode_cwd_s(CW_SIZE - 1 - 5 DOWNTO 0);
@@ -246,6 +253,10 @@ BEGIN
                     END IF;
                 END IF;      
             END PROCESS;
+            decode_cwd <= decode_cwd_s;
+            execute_cwd <= execute_cwd_s;
+            memory_cwd <= memory_cwd_s;
+            wb_cwd <= wb_cwd_s;
 
 
 END behavioral;

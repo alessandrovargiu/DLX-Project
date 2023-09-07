@@ -58,6 +58,9 @@ package INSTR_CODES is
 	constant ITYPE_SGTI : std_logic_vector(OP_CODE_SIZE - 1 downto 0) :=   "010111";
 	constant ITYPE_ADDUI : std_logic_vector(OP_CODE_SIZE - 1 downto 0) :=  "011000";
 	constant ITYPE_SUBUI : std_logic_vector(OP_CODE_SIZE - 1 downto 0) :=  "011001";
+	constant ITYPE_XNORI : std_logic_vector(OP_CODE_SIZE - 1 downto 0) :=  "011010";
+	constant ITYPE_NORI : std_logic_vector(OP_CODE_SIZE - 1 downto 0) :=  "011011";
+	constant ITYPE_NANDI : std_logic_vector(OP_CODE_SIZE - 1 downto 0) :=  "011100";
 
 
 	-- J-Type instruction format: | opcode | value |
@@ -346,6 +349,7 @@ package INSTR_CODES is
 	constant STW_WB: std_logic_vector(4 downto 0) := "00000"; --3 4 5 dontcare
 	constant STW_CWD: std_logic_vector(24 downto 0) := STW_DECODE &  STW_EXECUTE & STW_MEMORY & STW_WB;
 
+	-- FARE LE DUE BRANCH
 
 	--JTYPE
 
