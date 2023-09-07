@@ -230,7 +230,7 @@ package INSTR_CODES is
 	--ANDI
 	constant ANDI_DECODE : std_logic_vector(4 downto 0) := "10100";
 	constant ANDI_EXECUTE: std_logic_vector(9 downto 0) := "1101000111"; 
-	constant ANDIEMORY: std_logic_vector(4 downto 0) := "01000";
+	constant ANDI_MEMORY: std_logic_vector(4 downto 0) := "01000";
 	constant ANDI_WB: std_logic_vector(4 downto 0) := "11000";
 	constant ANDI_CWD: std_logic_vector(24 downto 0) := ANDI_DECODE &  ANDI_EXECUTE & ANDI_MEMORY & ANDI_WB;
 
