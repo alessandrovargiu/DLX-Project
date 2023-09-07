@@ -219,6 +219,7 @@ ENTITY CU_dlx IS
                     cw_s <= cw_mem(19); --nop
                 END IF
             END PROCESS;
+
             PROCESS (clk) --cw_s
             BEGIN
                 --reset messo prima da capire se giusto
