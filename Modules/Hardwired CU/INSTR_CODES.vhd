@@ -77,140 +77,141 @@ package INSTR_CODES is
 	--ADDU same cwd as ADD
 
 	--SUB
-	constant ADD_DECODE : std_logic_vector(4 downto 0) := "11111";
-	constant ADD_EXECUTE: std_logic_vector(9 downto 0) := "1011000100";
-	constant ADD_MEMORY: std_logic_vector(4 downto 0) := "01000";
-	constant ADD_WB: std_logic_vector(4 downto 0) := "11000";
-	constant ADD_CWD: std_logic_vector(24 downto 0) := ADD_DECODE &  ADD_EXECUTE & ADD_MEMORY & ADD_WB  ;
+	constant SUB_DECODE : std_logic_vector(4 downto 0) := "11111";
+	constant SUB_EXECUTE: std_logic_vector(9 downto 0) := "1011000100";
+	constant SUB_MEMORY: std_logic_vector(4 downto 0) := "01000";
+	constant SUB_WB: std_logic_vector(4 downto 0) := "11000";
+	constant SUB_CWD: std_logic_vector(24 downto 0) := SUB_DECODE &  SUB_EXECUTE & SUB_MEMORY & SUB_WB  ;
 
 	--SUBU same cwd as SUB
 
 	--AND
-	constant ADD_DECODE : std_logic_vector(4 downto 0) := "11111";
-	constant ADD_EXECUTE: std_logic_vector(9 downto 0) := "1011000111"; --S0 S1 S2 S3
-	constant ADD_MEMORY: std_logic_vector(4 downto 0) := "01000";
-	constant ADD_WB: std_logic_vector(4 downto 0) := "11000";
-	constant ADD_CWD: std_logic_vector(24 downto 0) := ADD_DECODE &  ADD_EXECUTE & ADD_MEMORY & ADD_WB  ;
+	constant AND_DECODE : std_logic_vector(4 downto 0) := "11111";
+	constant AND_EXECUTE: std_logic_vector(9 downto 0) := "1011000111"; --S0 S1 S2 S3
+	constant AND_MEMORY: std_logic_vector(4 downto 0) := "01000";
+	constant AND_WB: std_logic_vector(4 downto 0) := "11000";
+	constant AND_CWD: std_logic_vector(24 downto 0) := AND_DECODE &  AND_EXECUTE & AND_MEMORY & AND_WB  ;
+	:'<,'>s/old_text/new_text/g
 
 	
 	--OR
-	constant ADD_DECODE : std_logic_vector(4 downto 0) := "11111";
-	constant ADD_EXECUTE: std_logic_vector(9 downto 0) := "1011011111"; --S0 S1 S2 S3
-	constant ADD_MEMORY: std_logic_vector(4 downto 0) := "01000";
-	constant ADD_WB: std_logic_vector(4 downto 0) := "11000";
-	constant ADD_CWD: std_logic_vector(24 downto 0) := ADD_DECODE &  ADD_EXECUTE & ADD_MEMORY & ADD_WB  ;
+	constant OR_DECODE : std_logic_vector(4 downto 0) := "11111";
+	constant OR_EXECUTE: std_logic_vector(9 downto 0) := "1011011111"; --S0 S1 S2 S3
+	constant OR_MEMORY: std_logic_vector(4 downto 0) := "01000";
+	constant OR_WB: std_logic_vector(4 downto 0) := "11000";
+	constant OR_CWD: std_logic_vector(24 downto 0) := OR_DECODE &  OR_EXECUTE & OR_MEMORY & OR_WB  ;
 
 	--XOR
-	constant ADD_DECODE : std_logic_vector(4 downto 0) := "11111";
-	constant ADD_EXECUTE: std_logic_vector(9 downto 0) := "1011011011"; --S0 S1 S2 S3
-	constant ADD_MEMORY: std_logic_vector(4 downto 0) := "01000";
-	constant ADD_WB: std_logic_vector(4 downto 0) := "11000";
-	constant ADD_CWD: std_logic_vector(24 downto 0) := ADD_DECODE &  ADD_EXECUTE & ADD_MEMORY & ADD_WB  ;
+	constant XOR_DECODE : std_logic_vector(4 downto 0) := "11111";
+	constant XOR_EXECUTE: std_logic_vector(9 downto 0) := "1011011011"; --S0 S1 S2 S3
+	constant XOR_MEMORY: std_logic_vector(4 downto 0) := "01000";
+	constant XOR_WB: std_logic_vector(4 downto 0) := "11000";
+	constant XOR_CWD: std_logic_vector(24 downto 0) := XOR_DECODE & XOR_EXECUTE & XOR_MEMORY & XOR_WB  ;
 
 	--XNOR
-	constant ADD_DECODE : std_logic_vector(4 downto 0) := "11111";
-	constant ADD_EXECUTE: std_logic_vector(9 downto 0) := "1011100111"; --S0 S1 S2 S3
-	constant ADD_MEMORY: std_logic_vector(4 downto 0) := "01000";
-	constant ADD_WB: std_logic_vector(4 downto 0) := "11000";
-	constant ADD_CWD: std_logic_vector(24 downto 0) := ADD_DECODE &  ADD_EXECUTE & ADD_MEMORY & ADD_WB  ;
+	constant XNOR_DECODE : std_logic_vector(4 downto 0) := "11111";
+	constant XNOR_EXECUTE: std_logic_vector(9 downto 0) := "1011100111"; --S0 S1 S2 S3
+	constant XNOR_MEMORY: std_logic_vector(4 downto 0) := "01000";
+	constant XNOR_WB: std_logic_vector(4 downto 0) := "11000";
+	constant XNOR_CWD: std_logic_vector(24 downto 0) := ADD_DECODE & ADD_EXECUTE & ADD_MEMORY & ADD_WB  ;
 
 	--NOR
-	constant ADD_DECODE : std_logic_vector(4 downto 0) := "11111";
-	constant ADD_EXECUTE: std_logic_vector(9 downto 0) := "1011100011"; --S0 S1 S2 S3
-	constant ADD_MEMORY: std_logic_vector(4 downto 0) := "01000";
-	constant ADD_WB: std_logic_vector(4 downto 0) := "11000";
-	constant ADD_CWD: std_logic_vector(24 downto 0) := ADD_DECODE &  ADD_EXECUTE & ADD_MEMORY & ADD_WB  ;
+	constant NOR_DECODE : std_logic_vector(4 downto 0) := "11111";
+	constant NOR_EXECUTE: std_logic_vector(9 downto 0) := "1011100011"; --S0 S1 S2 S3
+	constant NOR_MEMORY: std_logic_vector(4 downto 0) := "01000";
+	constant NOR_WB: std_logic_vector(4 downto 0) := "11000";
+	constant NOR_CWD: std_logic_vector(24 downto 0) := ADD_DECODE &  ADD_EXECUTE & ADD_MEMORY & ADD_WB  ;
 
 	--NAND
-	constant ADD_DECODE : std_logic_vector(4 downto 0) := "11111";
-	constant ADD_EXECUTE: std_logic_vector(9 downto 0) := "1011111011"; --S0 S1 S2 S3
-	constant ADD_MEMORY: std_logic_vector(4 downto 0) := "01000";
-	constant ADD_WB: std_logic_vector(4 downto 0) := "11000";
-	constant ADD_CWD: std_logic_vector(24 downto 0) := ADD_DECODE &  ADD_EXECUTE & ADD_MEMORY & ADD_WB  ;
+	constant NAND_DECODE : std_logic_vector(4 downto 0) := "11111";
+	constant NAND_EXECUTE: std_logic_vector(9 downto 0) := "1011111011"; --S0 S1 S2 S3
+	constant NAND_MEMORY: std_logic_vector(4 downto 0) := "01000";
+	constant NAND_WB: std_logic_vector(4 downto 0) := "11000";
+	constant NAND_CWD: std_logic_vector(24 downto 0) := ADD_DECODE &  ADD_EXECUTE & ADD_MEMORY & ADD_WB  ;
 
 	--SGE
-	constant ADD_DECODE : std_logic_vector(4 downto 0) := "11111";
-	constant ADD_EXECUTE: std_logic_vector(9 downto 0) := "1011001110"; 
-	constant ADD_MEMORY: std_logic_vector(4 downto 0) := "01000";
-	constant ADD_WB: std_logic_vector(4 downto 0) := "11000";
-	constant ADD_CWD: std_logic_vector(24 downto 0) := ADD_DECODE &  ADD_EXECUTE & ADD_MEMORY & ADD_WB  ;
+	constant SGE_DECODE : std_logic_vector(4 downto 0) := "11111";
+	constant SGE_EXECUTE: std_logic_vector(9 downto 0) := "1011001110"; 
+	constant SGE_MEMORY: std_logic_vector(4 downto 0) := "01000";
+	constant SGE_WB: std_logic_vector(4 downto 0) := "11000";
+	constant SGE_CWD: std_logic_vector(24 downto 0) := ADD_DECODE &  ADD_EXECUTE & ADD_MEMORY & ADD_WB  ;
 
 	--SLE
-	constant ADD_DECODE : std_logic_vector(4 downto 0) := "11111";
-	constant ADD_EXECUTE: std_logic_vector(9 downto 0) := "1011100110"; 
-	constant ADD_MEMORY: std_logic_vector(4 downto 0) := "01000";
-	constant ADD_WB: std_logic_vector(4 downto 0) := "11000";
-	constant ADD_CWD: std_logic_vector(24 downto 0) := ADD_DECODE &  ADD_EXECUTE & ADD_MEMORY & ADD_WB  ;
+	constant SLE_DECODE : std_logic_vector(4 downto 0) := "11111";
+	constant SLE_EXECUTE: std_logic_vector(9 downto 0) := "1011100110"; 
+	constant SLE_MEMORY: std_logic_vector(4 downto 0) := "01000";
+	constant SLE_WB: std_logic_vector(4 downto 0) := "11000";
+	constant SLE_CWD: std_logic_vector(24 downto 0) := ADD_DECODE &  ADD_EXECUTE & ADD_MEMORY & ADD_WB  ;
 
 	--SEQ
-	constant ADD_DECODE : std_logic_vector(4 downto 0) := "11111";
-	constant ADD_EXECUTE: std_logic_vector(9 downto 0) := "1011000110"; 
-	constant ADD_MEMORY: std_logic_vector(4 downto 0) := "01000";
-	constant ADD_WB: std_logic_vector(4 downto 0) := "11000";
-	constant ADD_CWD: std_logic_vector(24 downto 0) := ADD_DECODE &  ADD_EXECUTE & ADD_MEMORY & ADD_WB  ;
+	constant SEQ_DECODE : std_logic_vector(4 downto 0) := "11111";
+	constant SEQ_EXECUTE: std_logic_vector(9 downto 0) := "1011000110"; 
+	constant SEQ_MEMORY: std_logic_vector(4 downto 0) := "01000";
+	constant SEQ_WB: std_logic_vector(4 downto 0) := "11000";
+	constant SEQ_CWD: std_logic_vector(24 downto 0) := ADD_DECODE &  ADD_EXECUTE & ADD_MEMORY & ADD_WB  ;
 --
 	--SNE  (it's a SEQ with 0 as result)
-	constant ADD_DECODE : std_logic_vector(4 downto 0) := "11111";
-	constant ADD_EXECUTE: std_logic_vector(9 downto 0) := "1011000110"; 
-	constant ADD_MEMORY: std_logic_vector(4 downto 0) := "01000";
-	constant ADD_WB: std_logic_vector(4 downto 0) := "11000";
-	constant ADD_CWD: std_logic_vector(24 downto 0) := ADD_DECODE &  ADD_EXECUTE & ADD_MEMORY & ADD_WB  ;
+	constant SNE_DECODE : std_logic_vector(4 downto 0) := "11111";
+	constant SNE_EXECUTE: std_logic_vector(9 downto 0) := "1011000110"; 
+	constant SNE_MEMORY: std_logic_vector(4 downto 0) := "01000";
+	constant SNE_WB: std_logic_vector(4 downto 0) := "11000";
+	constant SNE_CWD: std_logic_vector(24 downto 0) := ADD_DECODE &  ADD_EXECUTE & ADD_MEMORY & ADD_WB  ;
 
 	--SLT
-	constant ADD_DECODE : std_logic_vector(4 downto 0) := "11111";
-	constant ADD_EXECUTE: std_logic_vector(9 downto 0) := "1011011110"; 
-	constant ADD_MEMORY: std_logic_vector(4 downto 0) := "01000";
-	constant ADD_WB: std_logic_vector(4 downto 0) := "11000";
-	constant ADD_CWD: std_logic_vector(24 downto 0) := ADD_DECODE &  ADD_EXECUTE & ADD_MEMORY & ADD_WB  ;
+	constant SLT_DECODE : std_logic_vector(4 downto 0) := "11111";
+	constant SLT_EXECUTE: std_logic_vector(9 downto 0) := "1011011110"; 
+	constant SLT_MEMORY: std_logic_vector(4 downto 0) := "01000";
+	constant SLT_WB: std_logic_vector(4 downto 0) := "11000";
+	constant SLT_CWD: std_logic_vector(24 downto 0) := ADD_DECODE &  ADD_EXECUTE & ADD_MEMORY & ADD_WB  ;
 
 	--SGT
-	constant ADD_DECODE : std_logic_vector(4 downto 0) := "11111";
-	constant ADD_EXECUTE: std_logic_vector(9 downto 0) := "1011010110"; 
-	constant ADD_MEMORY: std_logic_vector(4 downto 0) := "01000";
-	constant ADD_WB: std_logic_vector(4 downto 0) := "11000";
-	constant ADD_CWD: std_logic_vector(24 downto 0) := ADD_DECODE &  ADD_EXECUTE & ADD_MEMORY & ADD_WB  ;
+	constant SGT_DECODE : std_logic_vector(4 downto 0) := "11111";
+	constant SGT_EXECUTE: std_logic_vector(9 downto 0) := "1011010110"; 
+	constant SGT_MEMORY: std_logic_vector(4 downto 0) := "01000";
+	constant SGT_WB: std_logic_vector(4 downto 0) := "11000";
+	constant SGT_CWD: std_logic_vector(24 downto 0) := ADD_DECODE &  ADD_EXECUTE & ADD_MEMORY & ADD_WB  ;
 
 	--SRL
-	constant ADD_DECODE : std_logic_vector(4 downto 0) := "11111";
-	constant ADD_EXECUTE: std_logic_vector(9 downto 0) := "1011010101"; 
-	constant ADD_MEMORY: std_logic_vector(4 downto 0) := "01000";
-	constant ADD_WB: std_logic_vector(4 downto 0) := "11000";
-	constant ADD_CWD: std_logic_vector(24 downto 0) := ADD_DECODE &  ADD_EXECUTE & ADD_MEMORY & ADD_WB  ;
+	constant SRL_DECODE : std_logic_vector(4 downto 0) := "11111";
+	constant SRL_EXECUTE: std_logic_vector(9 downto 0) := "1011010101"; 
+	constant SRL_MEMORY: std_logic_vector(4 downto 0) := "01000";
+	constant SRL_WB: std_logic_vector(4 downto 0) := "11000";
+	constant SRL_CWD: std_logic_vector(24 downto 0) := ADD_DECODE &  ADD_EXECUTE & ADD_MEMORY & ADD_WB  ;
 	--SLL
-	constant ADD_DECODE : std_logic_vector(4 downto 0) := "11111";
-	constant ADD_EXECUTE: std_logic_vector(9 downto 0) := "1011010001"; 
-	constant ADD_MEMORY: std_logic_vector(4 downto 0) := "01000";
-	constant ADD_WB: std_logic_vector(4 downto 0) := "11000";
-	constant ADD_CWD: std_logic_vector(24 downto 0) := ADD_DECODE &  ADD_EXECUTE & ADD_MEMORY & ADD_WB  ;
+	constant SLL_DECODE : std_logic_vector(4 downto 0) := "11111";
+	constant SLL_EXECUTE: std_logic_vector(9 downto 0) := "1011010001"; 
+	constant SLL_MEMORY: std_logic_vector(4 downto 0) := "01000";
+	constant SLL_WB: std_logic_vector(4 downto 0) := "11000";
+	constant SLL_CWD: std_logic_vector(24 downto 0) := ADD_DECODE &  ADD_EXECUTE & ADD_MEMORY & ADD_WB  ;
 	--SRA
-	constant ADD_DECODE : std_logic_vector(4 downto 0) := "11111";
-	constant ADD_EXECUTE: std_logic_vector(9 downto 0) := "1011011001"; 
-	constant ADD_MEMORY: std_logic_vector(4 downto 0) := "01000";
-	constant ADD_WB: std_logic_vector(4 downto 0) := "11000";
-	constant ADD_CWD: std_logic_vector(24 downto 0) := ADD_DECODE &  ADD_EXECUTE & ADD_MEMORY & ADD_WB  ;
+	constant SRA_DECODE : std_logic_vector(4 downto 0) := "11111";
+	constant SRA_EXECUTE: std_logic_vector(9 downto 0) := "1011011001"; 
+	constant SRA_MEMORY: std_logic_vector(4 downto 0) := "01000";
+	constant SRA_WB: std_logic_vector(4 downto 0) := "11000";
+	constant SRA_CWD: std_logic_vector(24 downto 0) := ADD_DECODE &  ADD_EXECUTE & ADD_MEMORY & ADD_WB  ;
 
 	--ITYPE
 
 	--NOP
-	constant ADD_DECODE : std_logic_vector(4 downto 0) := "10100";
-	constant ADD_EXECUTE: std_logic_vector(9 downto 0) := "1101000001"; 
-	constant ADD_MEMORY: std_logic_vector(4 downto 0) := "01000";
-	constant ADD_WB: std_logic_vector(4 downto 0) := "11000";
-	constant ADD_CWD: std_logic_vector(24 downto 0) := ADD_DECODE &  ADD_EXECUTE & ADD_MEMORY & ADD_WB  ;
+	constant NOP_DECODE : std_logic_vector(4 downto 0) := "10100";
+	constant NOP_EXECUTE: std_logic_vector(9 downto 0) := "1101000001"; 
+	constant NOP_MEMORY: std_logic_vector(4 downto 0) := "01000";
+	constant NOP_WB: std_logic_vector(4 downto 0) := "11000";
+	constant NOP_CWD: std_logic_vector(24 downto 0) := ADD_DECODE &  ADD_EXECUTE & ADD_MEMORY & ADD_WB  ;
 
 	--ADDI
-	constant ADD_DECODE : std_logic_vector(4 downto 0) := "10101";
-	constant ADD_EXECUTE: std_logic_vector(9 downto 0) := "1101000000"; 
-	constant ADD_MEMORY: std_logic_vector(4 downto 0) := "01000";
-	constant ADD_WB: std_logic_vector(4 downto 0) := "11000";
-	constant ADD_CWD: std_logic_vector(24 downto 0) := ADD_DECODE &  ADD_EXECUTE & ADD_MEMORY & ADD_WB  ;
+	constant ADDI_DECODE : std_logic_vector(4 downto 0) := "10101";
+	constant ADDI_EXECUTE: std_logic_vector(9 downto 0) := "1101000000"; 
+	constant ADDI_MEMORY: std_logic_vector(4 downto 0) := "01000";
+	constant ADDI_WB: std_logic_vector(4 downto 0) := "11000";
+	constant ADDI_CWD: std_logic_vector(24 downto 0) := ADDI_DECODE &  ADDI_EXECUTE & ADDI_MEMORY & ADDI_WB  ;
 	
 	--ADDUI
-	constant ADD_DECODE : std_logic_vector(4 downto 0) := "10100";
-	constant ADD_EXECUTE: std_logic_vector(9 downto 0) := "1101000000"; 
-	constant ADD_MEMORY: std_logic_vector(4 downto 0) := "01000";
-	constant ADD_WB: std_logic_vector(4 downto 0) := "11000";
-	constant ADD_CWD: std_logic_vector(24 downto 0) := ADD_DECODE &  ADD_EXECUTE & ADD_MEMORY & ADD_WB  ;
+	constant ADDUI_DECODE : std_logic_vector(4 downto 0) := "10100";
+	constant ADDUI_EXECUTE: std_logic_vector(9 downto 0) := "1101000000"; 
+	constant ADDUI_MEMORY: std_logic_vector(4 downto 0) := "01000";
+	constant ADDUI_WB: std_logic_vector(4 downto 0) := "11000";
+	constant ADDUI_CWD: std_logic_vector(24 downto 0) := ADDUI_DECODE &  ADDUI_EXECUTE & ADDUI_MEMORY & ADDUI_WB  ;
 
 	--SUBI
 	constant ADD_DECODE : std_logic_vector(4 downto 0) := "10101";
