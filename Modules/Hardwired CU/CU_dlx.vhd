@@ -26,8 +26,8 @@ ENTITY CU_dlx IS
         --control_wrd: OUT std_logic_vector (totbit downto 0)
 
         decode_cwd : OUT STD_LOGIC_VECTOR(4 DOWNTO 0);
-        execute_cwd : STD_LOGIC_VECTOR (9 DOWNTO 0);
-        memory_cwd : STD_LOGIC_VECTOR (4 DOWNTO 0);
+        execute_cwd : OUT STD_LOGIC_VECTOR (9 DOWNTO 0);
+        memory_cwd : OUT STD_LOGIC_VECTOR (4 DOWNTO 0);
         wb_cwd : OUT STD_LOGIC_VECTOR (4 DOWNTO 0);
 
         --decode
@@ -219,6 +219,7 @@ ENTITY CU_dlx IS
                     cw_s <= cw_mem(19); --nop
                 END IF
             END PROCESS;
+
             PROCESS (cw_s, clk)
             BEGIN
                 --reset messo prima da capire se giusto
