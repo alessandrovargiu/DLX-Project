@@ -17,15 +17,16 @@ END ENTITY HU;
 
 ARCHITECTURE beh OF HU IS
     --flush_j,flush_b: std_logic;
-    signal IR_EX, IR_MEM, IR_WB: std_logic_vector(Nbit-1 downto 0);   
+    signal IR_ID_s,IR_EX, IR_MEM, IR_WB: std_logic_vector(Nbit-1 downto 0);   
 
 BEGIN
     -- instruction pipeline
+    IR_ID_s<=IR_ID;
     pipe: process (clk)
     begin
         if(rising_edge(clk)) then
-            IR_EX <= IR_ID;
-            IR_MEM <= IR_MEM;
+            IR_EX <= IR_ID_s;
+            IR_MEM <= IR_EX;
             IR_WB <= IR_MEM;
         end if;
     end process;
@@ -58,16 +59,17 @@ BEGIN
 
     RAW: process (clk)
     begin
+        hzd_sig <= '0';
         if(rising_edge(clk)) then
             if(IR_ID(Nbit-1) = '0' AND IR_EX(Nbit-1 downto Nbit-6) = ITYPE_LDW) then
                 if(IR_ID(Nbit-7 downto Nbit-12) = IR_EX(Nbit-7 downto Nbit-12)) then -- RS1 data dependency
-                    --hzd_sig <= '1';
+                    hzd_sig <= '1';
                 end if;
             end if;
         
             if(IR_ID(Nbit-1 downto Nbit-6) = RTYPE OR IR_ID(Nbit-1 downto Nbit-6) = ITYPE_BEQZ OR IR_ID(Nbit-1 downto Nbit-6) = ITYPE_BNEZ) then
                 if(IR_ID(Nbit-13 downto Nbit-18) = IR_EX(Nbit-13 downto Nbit-18)) then -- RS2 data dependency
-                    --hzd_sig <= '1';
+                    hzd_sig <= '1';
                 end if;
             end if;
         end if;
