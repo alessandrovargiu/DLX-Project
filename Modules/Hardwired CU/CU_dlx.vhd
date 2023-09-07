@@ -3,13 +3,14 @@ USE ieee.std_logic_1164.ALL;
 USE ieee.std_logic_unsigned.ALL;
 USE ieee.std_logic_arith.ALL;
 USE work.INSTR_CODES.ALL;
+use work.constants.all;
 
 ENTITY CU_dlx IS
     GENERIC (
         MICROCODE_MEM_SIZE : INTEGER := 41; -- Microcode Memory Size
         FUNC_SIZE : INTEGER := 11; -- Func Field Size for R-Type Ops
         OP_CODE_SIZE : INTEGER := 6; -- Op Code Size
-        CW_SIZE : INTEGER := 25; -- output signals of CU
+        CW_SIZE : INTEGER := 25 -- output signals of CU
         --ALU_SIZE : Integer := 2    --2 bits for 4 operations 0 1 2 3
     );
     PORT (
@@ -20,7 +21,7 @@ ENTITY CU_dlx IS
         -- opcode : IN  std_logic_vector(OP_CODE_SIZE - 1 downto 0);
         --func  : IN  std_logic_vector(FUNC_SIZE - 1 downto 0);
         IR_in : IN STD_LOGIC_VECTOR(Nbit - 1 DOWNTO 0);
-        hzd_sing: in std_logic;
+        hzd_sig: in std_logic;
         --stall : IN STD_LOGIC;
         --jump : IN STD_LOGIC;
         --control_wrd: OUT std_logic_vector (totbit downto 0)
@@ -28,7 +29,7 @@ ENTITY CU_dlx IS
         decode_cwd : OUT STD_LOGIC_VECTOR(CW_SIZE-1 DOWNTO 0);
         execute_cwd : OUT STD_LOGIC_VECTOR (CW_SIZE-1-5 DOWNTO 0);
         memory_cwd : out STD_LOGIC_VECTOR (CW_SIZE-1-15 DOWNTO 0);
-        wb_cwd : OUT STD_LOGIC_VECTOR (CW_SIZE-1-20 DOWNTO 0);
+        wb_cwd : OUT STD_LOGIC_VECTOR (CW_SIZE-1-20 DOWNTO 0)
 
         --decode
         --rf1: out std_logic; --read port A of register file
@@ -59,7 +60,9 @@ ENTITY CU_dlx IS
         --s5: out std_logic -- VAL/PC+4
         --mux_sel1: out std_logic --address rf for jump and link
     );
-    ARCHITECTURE behavioral OF CU_dlx IS
+end entity;
+
+ARCHITECTURE behavioral OF CU_dlx IS
         TYPE mem_array IS ARRAY (INTEGER RANGE 0 TO MICROCODE_MEM_SIZE - 1) OF STD_LOGIC_VECTOR(CW_SIZE - 1 DOWNTO 0); --rivedere size
         SIGNAL cw_mem : mem_array := (
             ADD_CWD,
@@ -109,10 +112,11 @@ ENTITY CU_dlx IS
         SIGNAL func_s : STD_LOGIC_VECTOR (FUNC_SIZE - 1 DOWNTO 0);
         SIGNAL cw_s : STD_LOGIC_VECTOR(CW_SIZE - 1 DOWNTO 0); --entire control word
         --signal cw1_s   : std_logic_vector(CW_SIZE - 1 - 4 downto 0); --controllare le dimensioni
-        SIGNAL cw2_s : STD_LOGIC_VECTOR(CW_SIZE - 1 - 4 DOWNTO 0);
-        SIGNAL cw3_s : STD_LOGIC_VECTOR(CW_SIZE - 1 - 14 DOWNTO 0);
-        SIGNAL cw4_s : STD_LOGIC_VECTOR(CW_SIZE - 1 - 19 DOWNTO 0);
-    BEGIN
+        SIGNAL decode_cwd_s : STD_LOGIC_VECTOR(CW_SIZE-1 DOWNTO 0);
+        SIGNAL execute_cwd_s : STD_LOGIC_VECTOR(CW_SIZE-1 - 5 DOWNTO 0);
+        SIGNAL memory_cwd_s : STD_LOGIC_VECTOR(CW_SIZE-1 - 15 DOWNTO 0);
+        signal wb_cwd_s: std_logic_vector(CW_SIZE-1 - 20 downto 0);  
+BEGIN
         PROCESS (IR_IN)
         BEGIN
             IF (IR_in(31 DOWNTO 26) = "000000") THEN
@@ -124,9 +128,9 @@ ENTITY CU_dlx IS
             END IF;
         END PROCESS;
 
-        PROCESS (rst, opcode_s, func_s)
+        PROCESS (reset, opcode_s, func_s)
         BEGIN
-            IF rst = '1' THEN
+            IF reset = '1' THEN
                 cw_s <= cw_mem(19); -- nop
             ELSE
                 IF (opcode_s = "000000") THEN
@@ -217,25 +221,31 @@ ENTITY CU_dlx IS
                     cw_s <= cw_mem(40);
                 ELSE
                     cw_s <= cw_mem(19); --nop
-                END IF
+                END IF;
+            end if;
             END PROCESS;
 
             PROCESS (clk) --cw_s
             BEGIN
                 --reset messo prima da capire se giusto
+                decode_cwd <= decode_cwd_s;
+                execute_cwd <= execute_cwd_s;
+                memory_cwd <= memory_cwd_s;
+                wb_cwd <= wb_cwd_s;
                 IF Clk'event AND Clk = '1' THEN
                     if (hzd_sig = '1') then  --- da aggiungere come input all entity
-                        decode_cwd <= "000000000000000000000000";
-                        execute_cwd <= decode_cwd(CW_SIZE - 1 - 5 DOWNTO 0);
-                        memory_cwd <= execute_cwd(CW_SIZE - 1 - 15 DOWNTO 0);
-                        wb_cwd <= memory_cwd(CW_SIZE - 1 - 20 DOWNTO 0);
+                        decode_cwd_s <= "000000000000000000000000";
+                        execute_cwd_s <= decode_cwd_s(CW_SIZE - 1 - 5 DOWNTO 0);
+                        memory_cwd_s <= execute_cwd_s(CW_SIZE - 1 - 15 DOWNTO 0);
+                        wb_cwd_s <= memory_cwd_s(CW_SIZE - 1 - 20 DOWNTO 0);
                     else
-                        decode_cwd <= cw_s(CW_SIZE - 1 DOWNTO 0);
-                        execute_cwd <= decode_cwd(CW_SIZE - 1 - 5 DOWNTO 0);
-                        memory_cwd <= execute_cwd(CW_SIZE - 1 - 15 DOWNTO 0);
-                        wb_cwd <= memory_cwd(CW_SIZE - 1 - 20 DOWNTO 0);
-                END IF
-            END PROCESS
+                        decode_cwd_s <= cw_s(CW_SIZE - 1 DOWNTO 0);
+                        execute_cwd_s <= decode_cwd_s(CW_SIZE - 1 - 5 DOWNTO 0);
+                        memory_cwd_s <= execute_cwd_s(CW_SIZE - 1 - 15 DOWNTO 0);
+                        wb_cwd_s <= memory_cwd_s(CW_SIZE - 1 - 20 DOWNTO 0);
+                    END IF;
+                END IF;      
+            END PROCESS;
 
 
-        END CU_dlx;
+END behavioral;
