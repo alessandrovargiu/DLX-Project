@@ -25,7 +25,8 @@ architecture test of tb is
             --stall: in std_logic;
             --jump: in std_logic;
             IR_in: in std_logic_vector(Nbit-1 downto 0);
-            hzd_sig: in std_logic;
+            hzd_sig_ctrl: in std_logic;
+            hzd_sig_raw: in std_logic;
             decode_cwd: out std_logic_vector(CW_SIZE-1 downto 0);
             execute_cwd : OUT STD_LOGIC_VECTOR (CW_SIZE-1 DOWNTO 0);
             memory_cwd : OUT STD_LOGIC_VECTOR (CW_SIZE-1 DOWNTO 0);
@@ -39,11 +40,12 @@ architecture test of tb is
             rst : IN STD_LOGIC; -- Reset Signal: Asyncronous Active Low (Negative)
             cwd : IN STD_LOGIC_VECTOR(25-1 DOWNTO 0); -- datapath signals
             IR_ID: in std_logic_vector(Nbit-1 downto 0);
-            hzd_sig : OUT STD_LOGIC -- hazard signals
+            hzd_sig_ctrl : OUT STD_LOGIC; -- hazard signals
+            hzd_sig_raw : OUT STD_LOGIC
     );
     end component HU;
 
-    signal clk_s, reset_s, hzd_sig_s: std_logic;
+    signal clk_s, reset_s, hzd_sig_ctrl_s,hzd_sig_raw_s: std_logic;
     signal IR_in_s: std_logic_vector(Nbit-1 downto 0);
     signal decode_cwd_s: std_logic_vector(24 downto 0);
     signal execute_cwd_s : STD_LOGIC_VECTOR (19 DOWNTO 0);
@@ -71,7 +73,8 @@ begin
         reset => reset_s,
         --stall => '0',
         --jump => '0',
-        hzd_sig => hzd_sig_s,
+        hzd_sig_raw => hzd_sig_raw_s,
+        hzd_sig_ctrl => hzd_sig_ctrl_s,
         IR_in => IR_in_s,
         decode_cwd => decode_cwd_s,
         execute_cwd => execute_cwd_s,
@@ -85,7 +88,8 @@ begin
         reset_s, 
         cwd_s,
         IR_in_s, 
-        hzd_sig_s);
+        hzd_sig_ctrl_s,
+        hzd_sig_raw_s);
 
 
     test: process

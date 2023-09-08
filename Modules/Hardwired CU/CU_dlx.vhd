@@ -21,7 +21,8 @@ ENTITY CU_dlx IS
         -- opcode : IN  std_logic_vector(OP_CODE_SIZE - 1 downto 0);
         --func  : IN  std_logic_vector(FUNC_SIZE - 1 downto 0);
         IR_in : IN STD_LOGIC_VECTOR(Nbit - 1 DOWNTO 0);
-        hzd_sig: in std_logic;
+        hzd_sig_ctrl: in std_logic;
+        hzd_sig_raw: in std_logic;
         --stall : IN STD_LOGIC;
         --jump : IN STD_LOGIC;
         --control_wrd: OUT std_logic_vector (totbit downto 0)
@@ -240,7 +241,7 @@ BEGIN
                 
                 --IF Clk'event AND Clk = '1' THEN
                 if (rising_edge(clk)) then
-                    if (hzd_sig = '1') then  --- da aggiungere come input all entity
+                    if (hzd_sig_ctrl = '1') then  --- da aggiungere come input all entity
                         decode_cwd_s <= "000000000000000000000000";
                         execute_cwd_s <= decode_cwd_s(CW_SIZE - 1 - 5 DOWNTO 0);
                         memory_cwd_s <= execute_cwd_s(CW_SIZE - 1 - 15 DOWNTO 0);
