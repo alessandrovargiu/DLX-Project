@@ -6,11 +6,13 @@ entity RCA is
 	generic (NbitRca: integer );
 	--generic (DRCAS : 	Time := 0 ns;
 	--         DRCAC : 	Time := 0 ns);
-	Port (	A:	In	std_logic_vector(NbitRca-1 downto 0);
+	Port (	
+			A:	In	std_logic_vector(NbitRca-1 downto 0);
 			B:	In	std_logic_vector(NbitRca-1 downto 0);
 			Ci:	In	std_logic;
 			S:	Out	std_logic_vector(NbitRca-1 downto 0);
 			Co:	Out	std_logic);
+
 end RCA; 
 
 architecture STRUCTURAL of RCA is --structural definition which makes use of the smaller component called full adder
