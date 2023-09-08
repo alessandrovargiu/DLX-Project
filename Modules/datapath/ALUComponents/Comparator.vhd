@@ -4,7 +4,7 @@ use ieee.numeric_std.all;
 
 entity Comparator is 
     generic (
-        Nbit: integer := 4
+        Nbit: integer := 32
     );
 	Port (	SUB:	In	std_logic_vector(Nbit-1 downto 0); --input from p4adder
 			Cout:	In	std_logic; --input from p4 adder
