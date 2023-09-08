@@ -14,16 +14,15 @@ end myregister;
 architecture behavioral of myregister is
 begin
 
-    general_ref: process (clk,I)
+    general_ref: process (clk, en)
     begin
+
         if( rising_edge(clk) ) then
             if( rst = '1' ) then --synchronous reset 
                 Q <= (others => '0') ;
-            else
-                if( en = '1' ) then
+            ELSIF ( en = '1' ) then
                 Q <= I ;
                 end if;
-            end if;
         end if;
     end process;
 

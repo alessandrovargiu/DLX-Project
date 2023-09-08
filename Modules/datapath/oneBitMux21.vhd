@@ -19,9 +19,9 @@ begin
 
 		case Sel is
 			when '1' =>
-				oneBitOut <= in1;
-			when '0' =>
 				oneBitOut <= in2;
+			when '0' =>
+				oneBitOut <= in1;
 			when others =>
 				oneBitOut <= 'U';
 		end case;
