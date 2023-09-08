@@ -1,4 +1,3 @@
--- Im implementing a datapath for the basicDLX structure first
 
 library ieee;
 use ieee.std_logic_1164.all;
@@ -193,23 +192,23 @@ signal fromMemOrFromAlu:     std_logic_vector(Nbit-1 downto 0);
 
     --alu
 
-    component ALU is
-
-    generic (N : integer );
-        port (--FUNC: IN TYPE_OP;
-            FUNC: IN std_logic_vector(5 downto 0);
-            DATA1, DATA2: IN std_logic_vector(N-1 downto 0);
-            OUTALU: OUT std_logic_vector(N-1 downto 0) );
-    end component;
-
+    component ProAlu is
+    generic( Nbit: integer := 32;
+             OperationSelNbit: integer := 6);
+    port( OperandA:     in std_logic_vector(Nbit-1 downto 0);
+          OperandB:     in std_logic_vector(Nbit-1 downto 0);
+          OperationSel: in std_logic_vector(6-1 downto 0);
+          ALUOut:       out std_logic_vector(Nbit-1 downto 0)
+          );
+end component;
 
 ---------------------------------------------------------------------------------
 --Brief description of my interpretetion of control bits
 
 --the official control signal once the Proalu has been finilized: 
 
---|RF1|RF2|EN1|UorS|JorIImm|S1|S2|rdChoice|EN2|ALU1|ALU2|ALU3|ALU4|ALU5|ALU6|WM|EN3|RM|Bop|Eq|WF1|EN4|S4|S5|jalEn|
---|24-|23-|22-|21--|---20--|19|18|---17---|16-|--15|-14-|-13-|-12-|-11-|-10-|9-|--8|-7|--6|-5|--4|-3-|2-|1-|--0--|
+--|RF1|RF2|EN1|UorS|JorIImm|S1|S2|rdChoice|EN2|ALU1|ALU2|ALU3|ALU4|ALU5|ALU6|Bop|Eq|WM|EN3|RM|WF1|EN4|S4|S5|jalEn|
+--|24-|23-|22-|21--|---20--|19|18|---17---|16-|--15|-14-|-13-|-12-|-11-|-10-|9--|-8|-7|--6|-5|--4|-3-|2-|1-|--0--|
 --|---decode---------------|----exec----------------------------------------|----mem---------|-----wb------------|
 
 
@@ -220,7 +219,7 @@ signal fromMemOrFromAlu:     std_logic_vector(Nbit-1 downto 0);
 --JorIMM is able to tell DP is the immediate to extend has originally 16 bits or 26
 
 
---S1 selects if to store in pipe "regA" the NPC or the value coming from register at address from first read port of RF
+--S1 selects if to store in pipe "regA" the NPC or the value coming from register at address from first read port of RF. 1 if regA, 0 if npc
 --S2 selects if to store in pipe "regB"  the value coming from register at address from first read port of RF or the IMM
 --rdChoice selects to store in pipe reg (belonging to ex/mem pipe regs family) the rd or the rt field depending on the type of instruction
 --EN2 enables EX/MEM pipe regs
@@ -394,9 +393,9 @@ ChooseSecondOperand: Mux21
 generic map(Nbit)
 port map( regBoutEX, extendedImmediateOut , controlWord(CWNbit-7), operandB ) ; -- 0 prendo B, 1 prendo imm
 
-BasicALUinstance: ALU 
+ProALuinstance: ProAlu 
 generic map(Nbit)
-port map ( controlWord(CWNbit-10 downto CWNbit-15), operandA, operandB, ALUOutEX); -- 6 bit di control per l alu
+port map (operandA, operandB, controlWord(CWNbit-10 downto CWNbit-15),  ALUOutEX); -- 6 bit di control per l alu
 
 --this below serves to understand which bit range location we should look at in the instruction to understand the address of where to write our result
 --for instance: if we have an I type instruction, the address of the register in which we store the result is located in the bit range [11,15] 

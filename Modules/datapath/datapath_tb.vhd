@@ -29,7 +29,7 @@ architecture TEST of dp_test is
     constant CWWbBitsSUBI: std_logic_vector(CWNbitsWB-1 downto 0) := "11000";
 
     constant CWIdBitsORI: std_logic_vector(CWNBitsID-1 downto 0) := "10100";
-    constant CWExBitsORI: std_logic_vector(CWNBitsEX-1 downto 0) := "110101111100";
+    constant CWExBitsORI: std_logic_vector(CWNBitsEX-1 downto 0) := "110111101100";
     constant CWMemBitsORI: std_logic_vector(CWNbitsMEM-1 downto 0) := "010";
     constant CWWbBitsORI: std_logic_vector(CWNbitsWB-1 downto 0) := "11000";
 
@@ -37,6 +37,16 @@ architecture TEST of dp_test is
     constant CWExBitsADD: std_logic_vector(CWNBitsEX-1 downto 0) := "101100000000";
     constant CWMemBitsADD: std_logic_vector(CWNbitsMEM-1 downto 0) := "010";
     constant CWWbBitsADD: std_logic_vector(CWNbitsWB-1 downto 0) := "11000";
+
+    constant CWidBitsBEQZ: std_logic_vector(CWNBitsID-1 downto 0) := "10101";
+    constant CWexBitsBEQZ: std_logic_vector(CWNBitsEX-1 downto 0) := "010100000011"; --3rd bit is dont care
+    constant CWmemBitsBEQZ: std_logic_vector(CWNbitsMEM-1 downto 0) := "010";
+    constant CWwbBitsBEQZ: std_logic_vector(CWNbitsWB-1 downto 0) := "00000";
+
+    constant CWidBitsBNEZ: std_logic_vector(CWNBitsID-1 downto 0) := "10101";
+    constant CWexBitsBNEZ: std_logic_vector(CWNBitsEX-1 downto 0) := "010100000010"; --3rd bit is dont care
+    constant CWmemBitsBNEZ: std_logic_vector(CWNbitsMEM-1 downto 0) := "010";
+    constant CWwbBitsBNEZ: std_logic_vector(CWNbitsWB-1 downto 0) := "00000";
 
     component BasicDP is
     Generic( NbitMem: integer;
@@ -62,6 +72,14 @@ end component;
     signal IMdata_i, DMdata_i: std_logic_vector(Nbit-1 downto 0);
     signal controlWord_i: std_logic_vector(controlNbit-1 downto 0);
     signal IMaddress_i, DMaddress_i: std_logic_vector(addressNbit-1 downto 0);
+
+    constant ADDI1BITWISE: std_logic_vector(Nbit-1 downto 0) := "00000100000000010000000000000001" ; -- label: addi r1, r0, 1
+    constant ADDI2BITWISE: std_logic_vector(Nbit-1 downto 0) := "00000100000000100000000000000010" ; --        addi r2, r0, 2
+    constant SUBI1BITWISE: std_logic_vector(Nbit-1 downto 0) := "00001100000000110000000000000000" ; --        subi r3, r0, 0
+    constant ORI1BITWISE: std_logic_vector(Nbit-1 downto 0) :=  "00010100000001000000000000000010" ;  --       ori  r4, r0, 2
+    constant ADD1BITWISE: std_logic_vector(Nbit-1 downto 0) :=  "00000000001000100010100000000000" ;  --       add  r5, r1, r2
+    constant BEQZ1BITWISE: std_logic_vector(Nbit-1 downto 0) := "00101000010000001111111111101000" ; --        beqz r2, label ; nn dovrebbe saltare
+    constant BNEZ1BITWISE: std_logic_vector(Nbit-1 downto 0) := "00101100010000001111111111100100" ; --        bnez r2, label ; dovrebbe saltare
 
 begin
 
@@ -106,54 +124,77 @@ begin
         wait for 2 ns;
         --in this instant, fetch of first instr
 
-        IMdata_i <= "00000100000000010000000000000001"; -- instruction bits corresponding to -addi r1, r0, 1- (the opcode assumed for addi is 000001)
+        IMdata_i <= ADDI1BITWISE; -- instruction bits corresponding to -addi r1, r0, 1- (the opcode assumed for addi is 000001)
 
         ControlWord_i <= (others => '0');
         
 
         wait for 2 ns;
-	IMdata_i <= "00000100000000100000000000000010"; -- instruction bits corresponding to -addi r2, r0, 2- 	       
+	IMdata_i <= ADDI2BITWISE; -- instruction bits corresponding to -addi r2, r0, 2- 	       
         
 
         ControlWord_i <= CWIdBitsADDI & "000000000000" & "000" & "00000" ;
 
         wait for 2 ns;
 
-        IMdata_i <= "00001100000000110000000000000001"; -- instruction bits corresponding to -subi r3, r0, 1- (opcode assumed for subi is 00011)
+        IMdata_i <= SUBI1BITWISE; -- instruction bits corresponding to -subi r3, r0, 1- (opcode assumed for subi is 00011)
 
         ControlWord_i <= CWIDbitsADDI & CWExBitsADDI & "000" & "00000"  ;
 
 
         wait for 2 ns;
-	IMdata_i <= "00010100000001000000000000000010"; -- instruction bits corresponding to -or r4, r0, 2- 	
+	IMdata_i <= ORI1BITWISE; -- instruction bits corresponding to -ori r4, r0, 2- 	
 
 
         controlword_i <= CWIdbitsSUBI & CWexbitsADDI & CWMemBitsADDI & "00000" ;
 
         wait for 2 ns;
 	
-        IMdata_i <= "00000000001000100010100000000000"; --instruction bits corresponding to 5th instruction: -add r5, r1, r2-  (opcode assumed for the add Rtype is 000000 and related FUNC is 00000000000 )
+        IMdata_i <= ADD1BITWISE; --instruction bits corresponding to 5th instruction: -add r5, r1, r2-  (opcode assumed for the add Rtype is 000000 and related FUNC is 00000000000 )
 
         controlword_i <= CWIdBitsORI & CWExBitsSUBI & CWMemBitsADDI & CWWBBitsADDI;
 
         wait for 2 ns;
 
+        IMdata_i <= BEQZ1BITWISE; 
+
         controlWord_i <= CWIdBitsADD & CWExBitsORI & CWMemBitsSUBI & CWWBBitsADDI ;
 		
         wait for 2 ns; 
 
-        controlWord_i <= "00000" & CWExBitsADD & CWMemBitsORI & CWWBBitsSUBI ;
+        IMdata_i <= BNEZ1BITWISE;
+
+        controlWord_i <= CWidBitsBEQZ & CWExBitsADD & CWMemBitsORI & CWWBBitsSUBI ;
 
         wait for 2 ns;
 
-
-        controlWord_i <= "00000" & "000000000000" & CWMemBitsADD & CWWBBitsORI ;
-
+        controlWord_i <= CWidBitsBNEZ & CWexBitsBEQZ & CWMemBitsADD & CWWBBitsORI ;
 
         wait for 2 ns;
 
-        controlword_i <= "00000" & "000000000000" & "000" & CWWbbitsAdd ;
+        controlword_i <= "00000" & CWexBitsBNEZ & CWmemBitsBEQZ & CWWbbitsAdd ;
 
+        wait for 2 ns;
+
+        controlword_i <= "00000" & "000000000000" & CWmemBitsBNEZ & CWwbBitsBEQZ ;
+
+        wait for 2 ns;
+        
+        IMdata_i <= ADDI1BITWISE; -- instruction bits corresponding to -addi r1, r0, 1- (the opcode assumed for addi is 000001)
+
+        controlword_i <= "00000" & "000000000000" & "000" & CWwbBitsBNEZ ;
+
+        wait for 2 ns;
+
+        IMdata_i <= ADDI2BITWISE; 
+
+        controlWord_i <= CWIdBitsADDI & "000000000000" & "000" & "00000" ;
+
+        wait for 2 ns;
+
+        wait for 2 ns;
+
+        wait for 2 ns;
         wait;
 
         end process;
