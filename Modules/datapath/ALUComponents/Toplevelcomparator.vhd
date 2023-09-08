@@ -4,7 +4,7 @@ use ieee.numeric_std.all;
 
 entity ToplevelComparator is 
     generic (
-	Nbit : integer := 4
+	Nbit : integer := 32
     );
 	Port (	Sub:	In	std_logic_vector(Nbit-1 downto 0); --input from p4adder
 			Cout:	In	std_logic; --input from p4 adder
@@ -26,7 +26,7 @@ end ToplevelComparator;
     signal res_s5: std_logic_vector (4 downto 0);
     signal res_s1: std_logic;
 begin
-    comparator1: comparator port map(Sub,Cout,A(3),B(3),res_s5);
+    comparator1: comparator port map(Sub,Cout,A(31),B(31),res_s5);
     mux: process(op,res_s5)
     begin
     case op is

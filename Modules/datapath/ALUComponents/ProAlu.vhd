@@ -154,64 +154,64 @@ begin
     ----------- parte sotto non la userei
 
 
-    OpSelection: process(OperationSel, OperandB, resultAdd, resultLogic) 
-    case OperationSel is
-    begin
-        when "0000" =>  -- ADD
+    --OpSelection: process(OperationSel, OperandB, resultAdd, resultLogic) 
+    --case OperationSel is
+    --begin
+      --  when "0000" =>  -- ADD
         
-        intermediateB <= OperandB; --we use the original B as second operand
-        cin4sub <= '0';
-        AluOut <= resultAdd;
+       -- intermediateB <= OperandB; --we use the original B as second operand
+       -- cin4sub <= '0';
+       -- AluOut <= resultAdd;
 
-        when "0001" =>  -- SUB
+       -- when "0001" =>  -- SUB
 
-        intermediateB <= Bcomplement;
-        cin4sub <= '1';
-        AluOut <= resultAdd;
+       -- intermediateB <= Bcomplement;
+       -- cin4sub <= '1';
+       -- AluOut <= resultAdd;
 
-        when "0010" =>  -- AND
+       -- when "0010" =>  -- AND
 
-        LogicOp <= ANDop;  --dont forget, ANDOp is a constant seen above it is 1000.
-        AluOut <= resultLogic;
+       -- LogicOp <= ANDop;  --dont forget, ANDOp is a constant seen above it is 1000.
+       -- AluOut <= resultLogic;
 
 
-        when "1110" =>  -- NAND
+       -- when "1110" =>  -- NAND
 
-        LogicOp <= NANDop;
-        AluOut <= resultLogic;
+       -- LogicOp <= NANDop;
+        --AluOut <= resultLogic;
 
-        when "0011" =>  -- OR
+        --when "0011" =>  -- OR
 
-        LogicOp <= ORop;
-        AluOut <= resultLogic;
+       -- LogicOp <= ORop;
+       -- AluOut <= resultLogic;
 
-        when "1010" =>  -- XOR
+       -- when "1010" =>  -- XOR
 
-        LogicOp <= XORop;
-        AluOut <= resultLogic;
+       -- LogicOp <= XORop;
+       -- AluOut <= resultLogic;
 
-        when "0110" =>  -- XNOR
+       -- when "0110" =>  -- XNOR
 
-        LogicOp <= XNORop;
-        AluOut <= resultLogic;
+       -- LogicOp <= XNORop;
+       -- AluOut <= resultLogic;
 
-        when "1001" =>  -- logical shift left
+       -- when "1001" =>  -- logical shift left
 
-        ShifterOp <= "00";
-        AluOut <= resultShifter; 
+        --ShifterOp <= "00";
+        --AluOut <= resultShifter; 
 
-        when "0111" =>  -- logical shift right
+        --when "0111" =>  -- logical shift right
 
-        ShifterOp <= "01";
-        AluOut <= resultShifter;
+        --ShifterOp <= "01";
+        --AluOut <= resultShifter;
 
-        when "1000" =>  -- Shift Right Arithmetic
+       -- when "1000" =>  -- Shift Right Arithmetic
 
-        ShifterOp <= "10";
-        AluOut <= resultShifter;
+        --ShifterOp <= "10";
+       -- AluOut <= resultShifter;
 
         -- MUL to be added
 
-    end case;
-    end process Opselection;
-end struct;
+    --end case;
+    --end process Opselection;
+--end struct;
