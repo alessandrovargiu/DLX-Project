@@ -11,6 +11,7 @@ ENTITY HU IS
         cwd : IN STD_LOGIC_VECTOR(25-1 DOWNTO 0); -- datapath signals
         IR_ID: in std_logic_vector(Nbit-1 downto 0);
         --IR_EX: in std_logic_vector(Nbit-1 downto 0);
+        -- input diretto dal datapath per dire se branch presa o no;
         hzd_sig_ctrl : OUT STD_LOGIC;
         hzd_sig_raw : OUT STD_LOGIC -- hazard signals
     );
