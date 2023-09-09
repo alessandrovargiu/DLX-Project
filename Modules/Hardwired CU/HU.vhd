@@ -9,8 +9,8 @@ ENTITY HU IS
         clk : IN STD_LOGIC; -- Clock Signal (rising-edge trigger)
         rst : IN STD_LOGIC; -- Reset Signal: Asyncronous Active Low (Negative)
         cwd : IN STD_LOGIC_VECTOR(25-1 DOWNTO 0); -- datapath signals
-        IR_ID: in std_logic_vector(Nbit-1 downto 0);
-        --IR_EX: in std_logic_vector(Nbit-1 downto 0);
+        IR_ID: IN std_logic_vector(Nbit-1 downto 0);
+        PC_SEL: OUT std_logic;        -- selection signal for value of PC 
         -- input diretto dal datapath per dire se branch presa o no;
         hzd_sig_ctrl : OUT STD_LOGIC;
         hzd_sig_raw : OUT STD_LOGIC -- hazard signals
@@ -64,14 +64,17 @@ BEGIN
         if(rising_edge(clk)) then
             if(IR_ID(Nbit-1) = '0' AND IR_EX(Nbit-1 downto Nbit-6) = ITYPE_LDW) then
                 if(IR_ID(Nbit-7 downto Nbit-12) = IR_EX(Nbit-7 downto Nbit-12)) then -- RS1 data dependency
+                    PC_SEL <= '1';
                     hzd_sig_raw <= '1';
                 end if;
             elsif(IR_ID(Nbit-1 downto Nbit-6) = RTYPE OR IR_ID(Nbit-1 downto Nbit-6) = ITYPE_BEQZ OR IR_ID(Nbit-1 downto Nbit-6) = ITYPE_BNEZ) then
                 if(IR_ID(Nbit-13 downto Nbit-18) = IR_EX(Nbit-13 downto Nbit-18)) then -- RS2 data dependency
                     hzd_sig_ctrl <= '1';
+                    PC_SEL <= '0';
                 end if;
             else                                    -- no more dependency -> program can continue 
-                hzd_sig_raw <= '0';         
+                hzd_sig_raw <= '0';
+                PC_SEL <= '0';         
             end if;
         end if;
     end process;
