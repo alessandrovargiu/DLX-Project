@@ -61,18 +61,17 @@ BEGIN
 
     RAW: process (clk)
     begin
-        hzd_sig_raw <= '0';
         if(rising_edge(clk)) then
             if(IR_ID(Nbit-1) = '0' AND IR_EX(Nbit-1 downto Nbit-6) = ITYPE_LDW) then
                 if(IR_ID(Nbit-7 downto Nbit-12) = IR_EX(Nbit-7 downto Nbit-12)) then -- RS1 data dependency
                     hzd_sig_raw <= '1';
                 end if;
-            end if;
-        
-            if(IR_ID(Nbit-1 downto Nbit-6) = RTYPE OR IR_ID(Nbit-1 downto Nbit-6) = ITYPE_BEQZ OR IR_ID(Nbit-1 downto Nbit-6) = ITYPE_BNEZ) then
+            elsif(IR_ID(Nbit-1 downto Nbit-6) = RTYPE OR IR_ID(Nbit-1 downto Nbit-6) = ITYPE_BEQZ OR IR_ID(Nbit-1 downto Nbit-6) = ITYPE_BNEZ) then
                 if(IR_ID(Nbit-13 downto Nbit-18) = IR_EX(Nbit-13 downto Nbit-18)) then -- RS2 data dependency
-                    hzd_sig_raw <= '1';
+                    hzd_sig_ctrl <= '1';
                 end if;
+            else                                    -- no more dependency -> program can continue 
+                hzd_sig_raw <= '0';         
             end if;
         end if;
     end process;
