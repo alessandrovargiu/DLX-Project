@@ -235,23 +235,20 @@ BEGIN
             end if;
             END PROCESS;
 
+            -- STALL PROCESS --
+            -- introduce NOP in decode stage --
+            -- proibits PC from incrementing --
             PROCESS (clk) --cw_s
             BEGIN
-                --reset messo prima da capire se giusto
-                
-                --IF Clk'event AND Clk = '1' THEN
                 if (rising_edge(clk)) then
-                    if (hzd_sig_ctrl = '1') then  --- da aggiungere come input all entity
+                    decode_cwd_s <= cw_s(CW_SIZE - 1 DOWNTO 0);
+                    -- hazard injection overrides the above one
+                    if (hzd_sig_raw = '1') then     
                         decode_cwd_s <= "000000000000000000000000";
-                        execute_cwd_s <= decode_cwd_s(CW_SIZE - 1 - 5 DOWNTO 0);
-                        memory_cwd_s <= execute_cwd_s(CW_SIZE - 1 - 15 DOWNTO 0);
-                        wb_cwd_s <= memory_cwd_s(CW_SIZE - 1 - 20 DOWNTO 0);
-                    else
-                        decode_cwd_s <= cw_s(CW_SIZE - 1 DOWNTO 0);
-                        execute_cwd_s <= decode_cwd_s(CW_SIZE - 1 - 5 DOWNTO 0);
-                        memory_cwd_s <= execute_cwd_s(CW_SIZE - 1 - 15 DOWNTO 0);
-                        wb_cwd_s <= memory_cwd_s(CW_SIZE - 1 - 20 DOWNTO 0);
-                    END IF;
+                    end if;
+                    execute_cwd_s <= decode_cwd_s(CW_SIZE - 1 - 5 DOWNTO 0);
+                    memory_cwd_s <= execute_cwd_s(CW_SIZE - 1 - 15 DOWNTO 0);
+                    wb_cwd_s <= memory_cwd_s(CW_SIZE - 1 - 20 DOWNTO 0);
                 END IF;      
             END PROCESS;
             decode_cwd <= decode_cwd_s;
