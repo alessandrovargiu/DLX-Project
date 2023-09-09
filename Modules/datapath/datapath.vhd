@@ -10,6 +10,7 @@ entity BasicDP is
     port(   Clk:        in std_logic;
             rst:        in std_logic;
             
+            fromHU:      in std_logic;
             enable:      in std_logic;
             IMdata:      in std_logic_vector(NbitMem-1 downto 0);  --is the instruction entering the dp and is input to the IR pipeline register in IF/ID bank
             controlWord: in std_logic_vector(controlNbit-1 downto 0);
@@ -40,6 +41,7 @@ signal NPCoutputID:    std_logic_vector(Nbit-1 downto 0); --signal of out from t
 signal co: std_logic;
 
 signal adder1Out: std_logic_vector(Nbit-1 downto 0);
+signal pcPlus4orJ: std_logic_vector(Nbit-1 downto 0);
 
 ---------------------------------------------------Decode Unit related internal signals---------------------------------------------------------------
 
@@ -256,9 +258,15 @@ NextAddressGenerator: rca
 generic map(Nbit)
 port map ( PCout, x"00000004" , '0', Adder1Out, co );  --generates NPC
 
-NextPCchoice: Mux21
+--mux choosing if giving as output PC+4 or address of jump
+NextPCchoice0: Mux21 
+generic map(Nbit)      
+port map( Adder1Out, ALUOutEX, branchStatus, pcPlus4orJ ); 
+
+--mux choosing if PC stays the same in case of hazard, or if provifing (PC+4/jumpAddres)
+NextPCchoice1: Mux21
 generic map(Nbit)
-port map( Adder1Out, ALUOutEX, branchStatus, PCinput ); 
+port map( pcPlus4orJ, PCout, fromHU, PCinput );  
 
 ---registers part of the IF/ID pipe 
 

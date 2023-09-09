@@ -54,8 +54,9 @@ architecture TEST of dp_test is
              addressNbit: integer );
     port(   Clk :        in std_logic;
             rst :        in std_logic;
+
+            fromHU:      in std_logic;
             enable:      in std_logic;
-            
             IMdata:      in std_logic_vector(Nbit-1 downto 0);
             controlWord: in std_logic_vector(controlNbit-1 downto 0);
             
@@ -68,6 +69,7 @@ end component;
     signal Clock: std_logic := '0';
     signal Reset: std_logic := '1';
     signal enable_i: std_logic ;
+    signal fromHU_i: std_logic := '0';
 
     signal IMdata_i, DMdata_i: std_logic_vector(Nbit-1 downto 0);
     signal controlWord_i: std_logic_vector(controlNbit-1 downto 0);
@@ -89,6 +91,7 @@ begin
        port map (
                 clk => Clock,
                 rst => Reset,
+                fromHU => fromHU_i,
                 enable => enable_i,
                 IMdata => IMdata_i,
                 controlWord => controlWord_i,
