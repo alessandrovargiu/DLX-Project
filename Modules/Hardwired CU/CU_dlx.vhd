@@ -116,7 +116,7 @@ ARCHITECTURE behavioral OF CU_dlx IS
         --signal cw1_s   : std_logic_vector(CW_SIZE - 1 - 4 downto 0); --controllare le dimensioni
         SIGNAL decode_cwd_s : STD_LOGIC_VECTOR(CW_SIZE-1 DOWNTO 0);
         SIGNAL execute_cwd_s : STD_LOGIC_VECTOR(CW_SIZE-1 - 5 DOWNTO 0);
-        SIGNAL memory_cwd_s : STD_LOGIC_VECTOR(CW_SIZE-1 - 15 DOWNTO 0);
+        SIGNAL memory_cwd_s : STD_LOGIC_VECTOR(CW_SIZE-1 - 17 DOWNTO 0);
         signal wb_cwd_s: std_logic_vector(CW_SIZE-1 - 20 downto 0);  
 BEGIN
         PROCESS (IR_IN)
@@ -244,7 +244,7 @@ BEGIN
                     decode_cwd_s <= cw_s(CW_SIZE - 1 DOWNTO 0);
                     -- hazard injection overrides the above one
                     if (hzd_sig_raw = '1') then     
-                        decode_cwd_s <= "10100110100000100010";
+                        decode_cwd_s <= "1010011010000010001011000";
                     end if;
                     execute_cwd_s <= decode_cwd_s(CW_SIZE - 1 - 5 DOWNTO 0);
                     memory_cwd_s <= execute_cwd_s(CW_SIZE - 1 - 17 DOWNTO 0);

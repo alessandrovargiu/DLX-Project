@@ -28,9 +28,9 @@ architecture test of tb is
             hzd_sig_ctrl: in std_logic;
             hzd_sig_raw: in std_logic;
             decode_cwd: out std_logic_vector(CW_SIZE-1 downto 0);
-            execute_cwd : OUT STD_LOGIC_VECTOR (CW_SIZE-1 DOWNTO 0);
-            memory_cwd : OUT STD_LOGIC_VECTOR (CW_SIZE-1 DOWNTO 0);
-            wb_cwd : OUT STD_LOGIC_VECTOR (CW_SIZE-1 DOWNTO 0)
+            execute_cwd : OUT STD_LOGIC_VECTOR (CW_SIZE-1-5 DOWNTO 0);
+            memory_cwd : OUT STD_LOGIC_VECTOR (CW_SIZE-1-17 DOWNTO 0);
+            wb_cwd : OUT STD_LOGIC_VECTOR (CW_SIZE-1-20 DOWNTO 0)
         );
     end component CU_dlx;
 
@@ -40,6 +40,7 @@ architecture test of tb is
             rst : IN STD_LOGIC; -- Reset Signal: Asyncronous Active Low (Negative)
             cwd : IN STD_LOGIC_VECTOR(25-1 DOWNTO 0); -- datapath signals
             IR_ID: in std_logic_vector(Nbit-1 downto 0);
+            PC_SEL: OUT std_logic;        -- selection signal for value of PC 
             hzd_sig_ctrl : OUT STD_LOGIC; -- hazard signals
             hzd_sig_raw : OUT STD_LOGIC
     );
@@ -47,9 +48,10 @@ architecture test of tb is
 
     signal clk_s, reset_s, hzd_sig_ctrl_s,hzd_sig_raw_s: std_logic;
     signal IR_in_s: std_logic_vector(Nbit-1 downto 0);
+    signal PC_SEL_s: std_logic;
     signal decode_cwd_s: std_logic_vector(24 downto 0);
     signal execute_cwd_s : STD_LOGIC_VECTOR (19 DOWNTO 0);
-    signal memory_cwd_s : STD_LOGIC_VECTOR (9 DOWNTO 0);
+    signal memory_cwd_s : STD_LOGIC_VECTOR (7 DOWNTO 0);
     signal wb_cwd_s : STD_LOGIC_VECTOR (4 DOWNTO 0);
     signal cwd_s: std_logic_vector(25-1 downto 0);
     
@@ -71,8 +73,6 @@ begin
     port map(
         clk => clk_s,
         reset => reset_s,
-        --stall => '0',
-        --jump => '0',
         hzd_sig_raw => hzd_sig_raw_s,
         hzd_sig_ctrl => hzd_sig_ctrl_s,
         IR_in => IR_in_s,
@@ -85,20 +85,31 @@ begin
     UUT2: HU
     port map(
         clk_s, 
-        reset_s, 
+        rst_s,
         cwd_s,
-        IR_in_s, 
+        IR_in_s,
+        PC_SEL_s, 
         hzd_sig_ctrl_s,
         hzd_sig_raw_s);
 
 
     test: process
     begin
+
+        -- LD R1, #imm
+        -- SUB R17, R1, R16
+        -- ADD R18, R3, R4
+        -- ADD R19, R4, R4
+        -- SUB R17, R1, r16
         reset_s <= '0';
-        -- 1st instr. -> LD R1, #imm
         IR_in_s <= "001100" & "00001" & "00010" & "0101010101010101";
-        wait for 0.5 ns;
-        -- 2nd instr. -> SUB R17, R1, R16  -> RAW hazard
+        wait for 1 ns;
+        IR_in_s <= "000000" & "00001" & "01000" & "01001" & "00000000001";
+        wait for 1 ns;
+        IR_in_s <= "000000" & "00011" & "00100" & "01010" & "00000000000";
+        wait for 1 ns;
+        IR_in_s <= "000000" & "00100" & "00100" & "01011" & "00000000000";
+        wait for 1 ns;
         IR_in_s <= "000000" & "00001" & "01000" & "01001" & "00000000001";
     wait;
     end process;
