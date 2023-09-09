@@ -29,7 +29,7 @@ ENTITY CU_dlx IS
 
         decode_cwd : OUT STD_LOGIC_VECTOR(CW_SIZE-1 DOWNTO 0);
         execute_cwd : OUT STD_LOGIC_VECTOR (CW_SIZE-1-5 DOWNTO 0);
-        memory_cwd : out STD_LOGIC_VECTOR (CW_SIZE-1-15 DOWNTO 0);
+        memory_cwd : out STD_LOGIC_VECTOR (CW_SIZE-1-17 DOWNTO 0);
         wb_cwd : OUT STD_LOGIC_VECTOR (CW_SIZE-1-20 DOWNTO 0)
 
         --decode
@@ -244,10 +244,10 @@ BEGIN
                     decode_cwd_s <= cw_s(CW_SIZE - 1 DOWNTO 0);
                     -- hazard injection overrides the above one
                     if (hzd_sig_raw = '1') then     
-                        decode_cwd_s <= "000000000000000000000000";
+                        decode_cwd_s <= "10100110100000100010";
                     end if;
                     execute_cwd_s <= decode_cwd_s(CW_SIZE - 1 - 5 DOWNTO 0);
-                    memory_cwd_s <= execute_cwd_s(CW_SIZE - 1 - 15 DOWNTO 0);
+                    memory_cwd_s <= execute_cwd_s(CW_SIZE - 1 - 17 DOWNTO 0);
                     wb_cwd_s <= memory_cwd_s(CW_SIZE - 1 - 20 DOWNTO 0);
                 END IF;      
             END PROCESS;

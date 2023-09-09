@@ -267,8 +267,8 @@ package INSTR_CODES is
 
 	--NANDI
 	constant NANDI_DECODE : std_logic_vector(4 downto 0) := "10100";
-	constant NANDI_EXECUTE: std_logic_vector(9 downto 0) := "110101111100"; 
-	constant NANDI_MEMORY: std_logic_vector(4 downto 0) := "010";
+	constant NANDI_EXECUTE: std_logic_vector(11 downto 0) := "110101111100"; 
+	constant NANDI_MEMORY: std_logic_vector(2 downto 0) := "010";
 	constant NANDI_WB: std_logic_vector(4 downto 0) := "11000";
 	constant NANDI_CWD: std_logic_vector(24 downto 0) := NANDI_DECODE &  NANDI_EXECUTE & NANDI_MEMORY & NANDI_WB;
 
