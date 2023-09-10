@@ -278,7 +278,7 @@ port map( clk, rst, enable, IMdata,  IRoutputID );  --called IRoutputID because 
 --stores subsequent instruction address
 NPC_0: myregister 
 generic map(Nbit)
-port map(clk, rst, enable, PCinput, NPCoutputID ); 
+port map(clk, rst, enable, PCout, NPCoutputID ); 
 
 IMAddress <= PCinput ;
 
@@ -394,7 +394,7 @@ notcondin <= not condIn; -- value stored in regAoutEx is 0, notcond is set to 0
 
 ChooseFirstOperand: Mux21
 generic map (Nbit)
-port map ( NPCoutputmem, regAoutEX, controlWord(CWNbit-6), operandA) ; --0 prendo NPC , 1 prendo A. 
+port map ( NPCoutputEX, regAoutEX, controlWord(CWNbit-6), operandA) ; --0 prendo NPC , 1 prendo A. 
 
 
 ChooseSecondOperand: Mux21

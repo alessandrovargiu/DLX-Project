@@ -3,6 +3,7 @@ use ieee.std_logic_1164.all;
 --use ieee.std_logic_unsigned.all;
 --use ieee.std_logic_arith.all;
 --use work.myTypes.all;
+--USE work.INSTR_CODES.ALL;
 
 entity dp_test is
 end dp_test;
@@ -48,6 +49,13 @@ architecture TEST of dp_test is
     constant CWmemBitsBNEZ: std_logic_vector(CWNbitsMEM-1 downto 0) := "010";
     constant CWwbBitsBNEZ: std_logic_vector(CWNbitsWB-1 downto 0) := "00000";
 
+    --JAL
+	constant JAL_DECODE : std_logic_vector(4 downto 0) := "00111";
+	constant JAL_EXECUTE: std_logic_vector(11 downto 0) := "011100000001"; 
+	constant JAL_MEMORY: std_logic_vector(2 downto 0) := "010";
+	constant JAL_WB: std_logic_vector(4 downto 0) := "11111"; --s4 dont care
+
+
     component BasicDP is
     Generic( NbitMem: integer;
              controlNbit: integer;
@@ -75,13 +83,15 @@ end component;
     signal controlWord_i: std_logic_vector(controlNbit-1 downto 0);
     signal IMaddress_i, DMaddress_i: std_logic_vector(addressNbit-1 downto 0);
 
-    constant ADDI1BITWISE: std_logic_vector(Nbit-1 downto 0) := "00000100000000010000000000000001" ; -- label: addi r1, r0, 1
-    constant ADDI2BITWISE: std_logic_vector(Nbit-1 downto 0) := "00000100000000100000000000000010" ; --        addi r2, r0, 2
-    constant SUBI1BITWISE: std_logic_vector(Nbit-1 downto 0) := "00001100000000110000000000000000" ; --        subi r3, r0, 0
-    constant ORI1BITWISE: std_logic_vector(Nbit-1 downto 0) :=  "00010100000001000000000000000010" ;  --       ori  r4, r0, 2
-    constant ADD1BITWISE: std_logic_vector(Nbit-1 downto 0) :=  "00000000001000100010100000000000" ;  --       add  r5, r1, r2
-    constant BEQZ1BITWISE: std_logic_vector(Nbit-1 downto 0) := "00101000010000001111111111101000" ; --        beqz r2, label ; nn dovrebbe saltare
-    constant BNEZ1BITWISE: std_logic_vector(Nbit-1 downto 0) := "00101100010000001111111111100100" ; --        bnez r2, label ; dovrebbe saltare
+
+    constant ADDI1BITWISE: std_logic_vector(Nbit-1 downto 0) := "00000100000000010000000000000001" ; -- label: addi r1, r0, 1                      assumed starting memAddress: 0000 0000
+    constant ADDI2BITWISE: std_logic_vector(Nbit-1 downto 0) := "00000100000000100000000000000010" ; --        addi r2, r0, 2                      memAddress:                  0000 0004
+    constant SUBI1BITWISE: std_logic_vector(Nbit-1 downto 0) := "00001100000000110000000000000000" ; --        subi r3, r0, 0                      memAddress:                  0000 0008
+    constant ORI1BITWISE: std_logic_vector(Nbit-1 downto 0) :=  "00010100000001000000000000000010" ;  --       ori  r4, r0, 2                      memAddress:                  0000 000C
+    constant ADD1BITWISE: std_logic_vector(Nbit-1 downto 0) :=  "00000000001000100010100000000000" ;  --       add  r5, r1, r2                     memAddress:                  0000 0010
+    --constant BEQZ1BITWISE: std_logic_vector(Nbit-1 downto 0) := "00101000010000001111111111101000" ; --        beqz r2, label ; nn dovrebbe saltare                             0000 0014
+    --constant BNEZ1BITWISE: std_logic_vector(Nbit-1 downto 0) := "00101100010000001111111111100100" ; --        bnez r2, label ; dovrebbe saltare                                0000 0018
+    constant JALBITWISE:   std_logic_vector(Nbit-1 downto 0) := "10000111111111111111111111101000";  --         jal label                   memAddress: 0000 0014
 
 begin
 
@@ -148,7 +158,6 @@ begin
         wait for 2 ns;
 	IMdata_i <= ORI1BITWISE; -- instruction bits corresponding to -ori r4, r0, 2- 	
 
-
         controlword_i <= CWIdbitsSUBI & CWexbitsADDI & CWMemBitsADDI & "00000" ;
 
         wait for 2 ns;
@@ -159,39 +168,46 @@ begin
 
         wait for 2 ns;
 
-        IMdata_i <= BEQZ1BITWISE; 
+        --IMdata_i <= BEQZ1BITWISE;
+        IMdata_i <=  JALBITWISE;
 
         controlWord_i <= CWIdBitsADD & CWExBitsORI & CWMemBitsSUBI & CWWBBitsADDI ;
 		
         wait for 2 ns; 
 
-        IMdata_i <= BNEZ1BITWISE;
+        --IMdata_i <= BNEZ1BITWISE;
 
-        controlWord_i <= CWidBitsBEQZ & CWExBitsADD & CWMemBitsORI & CWWBBitsSUBI ;
-
-        wait for 2 ns;
-
-        controlWord_i <= CWidBitsBNEZ & CWexBitsBEQZ & CWMemBitsADD & CWWBBitsORI ;
+        --controlWord_i <= CWidBitsBEQZ & CWExBitsADD & CWMemBitsORI & CWWBBitsSUBI ;
+        controlWord_i <= JAL_DECODE & CWExBitsADD & CWMemBitsORI & CWWBBitsSUBI ;
 
         wait for 2 ns;
 
-        controlword_i <= "00000" & CWexBitsBNEZ & CWmemBitsBEQZ & CWWbbitsAdd ;
+        --controlWord_i <= CWidBitsBNEZ & CWexBitsBEQZ & CWMemBitsADD & CWWBBitsORI ;
+        controlWord_i <= "00000" & JAL_EXECUTE & CWMemBitsADD & CWWBBitsORI ;
 
         wait for 2 ns;
 
-        controlword_i <= "00000" & "000000000000" & CWmemBitsBNEZ & CWwbBitsBEQZ ;
+        --controlword_i <= "00000" & CWexBitsBNEZ & CWmemBitsBEQZ & CWWbbitsAdd ;
+        controlword_i <= "00000" & "000000000000" & JAL_MEMORY & CWWbbitsAdd ;
+
+        wait for 2 ns;
+
+        IMdata_i <= ADDI1BITWISE; -- instruction bits corresponding to -addi r1, r0, 1- (the opcode assumed for addi is 000001)
+
+        --controlword_i <= "00000" & "000000000000" & CWmemBitsBNEZ & CWwbBitsBEQZ ;
+        controlword_i <= CWIdBitsADDI & "000000000000" & "000" & JAL_WB ;
 
         wait for 2 ns;
         
-        IMdata_i <= ADDI1BITWISE; -- instruction bits corresponding to -addi r1, r0, 1- (the opcode assumed for addi is 000001)
+        --IMdata_i <= ADDI1BITWISE; -- instruction bits corresponding to -addi r1, r0, 1- (the opcode assumed for addi is 000001)
 
-        controlword_i <= "00000" & "000000000000" & "000" & CWwbBitsBNEZ ;
+        --controlword_i <= "00000" & "000000000000" & "000" & CWwbBitsBNEZ ;
 
         wait for 2 ns;
 
-        IMdata_i <= ADDI2BITWISE; 
+        --IMdata_i <= ADDI2BITWISE; 
 
-        controlWord_i <= CWIdBitsADDI & "000000000000" & "000" & "00000" ;
+        --controlWord_i <= CWIdBitsADDI & "000000000000" & "000" & "00000" ;
 
         wait for 2 ns;
 
