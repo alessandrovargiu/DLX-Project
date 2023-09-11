@@ -71,6 +71,14 @@ BEGIN
                 if(IR_ID(Nbit-13 downto Nbit-18) = IR_EX(Nbit-13 downto Nbit-18)) then -- RS2 data dependency
                     hzd_sig_ctrl <= '1';
                     PC_SEL <= '0';
+                --pensiero Gio:
+                --Ho pensato, se il registro di destinazione dell istruzione che e' in execute e' uguale al source register dell istruzione in decode, allora c'e stallo.
+                --elsif( (IR_ID(Nbit-7 downto Nbit-11) = IR_EX(Nbit-17 downto 21)) or (IR_ID(Nbit-12 downto Nbit-16) = IR_EX(Nbit-17 downto 21)) ) then 
+                    --hzd_sig_ctrl <= '1';
+                --Ho pensato, se il registro di destinazione dell istruzione che e' in mem e' uguale al source register dell istruzione in decode, allora c'e stallo.
+                --elsif( (IR_ID(Nbit-7 downto Nbit-11) = IR_MEM(Nbit-17 downto 21)) or (IR_ID(Nbit-12 downto Nbit-16) = IR_MEM(Nbit-17 downto 21)) ) then 
+                    --hzd_sig_ctrl <= '1';
+                
                 end if;
             else                                    -- no more dependency -> program can continue 
                 hzd_sig_raw <= '0';
