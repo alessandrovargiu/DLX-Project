@@ -26,7 +26,8 @@ architecture test of tb is
             --jump: in std_logic;
             IR_in: in std_logic_vector(Nbit-1 downto 0);
             hzd_sig_ctrl: in std_logic;
-            hzd_sig_raw: in std_logic;
+            hzd_sig_raw_1clk: in std_logic;
+            hzd_sig_raw_2clk: in std_logic;
             decode_cwd: out std_logic_vector(CW_SIZE-1 downto 0);
             execute_cwd : OUT STD_LOGIC_VECTOR (CW_SIZE-1-5 DOWNTO 0);
             memory_cwd : OUT STD_LOGIC_VECTOR (CW_SIZE-1-17 DOWNTO 0);
@@ -42,11 +43,12 @@ architecture test of tb is
             IR_ID: in std_logic_vector(Nbit-1 downto 0);
             PC_SEL: OUT std_logic;        -- selection signal for value of PC 
             hzd_sig_ctrl : OUT STD_LOGIC; -- hazard signals
-            hzd_sig_raw : OUT STD_LOGIC
+            hzd_sig_raw_1clk : OUT STD_LOGIC;
+            hzd_sig_raw_2clk: in std_logic
     );
     end component HU;
 
-    signal clk_s, reset_s, hzd_sig_ctrl_s,hzd_sig_raw_s: std_logic;
+    signal clk_s, reset_s, hzd_sig_ctrl_s,hzd_sig_raw_1clk_s,hzd_sig_raw_2clk_s: in std_logic;: std_logic;
     signal IR_in_s: std_logic_vector(Nbit-1 downto 0);
     signal PC_SEL_s: std_logic;
     signal decode_cwd_s: std_logic_vector(24 downto 0);
@@ -69,11 +71,13 @@ begin
     END PROCESS;
 
     UUT: CU_dlx
-    generic map(39, 11, 6, 25)
+    generic map(41, 11, 6, 25)
     port map(
         clk => clk_s,
         reset => reset_s,
-        hzd_sig_raw => hzd_sig_raw_s,
+        PC_SEL => PC_SEL_s,
+        hzd_sig_raw_1clk => hzd_sig_raw_1clk_s,
+        hzd_sig_raw_2clk => hzd_sig_raw_2clk_s,
         hzd_sig_ctrl => hzd_sig_ctrl_s,
         IR_in => IR_in_s,
         decode_cwd => decode_cwd_s,
@@ -88,9 +92,11 @@ begin
         rst_s,
         cwd_s,
         IR_in_s,
-        PC_SEL_s, 
+        --PC_SEL_s, 
         hzd_sig_ctrl_s,
-        hzd_sig_raw_s);
+        hzd_sig_raw_1clk_s,
+        hzd_sig_raw_2clk_s
+        );
 
 
     test: process
