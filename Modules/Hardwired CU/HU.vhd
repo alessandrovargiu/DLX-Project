@@ -10,10 +10,10 @@ ENTITY HU IS
         rst : IN STD_LOGIC; -- Reset Signal: Asyncronous Active Low (Negative)
         cwd : IN STD_LOGIC_VECTOR(25-1 DOWNTO 0); -- datapath signals
         IR_ID: IN std_logic_vector(Nbit-1 downto 0);
-        --PC_SEL: OUT std_logic;        -- selection signal for value of PC 
+        PC_SEL: OUT std_logic;        -- selection signal for value of PC 
         -- input diretto dal datapath per dire se branch presa o no;
         hzd_sig_ctrl : OUT STD_LOGIC;
-        hzd_sig_raw : OUT STD_LOGIC;
+        hzd_sig_raw : OUT STD_LOGIC
         --hzd_sig_raw_2clk : OUT STD_LOGIC -- hazard signals
     );
 END ENTITY HU;
@@ -63,19 +63,19 @@ BEGIN
     RAW: process (clk)
     begin
         if(rising_edge(clk)) then
-            --hzd_sig_raw <= '0';
-            -- R_TYPE
-            if(IR_ID(Nbit-1) = '0') then                    
-                -- if IR_ID (Rs) = IR_EX (Rd)  -> hazard
-                if((IR_ID(Nbit-7 downto Nbit-11) = IR_EX(Nbit-17 downto 21)) or (IR_ID(Nbit-12 downto Nbit-16) = IR_EX(Nbit-17 downto 21)) ) then 
-                    hzd_sig_raw <= '1';
+            -- second condition takes account of I_TYPE different format
+            -- if IR_ID (Rs) = IR_EX (Rd)  -> hazard 
+            if((IR_ID(Nbit-7 downto Nbit-11) = IR_EX(Nbit-17 downto Nbit-21)) or (IR_ID(Nbit-12 downto Nbit-16) = IR_EX(Nbit-17 downto Nbit-21)) ) then 
+                hzd_sig_raw <= '1';
+                PC_SEL <= '1';
                 -- if IR_ID(Rs) = IR_MEM (Rd) -> hazard
-                else if((IR_ID(Nbit-7 downto Nbit-11) = IR_MEM(Nbit-17 downto 21)) or (IR_ID(Nbit-12 downto Nbit-16) = IR_MEM(Nbit-17 downto 21)) ) then 
-                    hzd_sig_raw <= '1';
-                else                                    -- normal execution can proceed                  
-                    hzd_sig_raw <= '0';                      
-                end if;
-            end if;
+            elsif((IR_ID(Nbit-7 downto Nbit-11) = IR_MEM(Nbit-17 downto Nbit-21)) or (IR_ID(Nbit-12 downto Nbit-16) = IR_MEM(Nbit-17 downto Nbit-21)) ) then 
+                hzd_sig_raw <= '1';
+                PC_sel <= '1';
+            else                                    -- normal execution can proceed                  
+                hzd_sig_raw <= '0';                      
+                PC_SEL <= '0';
+            end if;    
         end if;
     end process;
     

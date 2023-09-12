@@ -26,8 +26,8 @@ architecture test of tb is
             --jump: in std_logic;
             IR_in: in std_logic_vector(Nbit-1 downto 0);
             hzd_sig_ctrl: in std_logic;
-            hzd_sig_raw_1clk: in std_logic;
-            hzd_sig_raw_2clk: in std_logic;
+            hzd_sig_raw: in std_logic;
+            --PC_SEL: OUT std_logic;
             decode_cwd: out std_logic_vector(CW_SIZE-1 downto 0);
             execute_cwd : OUT STD_LOGIC_VECTOR (CW_SIZE-1-5 DOWNTO 0);
             memory_cwd : OUT STD_LOGIC_VECTOR (CW_SIZE-1-17 DOWNTO 0);
@@ -43,12 +43,11 @@ architecture test of tb is
             IR_ID: in std_logic_vector(Nbit-1 downto 0);
             PC_SEL: OUT std_logic;        -- selection signal for value of PC 
             hzd_sig_ctrl : OUT STD_LOGIC; -- hazard signals
-            hzd_sig_raw_1clk : OUT STD_LOGIC;
-            hzd_sig_raw_2clk: in std_logic
+            hzd_sig_raw : OUT STD_LOGIC
     );
     end component HU;
 
-    signal clk_s, reset_s, hzd_sig_ctrl_s,hzd_sig_raw_1clk_s,hzd_sig_raw_2clk_s: in std_logic;: std_logic;
+    signal clk_s, reset_s, hzd_sig_ctrl_s,hzd_sig_raw_s: std_logic;
     signal IR_in_s: std_logic_vector(Nbit-1 downto 0);
     signal PC_SEL_s: std_logic;
     signal decode_cwd_s: std_logic_vector(24 downto 0);
@@ -75,10 +74,9 @@ begin
     port map(
         clk => clk_s,
         reset => reset_s,
-        PC_SEL => PC_SEL_s,
-        hzd_sig_raw_1clk => hzd_sig_raw_1clk_s,
-        hzd_sig_raw_2clk => hzd_sig_raw_2clk_s,
+        hzd_sig_raw => hzd_sig_raw_s,
         hzd_sig_ctrl => hzd_sig_ctrl_s,
+        --PC_SEL => PC_SEL_s,
         IR_in => IR_in_s,
         decode_cwd => decode_cwd_s,
         execute_cwd => execute_cwd_s,
@@ -89,14 +87,12 @@ begin
     UUT2: HU
     port map(
         clk_s, 
-        rst_s,
+        reset_s,
         cwd_s,
         IR_in_s,
-        --PC_SEL_s, 
+        PC_SEL_s, 
         hzd_sig_ctrl_s,
-        hzd_sig_raw_1clk_s,
-        hzd_sig_raw_2clk_s
-        );
+        hzd_sig_raw_s);
 
 
     test: process
@@ -108,15 +104,22 @@ begin
         -- ADD R19, R4, R4
         -- SUB R17, R1, r16
         reset_s <= '0';
-        IR_in_s <= "001100" & "00001" & "00010" & "0101010101010101";
+        --IR_in_s <= "001100" & "00001" & "00010" & "0101010101010101";
+        --wait for 1 ns;
+        --IR_in_s <= "000000" & "00001" & "01000" & "01001" & "00000000001";
+        --wait for 1 ns;
+        --IR_in_s <= "000000" & "00011" & "00100" & "01010" & "00000000000";
+        --wait for 1 ns;
+        --IR_in_s <= "000000" & "00100" & "00100" & "01011" & "00000000000";
+        --wait for 1 ns;
+        --IR_in_s <= "000000" & "00001" & "01000" & "01001" & "00000000001";
+        
+        -- ADD R3, R1, R2
+        -- ADD R4, R3, R1
+        IR_in_s <= "000000" & "00001" & "00010" & "00011" & "00000000000";
         wait for 1 ns;
-        IR_in_s <= "000000" & "00001" & "01000" & "01001" & "00000000001";
+        IR_in_s <= "000000" & "00011" & "00001" & "00100" & "00000000000";
         wait for 1 ns;
-        IR_in_s <= "000000" & "00011" & "00100" & "01010" & "00000000000";
-        wait for 1 ns;
-        IR_in_s <= "000000" & "00100" & "00100" & "01011" & "00000000000";
-        wait for 1 ns;
-        IR_in_s <= "000000" & "00001" & "01000" & "01001" & "00000000001";
     wait;
     end process;
 

@@ -18,7 +18,7 @@ ENTITY CU_dlx IS
         --Instr_wrd: IN std_logic_vector (totbit downto 0)    
         clk : IN STD_LOGIC;
         reset : IN STD_LOGIC;
-        pc_sel: OUT STD_LOGIC;
+        --pc_sel: OUT STD_LOGIC;
         -- opcode : IN  std_logic_vector(OP_CODE_SIZE - 1 downto 0);
         --func  : IN  std_logic_vector(FUNC_SIZE - 1 downto 0);
         IR_in : IN STD_LOGIC_VECTOR(Nbit - 1 DOWNTO 0);
@@ -252,23 +252,23 @@ BEGIN
             -- proibits PC from incrementing --
             process(CLK)
 	        begin
-                decode_cwd_s <= cw_s(CW_SIZE-1 DOWNTO 0);
-		        execute_cwd_s <= decode_cwd_s(CW_SIZE - 1 - 5 DOWNTO 0);
-                memory_cwd_s <= execute_cwd_s(CW_SIZE - 1 - 17 DOWNTO 0);
-                wb_cwd_s <= memory_cwd_s(CW_SIZE - 1 - 20 DOWNTO 0);              
+                if(rising_edge(clk)) then
+                    decode_cwd_s <= cw_s(CW_SIZE-1 DOWNTO 0);
+		            execute_cwd_s <= decode_cwd_s(CW_SIZE - 1 - 5 DOWNTO 0);
+                    memory_cwd_s <= execute_cwd_s(CW_SIZE - 1 - 17 DOWNTO 0);
+                    wb_cwd_s <= memory_cwd_s(CW_SIZE - 1 - 20 DOWNTO 0);              
                 
-                if(hzd_sig_raw = '1') then
-                    decode_cwd_s <= "10100110100000100010";             -- insert NOP in decode stage
-                    if(backup = '0') then
-                        IR_ID_backup <= cw_s(CW_SIZE-1 downto 0);           -- save stalled instruction
+                    if(hzd_sig_raw = '1') then
+                        decode_cwd_s <= NOP_cwd;             -- insert NOP in decode stage
+                        if(backup = '0') then
+                            IR_ID_backup <= cw_s(CW_SIZE-1 downto 0);           -- save stalled instruction
+                        end if;
+                        backup <= '1';
                     end if;
-                    backup <= '1';
-                    PC_SEL <= '1';                                      -- stall PC
-                end if;
-                if(backup = '1') then                                   -- last cc was a stall
-                    backup <= '0';
-                    execute_cwd_s <= IR_ID_backup(CW_SIZE-1-5 downto 0);        -- override execute cw injection after
-                    PC_SEL <= '0';                                      -- restore normal PC selection
+                    if(backup = '1') then                                   -- last cc was a stall
+                        backup <= '0';
+                        execute_cwd_s <= IR_ID_backup(CW_SIZE-1-5 downto 0);        -- override execute cw injection after
+                    end if;
                 end if;
             end process;
             
