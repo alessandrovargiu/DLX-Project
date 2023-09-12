@@ -3,16 +3,17 @@ use ieee.std_logic_1164.all;
 --use ieee.std_logic_unsigned.all;
 --use ieee.std_logic_arith.all;
 --use work.myTypes.all;
---USE work.INSTR_CODES.ALL;
+USE work.INSTR_CODES.ALL;
 
-entity dp_test is
-end dp_test;
+entity dp_testPROVA is
+end dp_testPROVA;
 
-architecture TEST of dp_test is
+architecture TESTPROVA of dp_testPROVA is
 
     constant Nbit: integer := 32;
     constant controlNbit: integer := 25;
     constant addressNbit: integer := 32; --number of bits used by the addresses of the instruction memory
+    constant CW_SIZE : INTEGER := 25;
 
     constant CWNbitsID: integer  :=5;
     constant CWNbitsEX: integer  :=12;
@@ -76,7 +77,7 @@ end component;
 
     component CUbasic IS
     GENERIC (
-        MICROCODE_MEM_SIZE : INTEGER := 39; -- Microcode Memory Size
+        MICROCODE_MEM_SIZE : INTEGER := 41; -- Microcode Memory Size
         FUNC_SIZE : INTEGER := 11; -- Func Field Size for R-Type Ops
         OP_CODE_SIZE : INTEGER := 6; -- Op Code Size
         CW_SIZE : INTEGER := 25 -- output signals of CU
@@ -110,10 +111,14 @@ end component;
     signal fromHU_i: std_logic := '0';
 
     signal IMdata_i, DMdata_i: std_logic_vector(Nbit-1 downto 0);
-    signal controlWord_i: std_logic_vector(controlNbit-1 downto 0);
+    signal controlWordOut_s: std_logic_vector(controlNbit-1 downto 0);
     signal IMaddress_i, DMaddress_i: std_logic_vector(addressNbit-1 downto 0);
+    signal decode_cwd_i : STD_LOGIC_VECTOR(CW_SIZE-1 DOWNTO 0);
+    signal execute_cwd_i :  STD_LOGIC_VECTOR (CW_SIZE-1-5 DOWNTO 0);
+    signal memory_cwd_i :  STD_LOGIC_VECTOR (CW_SIZE-1-17 DOWNTO 0);
+    signal wb_cwd_i :  STD_LOGIC_VECTOR (CW_SIZE-1-20 DOWNTO 0);
 
-
+    
     constant ADDI1BITWISE: std_logic_vector(Nbit-1 downto 0) := "00000100000000010000000000000001" ; -- label: addi r1, r0, 1                      assumed starting memAddress: 0000 0000
     constant ADDI2BITWISE: std_logic_vector(Nbit-1 downto 0) := "00000100000000100000000000000010" ; --        addi r2, r0, 2                      memAddress:                  0000 0004
     constant SUBI1BITWISE: std_logic_vector(Nbit-1 downto 0) := "00001100000000110000000000000000" ; --        subi r3, r0, 0                      memAddress:                  0000 0008
@@ -134,22 +139,23 @@ begin
                 fromHU => fromHU_i,
                 enable => enable_i,
                 IMdata => IMdata_i,
-                controlWord => controlWordOut,
+                controlWord => controlWordOut_s,
                 IMaddress => IMaddress_i,
                 DMaddress => DMaddress_i,
                 DMdata => DMdata_i
                );
 
         CU: CUbasic
-        generic map( 39, 11, 6, 25)
+        generic map( 41, 11, 6, 25)
         port map (
-            clk => Clock
+            clk => Clock,
             reset => Reset,
             IR_in => IMdata_i,
             decode_cwd => decode_cwd_i,
             execute_cwd => execute_cwd_i,
             memory_cwd => memory_cwd_i,
-            wb_cwd => wb_cwd_i
+            wb_cwd => wb_cwd_i,
+            controlWordOut => controlWordOut_s
         );
 
 
@@ -232,7 +238,7 @@ begin
 
         IMdata_i <= ADDI1BITWISE; -- instruction bits corresponding to -addi r1, r0, 1- (the opcode assumed for addi is 000001)
 
-        controlword_i <= CWIdBitsADDI & "000000000000" & "000" & JAL_WB ;
+        controlwordOut_s <= CWIdBitsADDI & "000000000000" & "000" & JAL_WB ;
 
         wait for 2 ns;
         
@@ -253,4 +259,4 @@ begin
 
         end process;
 
-end TEST;
+end TESTPROVA;

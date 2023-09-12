@@ -7,7 +7,7 @@ use work.constants.all;
 
 ENTITY CUbasic IS
     GENERIC (
-        MICROCODE_MEM_SIZE : INTEGER := 39; -- Microcode Memory Size
+        MICROCODE_MEM_SIZE : INTEGER := 41; -- Microcode Memory Size
         FUNC_SIZE : INTEGER := 11; -- Func Field Size for R-Type Ops
         OP_CODE_SIZE : INTEGER := 6; -- Op Code Size
         CW_SIZE : INTEGER := 25 -- output signals of CU
@@ -64,7 +64,7 @@ ENTITY CUbasic IS
     );
 end entity;
 
-ARCHITECTURE behavioral OF CU_dlx IS
+ARCHITECTURE behavioral OF CUbasic IS
         TYPE mem_array IS ARRAY (INTEGER RANGE 0 TO MICROCODE_MEM_SIZE - 1) OF STD_LOGIC_VECTOR(CW_SIZE - 1 DOWNTO 0); --rivedere size
         SIGNAL cw_mem : mem_array := (
             ADD_CWD,
@@ -107,8 +107,9 @@ ARCHITECTURE behavioral OF CU_dlx IS
             LDW_CWD,
             STW_CWD,
             JMP_CWD,
-            JAL_CWD
-            --INSERIRE BRANCH
+            JAL_CWD,
+            BEQZ_CWD,
+            BNEZ_CWD
         );
 
         SIGNAL opcode_s : STD_LOGIC_VECTOR (OP_CODE_SIZE - 1 DOWNTO 0);
@@ -226,10 +227,10 @@ BEGIN
                     cw_s <= cw_mem(37);
                 ELSIF (opcode_s = JTYPE_JAL) THEN
                     cw_s <= cw_mem(38);
-               -- ELSIF (opcode_s = ITYPE_BEQZ) THEN
-                --    cw_s <= cw_mem(39);
-               -- ELSIF (opcode_s = ITYPE_BNEZ) THEN
-                  --  cw_s <= cw_mem(40);
+                ELSIF (opcode_s = ITYPE_BEQZ) THEN
+                    cw_s <= cw_mem(39);
+                ELSIF (opcode_s = ITYPE_BNEZ) THEN
+                    cw_s <= cw_mem(40);
                 ELSE
                     cw_s <= cw_mem(17); --nop
                 END IF;
@@ -249,8 +250,7 @@ BEGIN
             execute_cwd <= execute_cwd_s;
             memory_cwd <= memory_cwd_s;
             wb_cwd <= wb_cwd_s;
-
-            controlWordOut <= decode_cwd(24 downto 20) & execute_cwd(19 downto 8) & memory_cwd(7 downto 5) & wb_cwd(4 downto 0);
+            controlWordOut <= decode_cwd_s(24 downto 20) & execute_cwd_s(19 downto 8) & memory_cwd_s(7 downto 5) & wb_cwd_s(4 downto 0);
 
 
 END behavioral;
