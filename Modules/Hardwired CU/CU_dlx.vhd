@@ -7,7 +7,7 @@ use work.constants.all;
 
 ENTITY CU_dlx IS
     GENERIC (
-        MICROCODE_MEM_SIZE : INTEGER := 39; -- Microcode Memory Size
+        MICROCODE_MEM_SIZE : INTEGER := 41; -- Microcode Memory Size
         FUNC_SIZE : INTEGER := 11; -- Func Field Size for R-Type Ops
         OP_CODE_SIZE : INTEGER := 6; -- Op Code Size
         CW_SIZE : INTEGER := 25 -- output signals of CU
@@ -18,11 +18,13 @@ ENTITY CU_dlx IS
         --Instr_wrd: IN std_logic_vector (totbit downto 0)    
         clk : IN STD_LOGIC;
         reset : IN STD_LOGIC;
+        pc_sel: OUT STD_LOGIC;
         -- opcode : IN  std_logic_vector(OP_CODE_SIZE - 1 downto 0);
         --func  : IN  std_logic_vector(FUNC_SIZE - 1 downto 0);
         IR_in : IN STD_LOGIC_VECTOR(Nbit - 1 DOWNTO 0);
         hzd_sig_ctrl: in std_logic;
-        hzd_sig_raw: in std_logic;
+        hzd_sig_raw_1clk: in std_logic;
+        hzd_sig_raw_2clk: in std_logic;
         --stall : IN STD_LOGIC;
         --jump : IN STD_LOGIC;
         --control_wrd: OUT std_logic_vector (totbit downto 0)
@@ -106,8 +108,9 @@ ARCHITECTURE behavioral OF CU_dlx IS
             LDW_CWD,
             STW_CWD,
             JMP_CWD,
-            JAL_CWD
-            --INSERIRE BRANCH
+            JAL_CWD,
+            BEQZ_CWD,
+            BNEZ_CWD
         );
 
         SIGNAL opcode_s : STD_LOGIC_VECTOR (OP_CODE_SIZE - 1 DOWNTO 0);
@@ -225,10 +228,10 @@ BEGIN
                     cw_s <= cw_mem(37);
                 ELSIF (opcode_s = JTYPE_JAL) THEN
                     cw_s <= cw_mem(38);
-               -- ELSIF (opcode_s = ITYPE_BEQZ) THEN
-                --    cw_s <= cw_mem(39);
-               -- ELSIF (opcode_s = ITYPE_BNEZ) THEN
-                  --  cw_s <= cw_mem(40);
+               ELSIF (opcode_s = ITYPE_BEQZ) THEN
+                    cw_s <= cw_mem(39);
+               ELSIF (opcode_s = ITYPE_BNEZ) THEN
+                    cw_s <= cw_mem(40);
                 ELSE
                     cw_s <= cw_mem(17); --nop
                 END IF;
@@ -238,18 +241,42 @@ BEGIN
             -- STALL PROCESS --
             -- introduce NOP in decode stage --
             -- proibits PC from incrementing --
-            PROCESS (clk) --cw_s
-            BEGIN
-                if (rising_edge(clk)) then
-                    decode_cwd_s <= cw_s(CW_SIZE - 1 DOWNTO 0);
+            process(CLK, reset)
+	        begin
+		        if reset='1' then
+			    current_state<=PIPELINE;
+		        elsif rising_edge(CLK) then
+			        current_state<=next_state;
+		        end if;
+	        end process;
+
+            process(current_state,hzd_sig_raw_1clk,hzd_sig_raw_2clk)
+            begin
+                decode_cwd_s <= cw_s(CW_SIZE - 1 DOWNTO 0);
+                execute_cwd_s <= decode_cwd_s(CW_SIZE - 1 - 5 DOWNTO 0);
+                memory_cwd_s <= execute_cwd_s(CW_SIZE - 1 - 17 DOWNTO 0);
+                wb_cwd_s <= memory_cwd_s(CW_SIZE - 1 - 20 DOWNTO 0);
+                case current_state is
+                    when PIPELINE => if(hzd_sig_raw_1clk = '1') then
+                                        PC_SEL<='1';
+                                        nextstate <= WAIT1CLK;
+                                        elsif (hzd_sig_raw_1clk = '1')
+                                        
+
+
+
+           -- PROCESS (clk) --cw_s
+            --BEGIN
+              --  if (rising_edge(clk)) then
+               --     decode_cwd_s <= cw_s(CW_SIZE - 1 DOWNTO 0);
                     -- hazard injection overrides the above one
-                    if (hzd_sig_raw = '1') then     
-                        decode_cwd_s <= "1010011010000010001011000";
-                    end if;
+                --    if (hzd_sig_raw = '1') then     
+                --        decode_cwd_s <= "1010011010000010001011000";
+                --    end if;
                     execute_cwd_s <= decode_cwd_s(CW_SIZE - 1 - 5 DOWNTO 0);
                     memory_cwd_s <= execute_cwd_s(CW_SIZE - 1 - 17 DOWNTO 0);
                     wb_cwd_s <= memory_cwd_s(CW_SIZE - 1 - 20 DOWNTO 0);
-                END IF;      
+               -- END IF;      
             END PROCESS;
             decode_cwd <= decode_cwd_s;
             execute_cwd <= execute_cwd_s;
