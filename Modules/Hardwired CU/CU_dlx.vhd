@@ -125,8 +125,6 @@ ARCHITECTURE behavioral OF CU_dlx IS
         signal IR_ID_backup: std_logic_vector(CW_SIZE-1 downto 0);
         -- 1 if returning from stall cycle, 0 normal execution
         signal backup: std_logic;                           
-        -- acts as counter of stall clock cycles
-        signal hzd_cnt: std_logic_vector(1 downto 0);  
 BEGIN
         PROCESS (IR_IN)
         BEGIN
