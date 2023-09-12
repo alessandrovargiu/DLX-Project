@@ -238,7 +238,7 @@ begin
 
         IMdata_i <= ADDI1BITWISE; -- instruction bits corresponding to -addi r1, r0, 1- (the opcode assumed for addi is 000001)
 
-        controlwordOut_s <= CWIdBitsADDI & "000000000000" & "000" & JAL_WB ;
+        --controlwordOut_s <= CWIdBitsADDI & "000000000000" & "000" & JAL_WB ;
 
         wait for 2 ns;
         
