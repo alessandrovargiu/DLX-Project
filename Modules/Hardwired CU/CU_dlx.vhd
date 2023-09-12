@@ -7,7 +7,7 @@ use work.constants.all;
 
 ENTITY CU_dlx IS
     GENERIC (
-        MICROCODE_MEM_SIZE : INTEGER := 39; -- Microcode Memory Size
+        MICROCODE_MEM_SIZE : INTEGER := 41; -- Microcode Memory Size
         FUNC_SIZE : INTEGER := 11; -- Func Field Size for R-Type Ops
         OP_CODE_SIZE : INTEGER := 6; -- Op Code Size
         CW_SIZE : INTEGER := 25 -- output signals of CU
@@ -18,11 +18,13 @@ ENTITY CU_dlx IS
         --Instr_wrd: IN std_logic_vector (totbit downto 0)    
         clk : IN STD_LOGIC;
         reset : IN STD_LOGIC;
+        pc_sel: OUT STD_LOGIC;
         -- opcode : IN  std_logic_vector(OP_CODE_SIZE - 1 downto 0);
         --func  : IN  std_logic_vector(FUNC_SIZE - 1 downto 0);
         IR_in : IN STD_LOGIC_VECTOR(Nbit - 1 DOWNTO 0);
         hzd_sig_ctrl: in std_logic;
         hzd_sig_raw: in std_logic;
+        --hzd_sig_raw_2clk: in std_logic;
         --stall : IN STD_LOGIC;
         --jump : IN STD_LOGIC;
         --control_wrd: OUT std_logic_vector (totbit downto 0)
@@ -106,8 +108,9 @@ ARCHITECTURE behavioral OF CU_dlx IS
             LDW_CWD,
             STW_CWD,
             JMP_CWD,
-            JAL_CWD
-            --INSERIRE BRANCH
+            JAL_CWD,
+            BEQZ_CWD,
+            BNEZ_CWD
         );
 
         SIGNAL opcode_s : STD_LOGIC_VECTOR (OP_CODE_SIZE - 1 DOWNTO 0);
@@ -117,7 +120,13 @@ ARCHITECTURE behavioral OF CU_dlx IS
         SIGNAL decode_cwd_s : STD_LOGIC_VECTOR(CW_SIZE-1 DOWNTO 0);
         SIGNAL execute_cwd_s : STD_LOGIC_VECTOR(CW_SIZE-1 - 5 DOWNTO 0);
         SIGNAL memory_cwd_s : STD_LOGIC_VECTOR(CW_SIZE-1 - 17 DOWNTO 0);
-        signal wb_cwd_s: std_logic_vector(CW_SIZE-1 - 20 downto 0);  
+        signal wb_cwd_s: std_logic_vector(CW_SIZE-1 - 20 downto 0);
+        -- this signal is used to save the stalled instruction when hazard is present
+        signal IR_ID_backup: std_logic_vector(CW_SIZE-1 downto 0);
+        -- 1 if returning from stall cycle, 0 normal execution
+        signal backup: std_logic;                           
+        -- acts as counter of stall clock cycles
+        signal hzd_cnt: std_logic_vector(1 downto 0);  
 BEGIN
         PROCESS (IR_IN)
         BEGIN
@@ -225,36 +234,44 @@ BEGIN
                     cw_s <= cw_mem(37);
                 ELSIF (opcode_s = JTYPE_JAL) THEN
                     cw_s <= cw_mem(38);
-               -- ELSIF (opcode_s = ITYPE_BEQZ) THEN
-                --    cw_s <= cw_mem(39);
-               -- ELSIF (opcode_s = ITYPE_BNEZ) THEN
-                  --  cw_s <= cw_mem(40);
+               ELSIF (opcode_s = ITYPE_BEQZ) THEN
+                    cw_s <= cw_mem(39);
+               ELSIF (opcode_s = ITYPE_BNEZ) THEN
+                    cw_s <= cw_mem(40);
                 ELSE
                     cw_s <= cw_mem(17); --nop
                 END IF;
             end if;
             END PROCESS;
 
-            -- STALL PROCESS --
-            -- introduce NOP in decode stage --
-            -- proibits PC from incrementing --
-            PROCESS (clk) --cw_s
-            BEGIN
-                if (rising_edge(clk)) then
-                    decode_cwd_s <= cw_s(CW_SIZE - 1 DOWNTO 0);
-                    -- hazard injection overrides the above one
-                    if (hzd_sig_raw = '1') then     
-                        decode_cwd_s <= "1010011010000010001011000";
-                    end if;
-                    execute_cwd_s <= decode_cwd_s(CW_SIZE - 1 - 5 DOWNTO 0);
-                    memory_cwd_s <= execute_cwd_s(CW_SIZE - 1 - 17 DOWNTO 0);
-                    wb_cwd_s <= memory_cwd_s(CW_SIZE - 1 - 20 DOWNTO 0);
-                END IF;      
-            END PROCESS;
             decode_cwd <= decode_cwd_s;
             execute_cwd <= execute_cwd_s;
             memory_cwd <= memory_cwd_s;
             wb_cwd <= wb_cwd_s;
 
-
+            -- PIPELINE PROCESS --
+            -- introduce NOP in decode stage when hazard --
+            -- proibits PC from incrementing --
+            process(CLK)
+	        begin
+                decode_cwd_s <= cw_s(CW_SIZE-1 DOWNTO 0);
+		        execute_cwd_s <= decode_cwd_s(CW_SIZE - 1 - 5 DOWNTO 0);
+                memory_cwd_s <= execute_cwd_s(CW_SIZE - 1 - 17 DOWNTO 0);
+                wb_cwd_s <= memory_cwd_s(CW_SIZE - 1 - 20 DOWNTO 0);              
+                
+                if(hzd_sig_raw = '1') then
+                    decode_cwd_s <= "10100110100000100010";             -- insert NOP in decode stage
+                    if(backup = '0') then
+                        IR_ID_backup <= cw_s(CW_SIZE-1 downto 0);           -- save stalled instruction
+                    end if;
+                    backup <= '1';
+                    PC_SEL <= '1';                                      -- stall PC
+                end if;
+                if(backup = '1') then                                   -- last cc was a stall
+                    backup <= '0';
+                    execute_cwd_s <= IR_ID_backup(CW_SIZE-1-5 downto 0);        -- override execute cw injection after
+                    PC_SEL <= '0';                                      -- restore normal PC selection
+                end if;
+            end process;
+            
 END behavioral;

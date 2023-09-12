@@ -10,10 +10,11 @@ ENTITY HU IS
         rst : IN STD_LOGIC; -- Reset Signal: Asyncronous Active Low (Negative)
         cwd : IN STD_LOGIC_VECTOR(25-1 DOWNTO 0); -- datapath signals
         IR_ID: IN std_logic_vector(Nbit-1 downto 0);
-        PC_SEL: OUT std_logic;        -- selection signal for value of PC 
+        --PC_SEL: OUT std_logic;        -- selection signal for value of PC 
         -- input diretto dal datapath per dire se branch presa o no;
         hzd_sig_ctrl : OUT STD_LOGIC;
-        hzd_sig_raw : OUT STD_LOGIC -- hazard signals
+        hzd_sig_raw_1clk : OUT STD_LOGIC;
+        hzd_sig_raw_2clk : OUT STD_LOGIC -- hazard signals
     );
 END ENTITY HU;
 
@@ -62,27 +63,33 @@ BEGIN
     RAW: process (clk)
     begin
         if(rising_edge(clk)) then
-            if(IR_ID(Nbit-1) = '0' AND IR_EX(Nbit-1 downto Nbit-6) = ITYPE_LDW) then
-                if(IR_ID(Nbit-7 downto Nbit-12) = IR_EX(Nbit-7 downto Nbit-12)) then -- RS1 data dependency
-                    PC_SEL <= '1';
-                    hzd_sig_raw <= '1';
-                end if;
-            elsif(IR_ID(Nbit-1 downto Nbit-6) = RTYPE OR IR_ID(Nbit-1 downto Nbit-6) = ITYPE_BEQZ OR IR_ID(Nbit-1 downto Nbit-6) = ITYPE_BNEZ) then
-                if(IR_ID(Nbit-13 downto Nbit-18) = IR_EX(Nbit-13 downto Nbit-18)) then -- RS2 data dependency
-                    hzd_sig_ctrl <= '1';
-                    PC_SEL <= '0';
+            hzd_sig_raw_1clk <= '0';
+            hzd_sig_raw_2clk <= '0';
+            --PC_SEL <= '0'; 
+            --if(IR_ID(Nbit-1) = '0' AND IR_EX(Nbit-1 downto Nbit-6) = ITYPE_LDW) then
+              --  if(IR_ID(Nbit-7 downto Nbit-12) = IR_EX(Nbit-7 downto Nbit-12)) then -- RS1 data dependency
+                --    PC_SEL <= '1';
+                --    hzd_sig_raw <= '1';
+                --end if;
+           -- elsif(IR_ID(Nbit-1 downto Nbit-6) = RTYPE OR IR_ID(Nbit-1 downto Nbit-6) = ITYPE_BEQZ OR IR_ID(Nbit-1 downto Nbit-6) = ITYPE_BNEZ) then
+            --    if(IR_ID(Nbit-13 downto Nbit-18) = IR_EX(Nbit-13 downto Nbit-18)) then -- RS2 data dependency
+               --     hzd_sig_ctrl <= '1';
+                 --   PC_SEL <= '0';
                 --pensiero Gio:
                 --Ho pensato, se il registro di destinazione dell istruzione che e' in execute e' uguale al source register dell istruzione in decode, allora c'e stallo.
-                --elsif( (IR_ID(Nbit-7 downto Nbit-11) = IR_EX(Nbit-17 downto 21)) or (IR_ID(Nbit-12 downto Nbit-16) = IR_EX(Nbit-17 downto 21)) ) then 
-                    --hzd_sig_ctrl <= '1';
+            if( (IR_ID(Nbit-7 downto Nbit-11) = IR_EX(Nbit-17 downto 21)) or (IR_ID(Nbit-12 downto Nbit-16) = IR_EX(Nbit-17 downto 21)) ) then 
+                hzd_sig_raw_2clk <= '1';
+               -- PC_SEL <= '1';
                 --Ho pensato, se il registro di destinazione dell istruzione che e' in mem e' uguale al source register dell istruzione in decode, allora c'e stallo.
-                --elsif( (IR_ID(Nbit-7 downto Nbit-11) = IR_MEM(Nbit-17 downto 21)) or (IR_ID(Nbit-12 downto Nbit-16) = IR_MEM(Nbit-17 downto 21)) ) then 
-                    --hzd_sig_ctrl <= '1';
-                
-                end if;
-            else                                    -- no more dependency -> program can continue 
-                hzd_sig_raw <= '0';
-                PC_SEL <= '0';         
+                else
+                    if( (IR_ID(Nbit-7 downto Nbit-11) = IR_MEM(Nbit-17 downto 21)) or (IR_ID(Nbit-12 downto Nbit-16) = IR_MEM(Nbit-17 downto 21)) ) then 
+                     hzd_sig_raw_1clk <= '1';
+                    -- PC_SEL <= '1';
+                    end if;
+                    --else                                    -- no more dependency -> program can continue 
+                    --    hzd_sig_raw <= '0';
+                   --     PC_SEL <= '0';         
+                   -- end if;
             end if;
         end if;
     end process;
