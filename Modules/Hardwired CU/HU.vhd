@@ -55,7 +55,7 @@ BEGIN
     RAW: process (clk)
     begin
         if(falling_edge(clk)) then
-            if(IR_ID /= std_logic_vector(to_unsigned(0, Nbit)) AND IR_MEM /= std_logic_vector(to_unsigned(0, Nbit))) then
+            if(IR_ID /= std_logic_vector(to_unsigned(0, Nbit)) AND IR_EX /= std_logic_vector(to_unsigned(0, Nbit))) then
             --if((IR_ID(Nbit-1 downto 0) /= (others => 'U')) AND (IR_EX(Nbit-1 downto 0) /= (others => 'U'))) then 
                 -- second condition takes account of I_TYPE different format
                 -- if IR_ID (Rs) = IR_EX (Rd)  -> hazard 

@@ -143,7 +143,7 @@ BEGIN
         PROCESS (reset, opcode_s, func_s)
         BEGIN
             IF reset = '1' THEN
-                cw_s <= cw_mem(19); -- nop
+                cw_s <= cw_mem(17); -- nop
             ELSE
                 IF (opcode_s = "000000") THEN
                     IF (func_s = RTYPE_ADD) THEN
@@ -274,7 +274,7 @@ BEGIN
 
                         if(hzd_sig_raw = '1') then
                             decode_cwd_s <= NOP_cwd;             -- insert NOP in decode stage
-                            IR_ID_s <= (others => '0');
+                            IR_ID_s <= "000010" & "00000000000000000000000000";
                             if(backup = '0') then
                                 IR_ID_backup <= cw_s(CW_SIZE-1 downto 0);           -- save stalled instruction
                             end if;
