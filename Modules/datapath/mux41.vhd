@@ -23,7 +23,8 @@ case (Sel) is
 
 	when "00" =>	Y <= input1;
 	when "01" =>	Y <= input2;
-	when "10" =>	Y <= input3;
+	--when "10" =>	Y <= input3;
+	when "10" =>	Y <= (others => '0'); -- in nop case: reg0 + 0 will give 0.
 	when "11" =>	Y <= input4;
 
 	when others =>	Y <= input1;

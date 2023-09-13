@@ -68,7 +68,9 @@ architecture TESTPROVA of dp_testPROVA is
             enable:      in std_logic;
             IMdata:      in std_logic_vector(Nbit-1 downto 0);
             controlWord: in std_logic_vector(controlNbit-1 downto 0);
-            
+
+
+            --IRout4CU:       out std_logic_vector(Nbit-1 downto 0);
             IMaddress:   out std_logic_vector(addressNbit-1 downto 0);
             DMaddress:   out std_logic_vector(addressNbit-1 downto 0);
             DMdata:      inout std_logic_vector(Nbit-1 downto 0)
@@ -150,7 +152,7 @@ begin
         port map (
             clk => Clock,
             reset => Reset,
-            IR_in => IMdata_i,
+            IR_in => Imdata_i,
             decode_cwd => decode_cwd_i,
             execute_cwd => execute_cwd_i,
             memory_cwd => memory_cwd_i,
@@ -182,7 +184,7 @@ begin
 
         wait for 1 ns;  
 
-
+        --IM
         wait for 2 ns;
         --in this instant, fetch of first instr
 
