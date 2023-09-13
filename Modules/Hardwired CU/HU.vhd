@@ -10,6 +10,8 @@ ENTITY HU IS
         rst : IN STD_LOGIC; -- Reset Signal: Asyncronous Active Low (Negative)
         cwd : IN STD_LOGIC_VECTOR(25-1 DOWNTO 0); -- datapath signals
         IR_ID: IN std_logic_vector(Nbit-1 downto 0);
+        IR_EX: IN std_logic_vector(Nbit-1 downto 0);
+        IR_MEM: IN std_logic_vector(Nbit-1 downto 0);
         PC_SEL: OUT std_logic;        -- selection signal for value of PC 
         -- input diretto dal datapath per dire se branch presa o no;
         hzd_sig_ctrl : OUT STD_LOGIC;
@@ -20,19 +22,9 @@ END ENTITY HU;
 
 ARCHITECTURE beh OF HU IS
     --flush_j,flush_b: std_logic;
-    signal IR_ID_s,IR_EX, IR_MEM, IR_WB: std_logic_vector(Nbit-1 downto 0);   
+       
 
 BEGIN
-    -- instruction pipeline
-    IR_ID_s<=IR_ID;
-    pipe: process (clk)
-    begin
-        if(rising_edge(clk)) then
-            IR_EX <= IR_ID_s;
-            IR_MEM <= IR_EX;
-            IR_WB <= IR_MEM;
-        end if;
-    end process;
 
     Ctrl : PROCESS (cwd)
         begin
@@ -62,20 +54,23 @@ BEGIN
 
     RAW: process (clk)
     begin
-        if(rising_edge(clk)) then
-            -- second condition takes account of I_TYPE different format
-            -- if IR_ID (Rs) = IR_EX (Rd)  -> hazard 
-            if((IR_ID(Nbit-7 downto Nbit-11) = IR_EX(Nbit-17 downto Nbit-21)) or (IR_ID(Nbit-12 downto Nbit-16) = IR_EX(Nbit-17 downto Nbit-21)) ) then 
-                hzd_sig_raw <= '1';
-                PC_SEL <= '1';
+        if(falling_edge(clk)) then
+            if(IR_ID /= std_logic_vector(to_unsigned(0, Nbit)) AND IR_MEM /= std_logic_vector(to_unsigned(0, Nbit))) then
+            --if((IR_ID(Nbit-1 downto 0) /= (others => 'U')) AND (IR_EX(Nbit-1 downto 0) /= (others => 'U'))) then 
+                -- second condition takes account of I_TYPE different format
+                -- if IR_ID (Rs) = IR_EX (Rd)  -> hazard 
+                if((IR_ID(Nbit-7 downto Nbit-11) = IR_EX(Nbit-17 downto Nbit-21)) or (IR_ID(Nbit-12 downto Nbit-16) = IR_EX(Nbit-17 downto Nbit-21)) ) then 
+                    hzd_sig_raw <= '1';
+                    PC_SEL <= '1';
                 -- if IR_ID(Rs) = IR_MEM (Rd) -> hazard
-            elsif((IR_ID(Nbit-7 downto Nbit-11) = IR_MEM(Nbit-17 downto Nbit-21)) or (IR_ID(Nbit-12 downto Nbit-16) = IR_MEM(Nbit-17 downto Nbit-21)) ) then 
-                hzd_sig_raw <= '1';
-                PC_sel <= '1';
-            else                                    -- normal execution can proceed                  
-                hzd_sig_raw <= '0';                      
-                PC_SEL <= '0';
-            end if;    
+                elsif((IR_ID(Nbit-7 downto Nbit-11) = IR_MEM(Nbit-17 downto Nbit-21)) or (IR_ID(Nbit-12 downto Nbit-16) = IR_MEM(Nbit-17 downto Nbit-21)) ) then 
+                    hzd_sig_raw <= '1';
+                    PC_sel <= '1';
+                else                                    -- normal execution can proceed                  
+                    hzd_sig_raw <= '0';                      
+                    PC_SEL <= '0';
+                end if;    
+            end if;
         end if;
     end process;
     

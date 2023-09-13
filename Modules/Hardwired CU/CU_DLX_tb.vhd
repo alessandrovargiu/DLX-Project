@@ -25,6 +25,9 @@ architecture test of tb is
             --stall: in std_logic;
             --jump: in std_logic;
             IR_in: in std_logic_vector(Nbit-1 downto 0);
+            IR_ID: OUT std_logic_vector(Nbit-1 downto 0);
+            IR_EX: OUT std_logic_vector(Nbit-1 downto 0);
+            IR_MEM: OUT std_logic_vector(Nbit-1 downto 0);
             hzd_sig_ctrl: in std_logic;
             hzd_sig_raw: in std_logic;
             --PC_SEL: OUT std_logic;
@@ -41,6 +44,8 @@ architecture test of tb is
             rst : IN STD_LOGIC; -- Reset Signal: Asyncronous Active Low (Negative)
             cwd : IN STD_LOGIC_VECTOR(25-1 DOWNTO 0); -- datapath signals
             IR_ID: in std_logic_vector(Nbit-1 downto 0);
+            IR_EX: IN std_logic_vector(Nbit-1 downto 0);
+            IR_MEM: IN std_logic_vector(Nbit-1 downto 0);
             PC_SEL: OUT std_logic;        -- selection signal for value of PC 
             hzd_sig_ctrl : OUT STD_LOGIC; -- hazard signals
             hzd_sig_raw : OUT STD_LOGIC
@@ -55,7 +60,9 @@ architecture test of tb is
     signal memory_cwd_s : STD_LOGIC_VECTOR (7 DOWNTO 0);
     signal wb_cwd_s : STD_LOGIC_VECTOR (4 DOWNTO 0);
     signal cwd_s: std_logic_vector(25-1 downto 0);
-    
+    signal IR_ID_s: std_logic_vector(Nbit-1 downto 0);
+    signal IR_EX_s: std_logic_vector(Nbit-1 downto 0);
+    signal IR_MEM_s: std_logic_vector(Nbit-1 downto 0);
     
 begin
 
@@ -78,6 +85,9 @@ begin
         hzd_sig_ctrl => hzd_sig_ctrl_s,
         --PC_SEL => PC_SEL_s,
         IR_in => IR_in_s,
+        IR_ID => IR_ID_s,
+        IR_EX => IR_EX_s,
+        IR_MEM => IR_MEM_s,
         decode_cwd => decode_cwd_s,
         execute_cwd => execute_cwd_s,
         memory_cwd => memory_cwd_s,
@@ -89,7 +99,9 @@ begin
         clk_s, 
         reset_s,
         cwd_s,
-        IR_in_s,
+        IR_ID_s,
+        IR_EX_s,
+        IR_MEM_s,
         PC_SEL_s, 
         hzd_sig_ctrl_s,
         hzd_sig_raw_s);
@@ -103,7 +115,10 @@ begin
         -- ADD R18, R3, R4
         -- ADD R19, R4, R4
         -- SUB R17, R1, r16
+        reset_s <= '1';
+        wait for 1 ns;
         reset_s <= '0';
+        wait for 1 ns;
         --IR_in_s <= "001100" & "00001" & "00010" & "0101010101010101";
         --wait for 1 ns;
         --IR_in_s <= "000000" & "00001" & "01000" & "01001" & "00000000001";
@@ -119,6 +134,15 @@ begin
         IR_in_s <= "000000" & "00001" & "00010" & "00011" & "00000000000";
         wait for 1 ns;
         IR_in_s <= "000000" & "00011" & "00001" & "00100" & "00000000000";
+        wait for 1 ns;
+        -- AND R5, R1, R2
+        IR_in_s <= "000000" & "00001" & "00010" & "00101" & "00000000010";
+        wait for 1 ns;
+        -- SUB R6, R1, R2
+        IR_in_s <= "000000" & "00001" & "00010" & "00110" & "00000000001";
+        wait for 1 ns;
+        -- ADD R7, R1, R2
+        IR_in_s <= "000000" & "00001" & "00010" & "00111" & "00000000000";
         wait for 1 ns;
     wait;
     end process;
