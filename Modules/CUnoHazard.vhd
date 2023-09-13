@@ -132,10 +132,10 @@ BEGIN
             END IF;
         END PROCESS;
 
-        PROCESS (reset, opcode_s, func_s)
+        PROCESS ( reset, opcode_s, func_s)
         BEGIN
             IF reset = '1' THEN
-                cw_s <= cw_mem(19); -- nop
+                cw_s <= cw_mem(17); -- nop
             ELSE
                 IF (opcode_s = "000000") THEN
                     IF (func_s = RTYPE_ADD) THEN
