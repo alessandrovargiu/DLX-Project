@@ -32,8 +32,10 @@ ENTITY CU_dlx IS
         decode_cwd : OUT STD_LOGIC_VECTOR(CW_SIZE-1 DOWNTO 0);
         execute_cwd : OUT STD_LOGIC_VECTOR (CW_SIZE-1-5 DOWNTO 0);
         memory_cwd : out STD_LOGIC_VECTOR (CW_SIZE-1-17 DOWNTO 0);
-        wb_cwd : OUT STD_LOGIC_VECTOR (CW_SIZE-1-20 DOWNTO 0)
-
+        wb_cwd : OUT STD_LOGIC_VECTOR (CW_SIZE-1-20 DOWNTO 0);
+        IR_ID: OUT std_logic_vector(Nbit-1 downto 0);
+        IR_EX: OUT std_logic_vector(Nbit-1 downto 0);
+        IR_MEM: OUT std_logic_vector(Nbit-1 downto 0)
         --decode
         --rf1: out std_logic; --read port A of register file
         --rf2: out std_logic; --read port B of reg file
@@ -121,6 +123,7 @@ ARCHITECTURE behavioral OF CU_dlx IS
         SIGNAL execute_cwd_s : STD_LOGIC_VECTOR(CW_SIZE-1 - 5 DOWNTO 0);
         SIGNAL memory_cwd_s : STD_LOGIC_VECTOR(CW_SIZE-1 - 17 DOWNTO 0);
         signal wb_cwd_s: std_logic_vector(CW_SIZE-1 - 20 downto 0);
+        signal IR_ID_s,IR_EX_s, IR_MEM_s: std_logic_vector(Nbit-1 downto 0);
         -- this signal is used to save the stalled instruction when hazard is present
         signal IR_ID_backup: std_logic_vector(CW_SIZE-1 downto 0);
         -- 1 if returning from stall cycle, 0 normal execution
@@ -247,28 +250,40 @@ BEGIN
             memory_cwd <= memory_cwd_s;
             wb_cwd <= wb_cwd_s;
 
+            IR_ID <= IR_ID_s;
+            IR_EX <= IR_EX_s;
+            IR_MEM <= IR_MEM_s;
             -- PIPELINE PROCESS --
             -- introduce NOP in decode stage when hazard --
             -- proibits PC from incrementing --
-            process(CLK)
+            process(CLK, reset)
 	        begin
-                if(rising_edge(clk)) then
-                    decode_cwd_s <= cw_s(CW_SIZE-1 DOWNTO 0);
-		            execute_cwd_s <= decode_cwd_s(CW_SIZE - 1 - 5 DOWNTO 0);
-                    memory_cwd_s <= execute_cwd_s(CW_SIZE - 1 - 17 DOWNTO 0);
-                    wb_cwd_s <= memory_cwd_s(CW_SIZE - 1 - 20 DOWNTO 0);              
-                
-                    if(hzd_sig_raw = '1') then
-                        decode_cwd_s <= NOP_cwd;             -- insert NOP in decode stage
-                        if(backup = '0') then
-                            IR_ID_backup <= cw_s(CW_SIZE-1 downto 0);           -- save stalled instruction
+                if(reset = '1') then
+                    IR_ID_s <= (others => '0');
+                    IR_EX_s <= (others => '0');
+                    IR_MEM_s <= (others => '0');
+                elsif(rising_edge(clk)) then
+                        decode_cwd_s <= cw_s(CW_SIZE-1 DOWNTO 0);
+		                execute_cwd_s <= decode_cwd_s(CW_SIZE - 1 - 5 DOWNTO 0);
+                        memory_cwd_s <= execute_cwd_s(CW_SIZE - 1 - 17 DOWNTO 0);
+                        wb_cwd_s <= memory_cwd_s(CW_SIZE - 1 - 20 DOWNTO 0);              
+                    
+                        IR_ID_s <= IR_in;
+                        IR_EX_s <= IR_ID_s;
+                        IR_MEM_s <= IR_EX_s;               
+
+                        if(hzd_sig_raw = '1') then
+                            decode_cwd_s <= NOP_cwd;             -- insert NOP in decode stage
+                            IR_ID_s <= (others => '0');
+                            if(backup = '0') then
+                                IR_ID_backup <= cw_s(CW_SIZE-1 downto 0);           -- save stalled instruction
+                            end if;
+                            backup <= '1';
                         end if;
-                        backup <= '1';
-                    end if;
-                    if(backup = '1') then                                   -- last cc was a stall
-                        backup <= '0';
-                        execute_cwd_s <= IR_ID_backup(CW_SIZE-1-5 downto 0);        -- override execute cw injection after
-                    end if;
+                        if(backup = '1') then                                   -- last cc was a stall
+                            backup <= '0';
+                            execute_cwd_s <= IR_ID_backup(CW_SIZE-1-5 downto 0);        -- override execute cw injection after
+                        end if;
                 end if;
             end process;
             
