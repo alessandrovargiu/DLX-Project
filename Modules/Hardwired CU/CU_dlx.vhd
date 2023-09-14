@@ -284,6 +284,9 @@ BEGIN
                             backup <= '0';
                             execute_cwd_s <= IR_ID_backup(CW_SIZE-1-5 downto 0);        -- override execute cw injection after
                         end if;
+                        if(hzd_sig_ctrl = '1') then
+                            decode_cwd_s <= NOP_cwd;
+                        end if;    
                 end if;
             end process;
             
