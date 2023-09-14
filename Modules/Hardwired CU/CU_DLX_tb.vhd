@@ -137,17 +137,31 @@ begin
         --wait for 1 ns;
         -- JUMP R10
         IR_in_s <= "100000" & "00000000000000000000000010";
+        wait for 1 ns;
         -- AND R5, R1, R2
         --IR_in_s <= "000000" & "00001" & "00010" & "00101" & "00000000010";
-        wait for 1 ns;
+        
+        -- cannot inject instructions right after jump because we have to simulate
+        -- PC reg being stalled as well -> after 10 ns we check if RAW hazards are
+        -- detected correctly
+
+        /* STUFF TO REMEMBER: 
+            this CU takes IR_in as input, which means that when we inject NOP in decode stage
+            IR_in stays with the same instruction that has caused the stall (since PC is stopped),
+            causing pipeline to feed old instruction instead of NOPs and so hzd signal stays high.
+            this has to change (maybe we inject NOPs in IR_in_s and feed that to the decode instead of
+            putting IR_in directly)
+        */
+        IR_in_s <= "000010" & "00000" & "00000" & "0000000000000000";
+        wait for 10 ns;
         -- SUB R6, R1, R2
         IR_in_s <= "000000" & "00001" & "00010" & "00110" & "00000000001";
         wait for 1 ns;
         --ADD R7, R1, R2
         IR_in_s <= "000000" & "00001" & "00010" & "00111" & "00000000000";
         wait for 1 ns;
-        -- SUB R8, R1, R2
-        IR_in_s <= "000000" & "00001" & "00010" & "01000" & "00000000001";
+        -- SUB R8, R6, R2           -> RAW HAZARD
+        IR_in_s <= "000000" & "00110" & "00010" & "01001" & "00000000001";
         wait for 1 ns;
         --ADD R9, R1, R2
         IR_in_s <= "000000" & "00001" & "00010" & "01001" & "00000000000";
