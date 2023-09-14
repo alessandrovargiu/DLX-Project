@@ -286,6 +286,7 @@ BEGIN
                         end if;
                         if(hzd_sig_ctrl = '1') then
                             decode_cwd_s <= NOP_cwd;
+                            IR_ID_s <= "000010" & "00000000000000000000000000";
                         end if;    
                 end if;
             end process;
