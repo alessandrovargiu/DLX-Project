@@ -12,8 +12,9 @@ ENTITY HU IS
         IR_ID: IN std_logic_vector(Nbit-1 downto 0);
         IR_EX: IN std_logic_vector(Nbit-1 downto 0);
         IR_MEM: IN std_logic_vector(Nbit-1 downto 0);
-        PC_SEL: OUT std_logic;        -- selection signal for value of PC 
-        -- input diretto dal datapath per dire se branch presa o no;
+        branchStatus: IN std_logic;
+        PC_SEL: OUT std_logic;        -- selection signal for value of PC
+        hzd_sig_jmp : out std_logic;        
         hzd_sig_ctrl : OUT STD_LOGIC;
         hzd_sig_raw : OUT STD_LOGIC
         --hzd_sig_raw_2clk : OUT STD_LOGIC -- hazard signals
@@ -60,18 +61,21 @@ BEGIN
 
     RAW: process (clk)
     begin
-        if(falling_edge(clk)) then
-            IF (IR_ID(Nbit-1 downto Nbit-6) = JTYPE_JMP or IR_EX(Nbit-1 downto Nbit-6) = JTYPE_JMP or IR_MEM(Nbit-1 downto Nbit-6) = JTYPE_JMP) THEN
+        if(rst = '0' AND falling_edge(clk)) then
+            if(branchStatus = '1') then
                 hzd_sig_ctrl <= '1';
+                PC_SEL <= '1';             
+            elsif (IR_ID(Nbit-1 downto Nbit-6) = JTYPE_JMP or IR_EX(Nbit-1 downto Nbit-6) = JTYPE_JMP or IR_MEM(Nbit-1 downto Nbit-6) = JTYPE_JMP) THEN
+                hzd_sig_jmp <= '1';
                 PC_SEL <= '1';
             elsif (IR_ID(Nbit-1 downto Nbit-6) = JTYPE_JAL or IR_EX(Nbit-1 downto Nbit-6) = JTYPE_JAL or IR_MEM(Nbit-1 downto Nbit-6) = JTYPE_JAL) THEN
-                hzd_sig_ctrl <= '1';
+                hzd_sig_jmp <= '1';
                 PC_SEL <= '1';
             elsif((IR_ID(Nbit-1 downto Nbit-6) /= "000010") AND IR_EX(Nbit-1 downto Nbit-6) /= "000010") then
             --if((IR_ID(Nbit-1 downto 0) /= (others => 'U')) AND (IR_EX(Nbit-1 downto 0) /= (others => 'U'))) then 
                 -- second condition takes account of I_TYPE different format
                 -- if IR_ID (Rs) = IR_EX (Rd)  -> hazard 
-                if((IR_ID(Nbit-7 downto Nbit-11) = IR_EX(Nbit-17 downto Nbit-21)) or (IR_ID(Nbit-12 downto Nbit-16) = IR_EX(Nbit-17 downto Nbit-21)) ) then 
+                if((IR_ID(Nbit-7 downto Nbit-11) = IR_EX(Nbit-17 downto Nbit-21)) or (IR_ID(Nbit-12 downto Nbit-16) = IR_EX(Nbit-17 downto Nbit-21)) or (IR_ID(Nbit-17 downto Nbit-21) = IR_EX(Nbit-17 downto Nbit-21))) then 
                     hzd_sig_raw <= '1';
                     PC_SEL <= '1';
                 -- if IR_ID(Rs) = IR_MEM (Rd) -> hazard
@@ -84,6 +88,7 @@ BEGIN
                     PC_SEL <= '0';
                 end if;
             else
+                hzd_sig_jmp <= '0';
                 hzd_sig_ctrl <= '0';
                 hzd_sig_raw <= '0';
                 PC_SEL <= '0';

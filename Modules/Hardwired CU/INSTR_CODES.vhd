@@ -1,5 +1,6 @@
 library ieee;
 use ieee.std_logic_1164.all;
+use work.constants.all;
 
 package INSTR_CODES is
 
@@ -32,7 +33,7 @@ package INSTR_CODES is
 -- R-Type instruction -> OPCODE field
     constant RTYPE : std_logic_vector(OP_CODE_SIZE - 1 downto 0) :=  "000000";          -- R-type OPCODE
 	constant NOP : std_logic_vector(OP_CODE_SIZE - 1 downto 0) :=  "000010"; 
-	
+	constant NOP_IR : std_logic_vector(Nbit-1 downto 0) := NOP & "00000000000000000000000000";
 -- I-Type instruction -> OPCODE field
     constant ITYPE_ADDI1 : std_logic_vector(OP_CODE_SIZE - 1 downto 0) :=  "000001";    -- ADDI1 RS1,RD,INP1
     constant ITYPE_SUBI1 : std_logic_vector(OP_CODE_SIZE - 1 downto 0) :=  "000011";
