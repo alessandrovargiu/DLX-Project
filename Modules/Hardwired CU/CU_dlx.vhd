@@ -37,7 +37,7 @@ ENTITY CU_dlx IS
         IR_ID: OUT std_logic_vector(Nbit-1 downto 0);
         IR_EX: OUT std_logic_vector(Nbit-1 downto 0);
         IR_MEM: OUT std_logic_vector(Nbit-1 downto 0);
-        IR_WB: IN std_logic_vector(Nbit-1 downto 0)
+        IR_WB: OUT std_logic_vector(Nbit-1 downto 0)
         --decode
         --rf1: out std_logic; --read port A of register file
         --rf2: out std_logic; --read port B of reg file
@@ -255,6 +255,7 @@ BEGIN
             IR_ID <= IR_ID_s;
             IR_EX <= IR_EX_s;
             IR_MEM <= IR_MEM_s;
+            IR_WB <= IR_WB_s;
             -- PIPELINE PROCESS --
             -- introduce NOP in decode stage when hazard --
             -- proibits PC from incrementing --
@@ -279,7 +280,7 @@ BEGIN
                         if(hzd_sig_raw = '1') then
                             decode_cwd_s <= decode_cwd_s;             -- instr. causing HZD stays in decode
                             IR_ID_s <= IR_in;                         --
-                            execute_cwd_s <= NOP_cwd;
+                            execute_cwd_s <= NOP_cwd(CW_SIZE-1-5 DOWNTO 0);
                             IR_EX_s <= NOP_IR;
                         end if;
                         
