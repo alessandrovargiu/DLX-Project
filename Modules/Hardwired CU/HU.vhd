@@ -32,11 +32,11 @@ BEGIN
 
     fetch: process(IR_ID)
     begin
-        if(IR_ID(Nbit-1 downto Nbit-6) = R_TYPE) then
+        if(IR_ID(Nbit-1 downto Nbit-6) = RTYPE) then
             ID_Rs1 <= IR_ID(Nbit-7 downto Nbit-11);
             ID_Rs2 <= IR_ID(Nbit-12 downto Nbit-16);
             ID_Rd <= IR_ID(Nbit-17 downto Nbit-21);
-        elsif(IR_ID(Nbit-1 downto Nbit-6) = I_TYPE) then
+        elsif(IR_ID(Nbit-1 downto Nbit-6) /= "000000") then
             ID_Rs1 <= IR_ID(Nbit-7 downto Nbit-11);
             ID_Rd <= IR_ID(Nbit-12 downto Nbit-16);
         end if;
@@ -44,7 +44,7 @@ BEGIN
 
     pipe: process(clk)
     begin
-        if(rst = '0' AND falling_edge(clk)) then
+        if(rst = '0' AND rising_edge(clk)) then
             EX_Rd <= "00000";
             MEM_Rd <= "00000";
             WB_Rd <= "00000";
@@ -78,16 +78,23 @@ BEGIN
                 hzd_sig_jmp <= '1';
                 PC_SEL <= '1';
             elsif((IR_ID(Nbit-1 downto Nbit-6) /= "000010") AND IR_EX(Nbit-1 downto Nbit-6) /= "000010") then
-                if((ID_Rs1 = EX_Rd OR ID_Rs2 = EX_Rd) AND EX_Rd /= (others => '0')) then
+                if((ID_Rs1 = EX_Rd OR ID_Rs2 = EX_Rd) AND EX_Rd /= std_logic_vector(to_unsigned(0, 5))) then
                     hzd_sig_raw <= '1';
                     PC_SEL <= '1';
-                elsif((ID_Rs1 = MEM_Rd OR ID_Rs2 = MEM_Rd) AND MEM_Rd /= (others => '0')) then
+                elsif((ID_Rs1 = MEM_Rd OR ID_Rs2 = MEM_Rd) AND MEM_Rd /= std_logic_vector(to_unsigned(0, 5))) then
                     hzd_sig_raw <= '1';
                     PC_SEL <= '1';
-                elsif((ID_Rs1 = WB_Rd OR ID_Rs2 = WB_Rd) AND WB_Rd /= (others => '0')) then
+                elsif((ID_Rs1 = WB_Rd OR ID_Rs2 = WB_Rd) AND WB_Rd /= std_logic_vector(to_unsigned(0, 5))) then
                     hzd_sig_raw <= '1';
                     PC_SEL <= '1';
+                else
+                    hzd_sig_raw <= '0';
+                    PC_SEL <= '0';
                 end if;
+            else
+            hzd_sig_ctrl <= '0';
+            hzd_sig_jmp <= '0';
+            PC_SEL <= '0';
             end if;  
         end if;
     end process;

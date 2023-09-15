@@ -28,6 +28,7 @@ architecture test of tb is
             IR_ID: OUT std_logic_vector(Nbit-1 downto 0);
             IR_EX: OUT std_logic_vector(Nbit-1 downto 0);
             IR_MEM: OUT std_logic_vector(Nbit-1 downto 0);
+            IR_WB: OUT std_logic_vector(Nbit-1 downto 0);
             hzd_sig_jmp: in std_logic;
             hzd_sig_ctrl: in std_logic;
             hzd_sig_raw: in std_logic;
@@ -47,6 +48,7 @@ architecture test of tb is
             IR_ID: in std_logic_vector(Nbit-1 downto 0);
             IR_EX: IN std_logic_vector(Nbit-1 downto 0);
             IR_MEM: IN std_logic_vector(Nbit-1 downto 0);
+            IR_WB: IN std_logic_vector(Nbit-1 downto 0);
             branchStatus: IN std_logic;
             PC_SEL: OUT std_logic;        -- selection signal for value of PC 
             hzd_sig_jmp: OUT std_logic;
@@ -66,6 +68,8 @@ architecture test of tb is
     signal IR_ID_s: std_logic_vector(Nbit-1 downto 0);
     signal IR_EX_s: std_logic_vector(Nbit-1 downto 0);
     signal IR_MEM_s: std_logic_vector(Nbit-1 downto 0);
+    signal IR_WB_s: std_logic_vector(Nbit-1 downto 0);
+
     
 begin
 
@@ -92,6 +96,7 @@ begin
         IR_ID => IR_ID_s,
         IR_EX => IR_EX_s,
         IR_MEM => IR_MEM_s,
+        IR_WB => IR_WB_s,
         decode_cwd => decode_cwd_s,
         execute_cwd => execute_cwd_s,
         memory_cwd => memory_cwd_s,
@@ -106,6 +111,7 @@ begin
         IR_ID_s,
         IR_EX_s,
         IR_MEM_s,
+        IR_WB_s,
         branchStatus_s,
         PC_SEL_s,
         hzd_sig_jmp_s, 
@@ -162,7 +168,7 @@ begin
         IR_in_s <= "000000" & "00000" & "00001" & "00100" & "00000000000";
         wait for 1 ns;
         -- BEQZ R4, label                   -> RAW hazard with ADD above
-        IR_in_s <= "001010" & "00000" & "00100" & "0101010101010101";
+        IR_in_s <= "001010" & "00100" & "00000"  & "0101010101010101";
         wait for 1 ns;
         -- NOP
         IR_in_s <= "000010" & "00000" & "00000" & "0000000000000000";
