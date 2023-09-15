@@ -12,6 +12,7 @@ ENTITY HU IS
         IR_ID: IN std_logic_vector(Nbit-1 downto 0);
         IR_EX: IN std_logic_vector(Nbit-1 downto 0);
         IR_MEM: IN std_logic_vector(Nbit-1 downto 0);
+        IR_WB: IN std_logic_vector(Nbit-1 downto 0);
         branchStatus: IN std_logic;
         PC_SEL: OUT std_logic;        -- selection signal for value of PC
         hzd_sig_jmp : out std_logic;        
@@ -23,37 +24,42 @@ END ENTITY HU;
 
 ARCHITECTURE beh OF HU IS
     --flush_j,flush_b: std_logic;
-       
-
+    signal ID_Rs1, ID_Rs2, ID_Rd: std_logic_vector(4 downto 0);
+    signal EX_Rd: std_logic_vector(4 downto 0);
+    signal MEM_Rd: std_logic_vector(4 downto 0);
+    signal WB_Rd: std_logic_vector(4 downto 0);
 BEGIN
 
-   -- Ctrl : PROCESS (clk)
-      --  begin
-       ---     if(falling_edge(clk)) then
-        --        IF (IR_ID(Nbit-1 downto Nbit-6) = JTYPE_JMP or IR_EX(Nbit-1 downto Nbit-6) = JTYPE_JMP or IR_MEM(Nbit-1 downto Nbit-6) = JTYPE_JMP) THEN
-         --           hzd_sig_ctrl <= '1';
-         --           PC_SEL <= '1';
-         --       elsIF (IR_ID(Nbit-1 downto Nbit-6) = JTYPE_JAL or IR_EX(Nbit-1 downto Nbit-6) = JTYPE_JAL or IR_MEM(Nbit-1 downto Nbit-6) = JTYPE_JAL) THEN
-         --          hzd_sig_ctrl <= '1';
-          --          PC_SEL <= '1';
-          --      else
-          ---          hzd_sig_ctrl <= '0';                      
-          --          PC_SEL <= '0';
-          ---      END IF;
+    fetch: process(IR_ID)
+    begin
+        if(IR_ID(Nbit-1 downto Nbit-6) = R_TYPE) then
+            ID_Rs1 <= IR_ID(Nbit-7 downto Nbit-11);
+            ID_Rs2 <= IR_ID(Nbit-12 downto Nbit-16);
+            ID_Rd <= IR_ID(Nbit-17 downto Nbit-21);
+        elsif(IR_ID(Nbit-1 downto Nbit-6) = I_TYPE) then
+            ID_Rs1 <= IR_ID(Nbit-7 downto Nbit-11);
+            ID_Rd <= IR_ID(Nbit-12 downto Nbit-16);
+        end if;
+    end process;
 
-          --  end if;
-           -- IF (cwd = BEQZ_CWD) THEN
-               -- IF () THEN --- if il segnale che esce dall output allora è preso o no il branch
-                --hzd_sig_ctrl <= '1';
-            --END IF;
-        --END IF;
-        --IF (cwd = BNEZ_CWD) THEN
-            --IF () THEN --- if il segnale che esce dall output allora è preso o no il branch
-            --    hzd_sig_ctrl <= '1';
-            --END IF;
-        --END IF;
-   -- END PROCESS;
-
+    pipe: process(clk)
+    begin
+        if(rst = '0' AND falling_edge(clk)) then
+            EX_Rd <= "00000";
+            MEM_Rd <= "00000";
+            WB_Rd <= "00000";
+            if(IR_EX(Nbit-1 downto Nbit-6) /= NOP) then
+                EX_Rd <= ID_Rd;
+            end if;
+            if(IR_MEM(Nbit-1 downto Nbit-6) /= NOP) then
+                MEM_Rd <= EX_Rd;
+            end if;
+            if(IR_WB(Nbit-1 downto Nbit-6) /= NOP) then
+                WB_Rd <= MEM_Rd;
+            end if; 
+        end if;
+    end process;
+    
     ------------------- RAW hazard detection ------------------
     -- hazard check done on ID stage 
     -- possibility of forwarding implementation in the future
@@ -72,30 +78,19 @@ BEGIN
                 hzd_sig_jmp <= '1';
                 PC_SEL <= '1';
             elsif((IR_ID(Nbit-1 downto Nbit-6) /= "000010") AND IR_EX(Nbit-1 downto Nbit-6) /= "000010") then
-            --if((IR_ID(Nbit-1 downto 0) /= (others => 'U')) AND (IR_EX(Nbit-1 downto 0) /= (others => 'U'))) then 
-                -- second condition takes account of I_TYPE different format
-                -- if IR_ID (Rs) = IR_EX (Rd)  -> hazard 
-                if((IR_ID(Nbit-7 downto Nbit-11) = IR_EX(Nbit-17 downto Nbit-21)) or (IR_ID(Nbit-12 downto Nbit-16) = IR_EX(Nbit-17 downto Nbit-21)) or (IR_ID(Nbit-17 downto Nbit-21) = IR_EX(Nbit-17 downto Nbit-21))) then 
+                if((ID_Rs1 = EX_Rd OR ID_Rs2 = EX_Rd) AND EX_Rd /= (others => '0')) then
                     hzd_sig_raw <= '1';
                     PC_SEL <= '1';
-                -- if IR_ID(Rs) = IR_MEM (Rd) -> hazard
-                elsif((IR_ID(Nbit-7 downto Nbit-11) = IR_MEM(Nbit-17 downto Nbit-21)) or (IR_ID(Nbit-12 downto Nbit-16) = IR_MEM(Nbit-17 downto Nbit-21)) ) then 
+                elsif((ID_Rs1 = MEM_Rd OR ID_Rs2 = MEM_Rd) AND MEM_Rd /= (others => '0')) then
                     hzd_sig_raw <= '1';
-                    PC_sel <= '1';
-                else                                    -- normal execution can proceed                  
-                    hzd_sig_ctrl <= '0'; 
-                    hzd_sig_raw <= '0';                      
-                    PC_SEL <= '0';
+                    PC_SEL <= '1';
+                elsif((ID_Rs1 = WB_Rd OR ID_Rs2 = WB_Rd) AND WB_Rd /= (others => '0')) then
+                    hzd_sig_raw <= '1';
+                    PC_SEL <= '1';
                 end if;
-            else
-                hzd_sig_jmp <= '0';
-                hzd_sig_ctrl <= '0';
-                hzd_sig_raw <= '0';
-                PC_SEL <= '0';
-            end if;      
+            end if;  
         end if;
     end process;
-    
-
+   
 
 end architecture beh;

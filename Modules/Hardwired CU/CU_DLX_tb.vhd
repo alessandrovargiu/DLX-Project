@@ -159,7 +159,7 @@ begin
         --    putting IR_in directly)
         --
         -- ADD R4, R0, R1
-        IR_in_s <= "000000" & "00000" & "00001" & "0000000000000000";
+        IR_in_s <= "000000" & "00000" & "00001" & "00100" & "00000000000";
         wait for 1 ns;
         -- BEQZ R4, label                   -> RAW hazard with ADD above
         IR_in_s <= "001010" & "00000" & "00100" & "0101010101010101";
