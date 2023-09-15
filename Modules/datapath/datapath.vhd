@@ -388,7 +388,7 @@ port map(clk => clk, rst => rst, en => '1', I => IRoutputID(Nbit-1-OpcodeNbit-RF
 
 zeroQcomp: comp4Branch
 generic map(Nbit)
-port map( RegBoutEX, condIn );  --if value stored in regAoutEx is 0, cond is 1
+port map( RegAoutEX, condIn );  --if value stored in regAoutEx is 0, cond is 1
 
 notcondin <= not condIn; -- value stored in regAoutEx is 0, notcond is set to 0
 
