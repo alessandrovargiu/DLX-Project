@@ -211,7 +211,7 @@ end component;
 
 --|RF1|RF2|EN1|UorS|JorIImm|S1|S2|rdChoice|EN2|ALU1|ALU2|ALU3|ALU4|ALU5|ALU6|Bop|Eq|WM|EN3|RM|WF1|EN4|S4|S5|jalEn|
 --|24-|23-|22-|21--|---20--|19|18|---17---|16-|--15|-14-|-13-|-12-|-11-|-10-|9--|-8|-7|--6|-5|--4|-3-|2-|1-|--0--|
---|---decode---------------|----exec----------------------------------------|----mem---------|-----wb------------|
+--|---decode---------------|----exec-----------------------------------------------|----mem--|-----wb------------|
 
 
 --RF1 enables the first read port of RF1
@@ -280,7 +280,7 @@ NPC_0: myregister
 generic map(Nbit)
 port map(clk, rst, enable, PCout, NPCoutputID ); 
 
-IMAddress <= PCinput ;
+IMAddress <= PCout ;
 
 ---------------------------------------------------Decode Unit related component instances--------------------------------------------------------
 

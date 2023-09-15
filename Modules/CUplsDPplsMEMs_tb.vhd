@@ -5,10 +5,10 @@ use ieee.std_logic_1164.all;
 --use work.myTypes.all;
 USE work.INSTR_CODES.ALL;
 
-entity dp_testPROVA is
-end dp_testPROVA;
+entity dpTestWithIram is
+end dpTestWithIram;
 
-architecture TESTPROVA of dp_testPROVA is
+architecture TESTPROVA of dpTestWithIram is
 
     constant Nbit: integer := 32;
     constant controlNbit: integer := 25;
@@ -70,7 +70,6 @@ architecture TESTPROVA of dp_testPROVA is
             controlWord: in std_logic_vector(controlNbit-1 downto 0);
 
 
-            --IRout4CU:       out std_logic_vector(Nbit-1 downto 0);
             IMaddress:   out std_logic_vector(addressNbit-1 downto 0);
             DMaddress:   out std_logic_vector(addressNbit-1 downto 0);
             DMdata:      inout std_logic_vector(Nbit-1 downto 0)
@@ -114,8 +113,8 @@ end component;
         port(
             clk: in std_logic;
             rst: in std_logic;                            -- active low
-            I_ADDR : in std_logic_vector(N downto 0);     -- dimensions to be specified     
-            I_DATA : out std_logic_vector(M downto 0);
+            I_ADDR : in std_logic_vector(N-1 downto 0);     -- dimensions to be specified     
+            I_DATA : out std_logic_vector(M-1 downto 0);
             ready : out std_logic                         -- active high
         );
     end component;
@@ -178,7 +177,7 @@ begin
         Imem: IRAM
         generic map (32, 32)
         port map (
-            clk => Clock
+            clk => Clock,
             rst => reset,
             I_ADDR => IMaddress_i,
             I_DATA => IMdata_i,
