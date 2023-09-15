@@ -28,6 +28,7 @@ architecture test of tb is
             IR_ID: OUT std_logic_vector(Nbit-1 downto 0);
             IR_EX: OUT std_logic_vector(Nbit-1 downto 0);
             IR_MEM: OUT std_logic_vector(Nbit-1 downto 0);
+            hzd_sig_jmp: in std_logic;
             hzd_sig_ctrl: in std_logic;
             hzd_sig_raw: in std_logic;
             --PC_SEL: OUT std_logic;
@@ -46,13 +47,15 @@ architecture test of tb is
             IR_ID: in std_logic_vector(Nbit-1 downto 0);
             IR_EX: IN std_logic_vector(Nbit-1 downto 0);
             IR_MEM: IN std_logic_vector(Nbit-1 downto 0);
+            branchStatus: IN std_logic;
             PC_SEL: OUT std_logic;        -- selection signal for value of PC 
+            hzd_sig_jmp: OUT std_logic;
             hzd_sig_ctrl : OUT STD_LOGIC; -- hazard signals
             hzd_sig_raw : OUT STD_LOGIC
     );
     end component HU;
 
-    signal clk_s, reset_s, hzd_sig_ctrl_s,hzd_sig_raw_s: std_logic;
+    signal clk_s, reset_s, hzd_sig_ctrl_s, hzd_sig_raw_s, hzd_sig_jmp_s, branchStatus_s: std_logic;
     signal IR_in_s: std_logic_vector(Nbit-1 downto 0);
     signal PC_SEL_s: std_logic;
     signal decode_cwd_s: std_logic_vector(24 downto 0);
@@ -83,6 +86,7 @@ begin
         reset => reset_s,
         hzd_sig_raw => hzd_sig_raw_s,
         hzd_sig_ctrl => hzd_sig_ctrl_s,
+        hzd_sig_jmp => hzd_sig_jmp_s,
         --PC_SEL => PC_SEL_s,
         IR_in => IR_in_s,
         IR_ID => IR_ID_s,
@@ -102,7 +106,9 @@ begin
         IR_ID_s,
         IR_EX_s,
         IR_MEM_s,
-        PC_SEL_s, 
+        branchStatus_s,
+        PC_SEL_s,
+        hzd_sig_jmp_s, 
         hzd_sig_ctrl_s,
         hzd_sig_raw_s);
 
@@ -130,14 +136,14 @@ begin
         --IR_in_s <= "000000" & "00001" & "01000" & "01001" & "00000000001";
         
         -- ADD R3, R1, R2
+        --IR_in_s <= "000000" & "00001" & "00010" & "00011" & "00000000000";
+        --wait for 1 ns;
         -- ADD R4, R3, R1
-        IR_in_s <= "000000" & "00001" & "00010" & "00011" & "00000000000";
-        wait for 1 ns;
         --IR_in_s <= "000000" & "00011" & "00001" & "00100" & "00000000000";
         --wait for 1 ns;
         -- JUMP R10
-        IR_in_s <= "100000" & "00000000000000000000000010";
-        wait for 1 ns;
+        --IR_in_s <= "100000" & "00000000000000000000000010";
+        --wait for 1 ns;
         -- AND R5, R1, R2
         --IR_in_s <= "000000" & "00001" & "00010" & "00101" & "00000000010";
         
@@ -145,13 +151,20 @@ begin
         -- PC reg being stalled as well -> after 10 ns we check if RAW hazards are
         -- detected correctly
 
-        /* STUFF TO REMEMBER: 
-            this CU takes IR_in as input, which means that when we inject NOP in decode stage
-            IR_in stays with the same instruction that has caused the stall (since PC is stopped),
-            causing pipeline to feed old instruction instead of NOPs and so hzd signal stays high.
-            this has to change (maybe we inject NOPs in IR_in_s and feed that to the decode instead of
-            putting IR_in directly)
-        */
+        -- STUFF TO REMEMBER: 
+        --    this CU takes IR_in as input, which means that when we inject NOP in decode stage
+        --    IR_in stays with the same instruction that has caused the stall (since PC is stopped),
+        --    causing pipeline to feed old instruction instead of NOPs and so hzd signal stays high.
+        --    this has to change (maybe we inject NOPs in IR_in_s and feed that to the decode instead of
+        --    putting IR_in directly)
+        --
+        -- ADD R4, R0, R1
+        IR_in_s <= "000000" & "00000" & "00001" & "0000000000000000";
+        wait for 1 ns;
+        -- BEQZ R4, label                   -> RAW hazard with ADD above
+        IR_in_s <= "001010" & "00000" & "00100" & "0101010101010101";
+        wait for 1 ns;
+        -- NOP
         IR_in_s <= "000010" & "00000" & "00000" & "0000000000000000";
         wait for 10 ns;
         -- SUB R6, R1, R2

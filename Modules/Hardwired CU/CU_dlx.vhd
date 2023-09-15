@@ -22,6 +22,7 @@ ENTITY CU_dlx IS
         -- opcode : IN  std_logic_vector(OP_CODE_SIZE - 1 downto 0);
         --func  : IN  std_logic_vector(FUNC_SIZE - 1 downto 0);
         IR_in : IN STD_LOGIC_VECTOR(Nbit - 1 DOWNTO 0);
+        hzd_sig_jmp: in std_logic;
         hzd_sig_ctrl: in std_logic;
         hzd_sig_raw: in std_logic;
         --hzd_sig_raw_2clk: in std_logic;
@@ -274,20 +275,28 @@ BEGIN
 
                         if(hzd_sig_raw = '1') then
                             decode_cwd_s <= NOP_cwd;             -- insert NOP in decode stage
-                            IR_ID_s <= "000010" & "00000000000000000000000000";
+                            IR_ID_s <= NOP_IR;
                             if(backup = '0') then
                                 IR_ID_backup <= cw_s(CW_SIZE-1 downto 0);           -- save stalled instruction
                             end if;
                             backup <= '1';
                         end if;
-                        if(backup = '1') then                                   -- last cc was a stall
+                        if(backup = '1' AND hzd_sig_raw = '0') then                                   -- last cc was a stall
                             backup <= '0';
                             execute_cwd_s <= IR_ID_backup(CW_SIZE-1-5 downto 0);        -- override execute cw injection after
                         end if;
-                        if(hzd_sig_ctrl = '1') then
+                        if(hzd_sig_jmp = '1') then
                             decode_cwd_s <= NOP_cwd;
-                            IR_ID_s <= "000010" & "00000000000000000000000000";
-                        end if;    
+                            IR_ID_s <= NOP_IR;
+                        end if;
+                        if(hzd_sig_ctrl = '1') then          --flush pipe
+                            -- decode flush
+                            decode_cwd_s <= NOP_cwd;
+                            IR_ID_s <= NOP_IR;
+                            -- EX flush
+                            execute_cwd_s <= NOP_cwd;
+                            IR_ID_s <= NOP_IR;
+                        end if;
                 end if;
             end process;
             

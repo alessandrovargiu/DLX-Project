@@ -388,7 +388,7 @@ port map(clk => clk, rst => rst, en => '1', I => IRoutputID(Nbit-1-OpcodeNbit-RF
 
 zeroQcomp: comp4Branch
 generic map(Nbit)
-port map( regAoutEX, condIn );  --if value stored in regAoutEx is 0, cond is 1
+port map( RegBoutEX, condIn );  --if value stored in regAoutEx is 0, cond is 1
 
 notcondin <= not condIn; -- value stored in regAoutEx is 0, notcond is set to 0
 
@@ -399,7 +399,7 @@ port map ( NPCoutputEX, regAoutEX, controlWord(CWNbit-6), operandA) ; --0 prendo
 
 ChooseSecondOperand: Mux21
 generic map(Nbit)
-port map( regBoutEX, extendedImmediateOut , controlWord(CWNbit-7), operandB ) ; -- 0 prendo B, 1 prendo imm
+port map( RegBoutEX, extendedImmediateOut , controlWord(CWNbit-7), operandB ) ; -- 0 prendo B, 1 prendo imm
 
 ProALuinstance: ProAlu 
 generic map(Nbit)
