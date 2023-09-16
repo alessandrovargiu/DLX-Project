@@ -279,7 +279,7 @@ BEGIN
 
                         if(hzd_sig_raw = '1') then
                             decode_cwd_s <= decode_cwd_s;             -- instr. causing HZD stays in decode
-                            IR_ID_s <= IR_in;                         --
+                            IR_ID_s <= IR_ID_s;                         --
                             execute_cwd_s <= NOP_cwd(CW_SIZE-1-5 DOWNTO 0);
                             IR_EX_s <= NOP_IR;
                         end if;
