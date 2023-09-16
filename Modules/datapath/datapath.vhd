@@ -14,10 +14,12 @@ entity BasicDP is
             enable:      in std_logic;
             IMdata:      in std_logic_vector(NbitMem-1 downto 0);  --is the instruction entering the dp and is input to the IR pipeline register in IF/ID bank
             controlWord: in std_logic_vector(controlNbit-1 downto 0);
-            
+            DMdataIn:    in std_logic_vector(NbitMem-1 downto 0);
+
             IMAddress:   out std_logic_vector(addressNbit-1 downto 0);
             DMaddress:   out std_logic_vector(addressNbit-1 downto 0);
-            DMdata:      inout std_logic_vector(NbitMem-1 downto 0)
+            DMdataOut:   out std_logic_vector(NbitMem -1 downto 0)
+            
     );
 end BasicDP;
 
@@ -467,7 +469,7 @@ port map(clk, rst, '1', RFWritePortAddressEX, RFWritePortAddressMEM);
 -----------------------------------------------------Memory Unit component instances----------------------------------------------------------------------------
 
 DMaddress <= ALURegOutMEM;
-DMdata <= RegBoutMEM;
+DMdataOUT <= RegBoutMEM;
 
 --Memory Unit Pipe registers
 
@@ -484,7 +486,7 @@ port map(clk => clk, rst => rst, en => '1', I => NPCoutputMEM, Q => NPCoutputWB)
 LMDReg: myregister
 generic map(Nbit)
 --port map( clk, rst, controlWord(CWNbit-17), DMdata, LMDRegOutWB);
-port map( clk, rst, '1', DMdata, LMDRegOutWB);
+port map( clk, rst, '1', DMdataIN, LMDRegOutWB);
 
 ALUout_reg_1: myregister
 generic map(Nbit)
