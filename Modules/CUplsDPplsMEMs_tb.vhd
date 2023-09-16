@@ -66,13 +66,13 @@ architecture TESTPROVA of dpTestWithIram is
 
             fromHU:      in std_logic;
             enable:      in std_logic;
-            IMdata:      in std_logic_vector(Nbit-1 downto 0);
+            IMdata:      in std_logic_vector(Nbit-1 downto 0); --input from iram
             controlWord: in std_logic_vector(controlNbit-1 downto 0);
-
+            DMdataIN:    in std_logic_vector(Nbit - 1 downto 0); --input from DMEM in case of Load inst
 
             IMaddress:   out std_logic_vector(addressNbit-1 downto 0);
             DMaddress:   out std_logic_vector(addressNbit-1 downto 0);
-            DMdata:      inout std_logic_vector(Nbit-1 downto 0)
+            DMdataOUT:   out std_logic_vector(Nbit-1 downto 0) -- output which goes to DMEM in case of Store inst
     );
 end component;
 
@@ -119,14 +119,31 @@ end component;
         );
     end component;
 
+    component DRAM is
+    generic (
+        W: integer := 32;
+        N: integer := 32
+    );
+    port(
+        clk: in std_logic;
+        rst: in std_logic;                            -- active low
+        RW: in std_logic;                             -- 1 - read, 0 - write
+        ADDR: in std_logic_vector(W-1 downto 0);          
+        DATA_IN: in std_logic_vector(N-1 downto 0);
+        DATA_OUT: out std_logic_vector(N-1 downto 0);
+        ready : out std_logic                         -- active high
+    );
+    end component;
 
     signal Clock: std_logic := '0';
     signal Reset: std_logic := '1';
     signal enable_i: std_logic ;
     signal fromHU_i: std_logic := '0';
-    signal ready_i: std_logic; --output signal of the Iram
+    signal readyIRAM_i: std_logic; --output signal of the Iram
+    signal readyDRAM_i: std_logic; --output bit from DRAM
+    signal RW_i: std_logic;
 
-    signal IMdata_i, DMdata_i: std_logic_vector(Nbit-1 downto 0);
+    signal IMdata_i, DMdataIN_i, DMdataOUT_i: std_logic_vector(Nbit-1 downto 0);
     signal controlWordOut_s: std_logic_vector(controlNbit-1 downto 0);
     signal IMaddress_i, DMaddress_i: std_logic_vector(addressNbit-1 downto 0);
     signal decode_cwd_i : STD_LOGIC_VECTOR(CW_SIZE-1 DOWNTO 0);
@@ -143,7 +160,7 @@ end component;
     --constant BEQZ1BITWISE: std_logic_vector(Nbit-1 downto 0) := "00101000010000001111111111101000" ; --        beqz r2, label ; nn dovrebbe saltare                             0000 0014
     --constant BNEZ1BITWISE: std_logic_vector(Nbit-1 downto 0) := "00101100010000001111111111100100" ; --        bnez r2, label ; dovrebbe saltare                                0000 0018
     constant JALBITWISE:   std_logic_vector(Nbit-1 downto 0) := "10000111111111111111111111101000";  --         jal label                   memAddress: 0000 0014
-
+    constant STWBITWISE: std_logic_vector(Nbit-1 downto 0) :=   "00110100010000010000000000010101" ; --        stw 21(r2), r1;
 begin
 
         -- instance of DP
@@ -154,11 +171,12 @@ begin
                 rst => Reset,
                 fromHU => fromHU_i,
                 enable => enable_i,
-                IMdata => IMdata_i,
+                IMdata => IMdata_i, --is input data from the IRAM
                 controlWord => controlWordOut_s,
+                DMdataIN => DMdataIN_i,
                 IMaddress => IMaddress_i,
                 DMaddress => DMaddress_i,
-                DMdata => DMdata_i
+                DMdataOUT => DMdataOUT_i
                );
 
         CU: CUbasic
@@ -181,7 +199,19 @@ begin
             rst => reset,
             I_ADDR => IMaddress_i,
             I_DATA => IMdata_i,
-            ready => ready_i
+            ready => readyIRAM_i
+        );
+
+        Dmem: DRAM
+        generic map(32, 32)
+        port map (
+            clk => Clock,
+            rst => reset,
+            RW => RW_i,
+            ADDR => DMaddress_i,
+            DATA_IN => DMdataOUT_i, --the data going as input to the DMEM is the data going as OUTPUT from dp
+            DATA_OUT => DMdataIN_i, --the data going output from DMEM is INPUT to the DP
+            ready => readyDRAM_i
         );
 
         Clock <= not Clock after 1 ns;
