@@ -51,12 +51,12 @@ BEGIN
             if(IR_EX(Nbit-1 downto Nbit-6) /= NOP) then
                 EX_Rd <= ID_Rd;
             end if;
-            if(IR_MEM(Nbit-1 downto Nbit-6) /= NOP) then
+            --if(IR_MEM(Nbit-1 downto Nbit-6) /= NOP) then
                 MEM_Rd <= EX_Rd;
-            end if;
-            if(IR_WB(Nbit-1 downto Nbit-6) /= NOP) then
+            --end if;
+           -- if(IR_WB(Nbit-1 downto Nbit-6) /= NOP) then
                 WB_Rd <= MEM_Rd;
-            end if; 
+           -- end if; 
         end if;
     end process;
     
@@ -77,24 +77,28 @@ BEGIN
             elsif (IR_ID(Nbit-1 downto Nbit-6) = JTYPE_JAL or IR_EX(Nbit-1 downto Nbit-6) = JTYPE_JAL or IR_MEM(Nbit-1 downto Nbit-6) = JTYPE_JAL) THEN
                 hzd_sig_jmp <= '1';
                 PC_SEL <= '1';
-            elsif((IR_ID(Nbit-1 downto Nbit-6) /= "000010") AND IR_EX(Nbit-1 downto Nbit-6) /= "000010") then
-                if((ID_Rs1 = EX_Rd OR ID_Rs2 = EX_Rd) AND EX_Rd /= std_logic_vector(to_unsigned(0, 5))) then
-                    hzd_sig_raw <= '1';
-                    PC_SEL <= '1';
-                elsif((ID_Rs1 = MEM_Rd OR ID_Rs2 = MEM_Rd) AND MEM_Rd /= std_logic_vector(to_unsigned(0, 5))) then
-                    hzd_sig_raw <= '1';
-                    PC_SEL <= '1';
-                elsif((ID_Rs1 = WB_Rd OR ID_Rs2 = WB_Rd) AND WB_Rd /= std_logic_vector(to_unsigned(0, 5))) then
-                    hzd_sig_raw <= '1';
-                    PC_SEL <= '1';
-                else
+            else 
+                if(((IR_ID(Nbit-1 downto Nbit-6) /= "000010") AND IR_EX(Nbit-1 downto Nbit-6) /= "000010") OR ((IR_ID(Nbit-1 downto Nbit-6) /= "000010") AND IR_MEM(Nbit-1 downto Nbit-6) /= "000010") OR ((IR_ID(Nbit-1 downto Nbit-6) /= "000010") AND IR_WB(Nbit-1 downto Nbit-6) /= "000010")) then
+                    if((ID_Rs1 = EX_Rd OR ID_Rs2 = EX_Rd) AND EX_Rd /= std_logic_vector(to_unsigned(0, 5))) then
+                        hzd_sig_raw <= '1';
+                        PC_SEL <= '1';
+                    elsif((ID_Rs1 = MEM_Rd OR ID_Rs2 = MEM_Rd) AND MEM_Rd /= std_logic_vector(to_unsigned(0, 5))) then
+                        hzd_sig_raw <= '1';
+                        PC_SEL <= '1';
+                    elsif((ID_Rs1 = WB_Rd OR ID_Rs2 = WB_Rd) AND WB_Rd /= std_logic_vector(to_unsigned(0, 5))) then
+                        hzd_sig_raw <= '1';
+                        PC_SEL <= '1';
+                    else
+                    hzd_sig_raw <= '0';
+                    PC_SEL <= '0';
+                    end if;
+                 else
                     hzd_sig_raw <= '0';
                     PC_SEL <= '0';
                 end if;
-            else
             hzd_sig_ctrl <= '0';
             hzd_sig_jmp <= '0';
-            PC_SEL <= '0';
+            PC_SEL <= '0';  -- qeusta assegnazione fa si che pcsel stia sempre a 0 attenzione.
             end if;  
         end if;
     end process;

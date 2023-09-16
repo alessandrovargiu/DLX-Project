@@ -164,14 +164,14 @@ begin
         --    this has to change (maybe we inject NOPs in IR_in_s and feed that to the decode instead of
         --    putting IR_in directly)
         --
-        -- ADD R4, R0, R1
+        --ADD R4, R0, R1
         IR_in_s <= "000000" & "00000" & "00001" & "00100" & "00000000000";
         wait for 1 ns;
-        -- BEQZ R4, label                   -> RAW hazard with ADD above
+        --BEQZ R4, label                   -> RAW hazard with ADD above
         IR_in_s <= "001010" & "00100" & "00000"  & "0101010101010101";
         wait for 1 ns;
         -- NOP
-        IR_in_s <= "000010" & "00000" & "00000" & "0000000000000000";
+        --IR_in_s <= "000010" & "00000" & "00000" & "0000000000000000";
         wait for 10 ns;
         -- SUB R6, R1, R2
         IR_in_s <= "000000" & "00001" & "00010" & "00110" & "00000000001";
