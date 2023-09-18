@@ -172,8 +172,8 @@ begin
         wait for 1 ns;
         -- NOP
         --IR_in_s <= "000010" & "00000" & "00000" & "0000000000000000";
-        wait for 10 ns;
-        -- SUB R6, R1, R2
+        --wait for 10 ns;
+        --SUB R6, R1, R2
         IR_in_s <= "000000" & "00001" & "00010" & "00110" & "00000000001";
         wait for 1 ns;
         --ADD R7, R1, R2
@@ -185,6 +185,32 @@ begin
         --ADD R9, R1, R2
         IR_in_s <= "000000" & "00001" & "00010" & "01001" & "00000000000";
         wait for 1 ns;
+
+        --questa prova sotto , non si alza pc sel
+        --ADD R5, R0, R1
+        --IR_in_s <= "000000" & "00000" & "00001" & "00101" & "00000000000";
+        --wait for 1 ns;
+        --BEQZ R4, label              -->     ctrl_hazd
+        --IR_in_s <= "001010" & "00100" & "00000"  & "0101010101010101";
+        --wait for 1.5 ns;
+        --branchstatus_s <= '1';
+        --wait for 1 ns;
+        --branchstatus_s <= '0';
+        --wait 1 ns;
+
+        
+        -- prova per jump 
+        -- ADD R3, R1, R2
+        --IR_in_s <= "000000" & "00001" & "00010" & "00011" & "00000000000";
+       -- wait for 1 ns;
+        -- JUMP R10
+        --IR_in_s <= "100000" & "00000000000000000000000010";
+        --wait for 1 ns;
+        --ADD R5, R0, R1
+        --IR_in_s <= "000000" & "00000" & "00001" & "00101" & "00000000000";
+        --wait for 1 ns;
+
+
         
     wait;
     end process;
