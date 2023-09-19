@@ -70,7 +70,7 @@ BEGIN
 
     RAW: process (clk)
     begin
-        if(rst = '0' AND rising_edge(clk)) then
+        if(rst = '0' AND falling_edge(clk)) then
             -- COND BRANCH TAKEN hazard
             if(branchStatus = '1') then
                 hzd_sig_ctrl <= '1';
