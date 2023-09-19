@@ -121,58 +121,49 @@ begin
 
     test: process
     begin
-
-        -- LD R1, #imm
-        -- SUB R17, R1, R16
-        -- ADD R18, R3, R4
-        -- ADD R19, R4, R4
-        -- SUB R17, R1, r16
         reset_s <= '1';
         wait for 1 ns;
         reset_s <= '0';
         wait for 1 ns;
-        --IR_in_s <= "001100" & "00001" & "00010" & "0101010101010101";
-        --wait for 1 ns;
-        --IR_in_s <= "000000" & "00001" & "01000" & "01001" & "00000000001";
-        --wait for 1 ns;
-        --IR_in_s <= "000000" & "00011" & "00100" & "01010" & "00000000000";
-        --wait for 1 ns;
-        --IR_in_s <= "000000" & "00100" & "00100" & "01011" & "00000000000";
-        --wait for 1 ns;
-        --IR_in_s <= "000000" & "00001" & "01000" & "01001" & "00000000001";
-        
-        -- ADD R3, R1, R2
-        --IR_in_s <= "000000" & "00001" & "00010" & "00011" & "00000000000";
-        --wait for 1 ns;
-        -- ADD R4, R3, R1
-        --IR_in_s <= "000000" & "00011" & "00001" & "00100" & "00000000000";
-        --wait for 1 ns;
-        -- JUMP R10
-        --IR_in_s <= "100000" & "00000000000000000000000010";
-        --wait for 1 ns;
+        -- LD R1, #imm
+        IR_in_s <= "001100" & "00000" & "00001" & "0101010101010101";
+        wait for 1 ns;
+        -- ADD R0, R1, R0           -- RAW 
+        IR_in_s <= "000000" & "00001" & "00000" & "0000000000000000";
+        wait for 4 ns;
+        -- JUMP addr                -- Jump hazard (pipeline is flushed)
+        IR_in_s <= "100000" & "00000000000000000000000010";
+        wait for 1 ns;
         -- AND R5, R1, R2
-        --IR_in_s <= "000000" & "00001" & "00010" & "00101" & "00000000010";
-        
-        -- cannot inject instructions right after jump because we have to simulate
-        -- PC reg being stalled as well -> after 10 ns we check if RAW hazards are
-        -- detected correctly
+        IR_in_s <= "000000" & "00001" & "00010" & "00101" & "00000000010";
+        wait for 4 ns;
 
         -- STUFF TO REMEMBER: 
         --    this CU takes IR_in as input, which means that when we inject NOP in decode stage
         --    IR_in stays with the same instruction that has caused the stall (since PC is stopped),
-        --    causing pipeline to feed old instruction instead of NOPs and so hzd signal stays high.
-        --    this has to change (maybe we inject NOPs in IR_in_s and feed that to the decode instead of
-        --    putting IR_in directly)
-        --
+        
         --ADD R4, R0, R1
-        --IR_in_s <= "000000" & "00000" & "00001" & "00100" & "00000000000";
-        --wait for 1 ns;
-        --BEQZ R4, label                   -> RAW hazard with ADD above
-        --IR_in_s <= "001010" & "00100" & "00000"  & "0101010101010101";
-        --wait for 1 ns;
-        -- NOP
-        --IR_in_s <= "000010" & "00000" & "00000" & "0000000000000000";
-        --wait for 10 ns;
+        IR_in_s <= "000000" & "00000" & "00001" & "00100" & "00000000000";
+        wait for 1 ns;
+        --BEQZ R4, label                   -- RAW with ADD before                  
+        IR_in_s <= "001010" & "00100" & "00000"  & "0101010101010101";
+        wait for 3 ns;
+        wait for 1.5 ns;
+        branchStatus_s <= '1';               -- branch taken
+        wait for 1 ns;
+        branchStatus_s <= '0';
+        wait for 0.5 ns;
+        
+        -- ADD R3, R1, R2
+        IR_in_s <= "000000" & "00001" & "00010" & "00011" & "00000000000";
+        wait for 1 ns;
+        -- JUMP 0x10
+        IR_in_s <= "100000" & "00000000000000000000000010";
+        wait for 1 ns;
+        --ADD R5, R0, R1
+        IR_in_s <= "000000" & "00000" & "00001" & "00101" & "00000000000";
+        wait for 1 ns;
+
         --SUB R6, R1, R2
         --IR_in_s <= "000000" & "00001" & "00010" & "00110" & "00000000001";
         --wait for 1 ns;
@@ -187,32 +178,17 @@ begin
         --wait for 1 ns;
 
         --ADD R5, R0, R1
-        IR_in_s <= "000000" & "00000" & "00001" & "00101" & "00000000000";
-        wait for 1 ns;
-        --BEQZ R4, label              -->     ctrl_hazd
-        IR_in_s <= "001010" & "00100" & "00000"  & "0101010101010101";
-        wait for 1 ns;
-        IR_in_s <= "000000" & "00001" & "00010" & "00011" & "00000000000";
-        wait for 0.5 ns;
-        branchstatus_s <= '1';
-        wait for 1 ns;
-        branchstatus_s <= '0';
-        wait 1 ns;
-
-        
-        -- prova per jump 
-        -- ADD R3, R1, R2
-        --IR_in_s <= "000000" & "00001" & "00010" & "00011" & "00000000000";
-       -- wait for 1 ns;
-        -- JUMP R10
-        --IR_in_s <= "100000" & "00000000000000000000000010";
-        --wait for 1 ns;
-        --ADD R5, R0, R1
         --IR_in_s <= "000000" & "00000" & "00001" & "00101" & "00000000000";
         --wait for 1 ns;
-
-
-        
+        --BEQZ R4, label              -->     ctrl_hazd
+        --IR_in_s <= "001010" & "00100" & "00000"  & "0101010101010101";
+        --wait for 1 ns;
+        --IR_in_s <= "000000" & "00001" & "00010" & "00011" & "00000000000";
+        --wait for 0.5 ns;
+        --branchstatus_s <= '1';
+        --wait for 1 ns;
+        --branchstatus_s <= '0';
+        --wait 1 ns;
     wait;
     end process;
 
