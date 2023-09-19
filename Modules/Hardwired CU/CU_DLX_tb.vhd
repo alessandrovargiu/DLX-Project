@@ -169,7 +169,7 @@ begin
         --wait for 1 ns;
         --BEQZ R4, label                   -> RAW hazard with ADD above
         --IR_in_s <= "001010" & "00100" & "00000"  & "0101010101010101";
-       -- wait for 1 ns;
+        --wait for 1 ns;
         -- NOP
         --IR_in_s <= "000010" & "00000" & "00000" & "0000000000000000";
         --wait for 10 ns;
@@ -186,7 +186,6 @@ begin
         --IR_in_s <= "000000" & "00001" & "00010" & "01001" & "00000000000";
         --wait for 1 ns;
 
-        --questa prova sotto , non si alza pc sel
         --ADD R5, R0, R1
         IR_in_s <= "000000" & "00000" & "00001" & "00101" & "00000000000";
         wait for 1 ns;
@@ -198,7 +197,7 @@ begin
         branchstatus_s <= '1';
         wait for 1 ns;
         branchstatus_s <= '0';
-        wait for 1 ns;
+        wait 1 ns;
 
         
         -- prova per jump 
