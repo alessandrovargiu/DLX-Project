@@ -294,7 +294,7 @@ BEGIN
                             IR_ID_s <= NOP_IR;
                             -- EX flush
                             execute_cwd_s <= NOP_cwd(CW_SIZE-1-5 DOWNTO 0);
-                            IR_ID_s <= NOP_IR;
+                            IR_EX_s <= NOP_IR;
                         end if;
                 end if;
             end process;
