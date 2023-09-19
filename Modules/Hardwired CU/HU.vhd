@@ -36,9 +36,6 @@ BEGIN
             ID_Rs1 <= IR_ID(Nbit-7 downto Nbit-11);
             ID_Rs2 <= IR_ID(Nbit-12 downto Nbit-16);
             ID_Rd <= IR_ID(Nbit-17 downto Nbit-21);
-        elsif(IR_ID(Nbit-1 downto Nbit-6) = ITYPE_BEQZ OR IR_ID(Nbit-1 downto Nbit-6) = ITYPE_BNEZ) then
-            ID_Rs1 <= IR_ID(Nbit-7 downto Nbit-11);
-            ID_Rd <= "00000";
         elsif(IR_ID(Nbit-1 downto Nbit-6) /= "000000") then
             ID_Rs1 <= IR_ID(Nbit-7 downto Nbit-11);
             ID_Rd <= IR_ID(Nbit-12 downto Nbit-16);
@@ -70,43 +67,38 @@ BEGIN
 
     RAW: process (clk)
     begin
-        if(rst = '0' AND rising_edge(clk)) then
-            -- COND BRANCH TAKEN hazard
+        if(rst = '0' AND falling_edge(clk)) then
             if(branchStatus = '1') then
                 hzd_sig_ctrl <= '1';
+                PC_SEL <= '1';             
+            elsif (IR_ID(Nbit-1 downto Nbit-6) = JTYPE_JMP or IR_EX(Nbit-1 downto Nbit-6) = JTYPE_JMP or IR_MEM(Nbit-1 downto Nbit-6) = JTYPE_JMP) THEN
+                hzd_sig_jmp <= '1';
+                PC_SEL <= '1';
+            elsif (IR_ID(Nbit-1 downto Nbit-6) = JTYPE_JAL or IR_EX(Nbit-1 downto Nbit-6) = JTYPE_JAL or IR_MEM(Nbit-1 downto Nbit-6) = JTYPE_JAL) THEN
+                hzd_sig_jmp <= '1';
                 PC_SEL <= '1';
             else
                 hzd_sig_ctrl <= '0';
-                PC_SEL <= '0';
-            end if;
-
-            if(((IR_ID(Nbit-1 downto Nbit-6) /= "000010") AND IR_EX(Nbit-1 downto Nbit-6) /= "000010") OR ((IR_ID(Nbit-1 downto Nbit-6) /= "000010") AND IR_MEM(Nbit-1 downto Nbit-6) /= "000010") OR ((IR_ID(Nbit-1 downto Nbit-6) /= "000010") AND IR_WB(Nbit-1 downto Nbit-6) /= "000010")) then
-                if (IR_ID(Nbit-1 downto Nbit-6) = JTYPE_JMP or IR_EX(Nbit-1 downto Nbit-6) = JTYPE_JMP or IR_MEM(Nbit-1 downto Nbit-6) = JTYPE_JMP) THEN
-                    hzd_sig_jmp <= '1';
-                    PC_SEL <= '1';
-                elsif (IR_ID(Nbit-1 downto Nbit-6) = JTYPE_JAL or IR_EX(Nbit-1 downto Nbit-6) = JTYPE_JAL or IR_MEM(Nbit-1 downto Nbit-6) = JTYPE_JAL) THEN
-                    hzd_sig_jmp <= '1';
-                    PC_SEL <= '1';
-                else
-                    hzd_sig_jmp <= '0';
-                    PC_SEL <= '0'; 
+                hzd_sig_jmp <= '0';
+                PC_SEL <= '0';  -- qeusta assegnazione fa si che pcsel stia sempre a 0 attenzione.
+                if(((IR_ID(Nbit-1 downto Nbit-6) /= "000010") AND IR_EX(Nbit-1 downto Nbit-6) /= "000010") OR ((IR_ID(Nbit-1 downto Nbit-6) /= "000010") AND IR_MEM(Nbit-1 downto Nbit-6) /= "000010") ) then  --OR ((IR_ID(Nbit-1 downto Nbit-6) /= "000010") ) AND IR_WB(Nbit-1 downto Nbit-6) /= "000010"
                     if((ID_Rs1 = EX_Rd OR ID_Rs2 = EX_Rd) AND EX_Rd /= std_logic_vector(to_unsigned(0, 5))) then
                         hzd_sig_raw <= '1';
                         PC_SEL <= '1';
                     elsif((ID_Rs1 = MEM_Rd OR ID_Rs2 = MEM_Rd) AND MEM_Rd /= std_logic_vector(to_unsigned(0, 5))) then
                         hzd_sig_raw <= '1';
                         PC_SEL <= '1';
-                    elsif((ID_Rs1 = WB_Rd OR ID_Rs2 = WB_Rd) AND WB_Rd /= std_logic_vector(to_unsigned(0, 5))) then
-                        hzd_sig_raw <= '1';
-                        PC_SEL <= '1';
+                    --elsif((ID_Rs1 = WB_Rd OR ID_Rs2 = WB_Rd) AND WB_Rd /= std_logic_vector(to_unsigned(0, 5))) then
+                     --   hzd_sig_raw <= '1';
+                      --  PC_SEL <= '1';
                     else
-                        hzd_sig_raw <= '0';
-                        PC_SEL <= '0';
+                    hzd_sig_raw <= '0';
+                    PC_SEL <= '0';
                     end if;
+                 else
+                    hzd_sig_raw <= '0';
+                    PC_SEL <= '0';
                 end if;
-            --hzd_sig_ctrl <= '0';
-            --hzd_sig_jmp <= '0';
-            --PC_SEL <= '0';  -- qeusta assegnazione fa si che pcsel stia sempre a 0 attenzione.
             end if;  
         end if;
     end process;
