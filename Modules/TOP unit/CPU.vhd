@@ -7,8 +7,8 @@ use work.constants.all;
 ENTITY CPU IS
     PORT (              
         clk : IN STD_LOGIC; -- Clock Signal (rising-edge trigger)
-        reset : IN STD_LOGIC; -- Reset Signal: Asyncronous Active Low (Negative)
-        Instr_in : IN std_logic_vector (Nbit-1 downto 0);
+        reset : IN STD_LOGIC -- Reset Signal: Asyncronous Active Low (Negative)
+        --Instr_in : IN std_logic_vector (Nbit-1 downto 0)
     );
 END ENTITY CPU;
 
@@ -57,9 +57,9 @@ component HU is
 END component;
 
 component BasicDp is
-    Generic( NbitMem: integer;
-             controlNbit: integer;
-             addressNbit: integer );
+    --Generic( NbitMem: integer;
+         --    controlNbit: integer;
+           --  addressNbit: integer );
     port(   Clk:        in std_logic;
             rst:        in std_logic;
             
@@ -83,7 +83,8 @@ component DRAM is
     );
     port(
         clk: in std_logic;
-        rst: in std_logic;                            -- active low
+        rst: in std_logic;
+        EN: in std_logic;                            -- active low
         RW: in std_logic;                             -- 1 - read, 0 - write
         ADDR: in std_logic_vector(W-1 downto 0);          
         DATA_IN: in std_logic_vector(N-1 downto 0);
@@ -136,23 +137,23 @@ signal enable_s:  std_logic;
 begin
 
     CU : CU_dlx
-    generic map()
-    port map(clk,reset,Inst_in,hzd_sig_jmp_s,hzd_sig_ctrl_s,hzd_sig_raw_s,decode_cwd_s,execute_cwd_s,memory_cwd_s,wb_cwd_s,IR_ID_s,IR_EX_s,IR_MEM_s,IR_WB_s);
+    --generic map()
+    port map(clk,reset,IramDATA_s,hzd_sig_jmp_s,hzd_sig_ctrl_s,hzd_sig_raw_s,decode_cwd_s,execute_cwd_s,memory_cwd_s,wb_cwd_s,IR_ID_s,IR_EX_s,IR_MEM_s,IR_WB_s);  --,Inst_in
 
-    HU : HU
-    generic map()
+    HU1 : HU
+    --generic map()
     port map(clk,reset,cwd_s,IR_ID_s,IR_EX_s,IR_MEM_s,IR_WB_s,branchstatus_s,PC_SEL_s,hzd_sig_jmp_s,hzd_sig_ctrl_s,hzd_sig_raw_s);
 
-    DRAM : DRAM
-    generic map()
-    port map(clk,reset,rw_s,Dramaddr_s,Dramdata_in_s,Dramdata_out_s,readyDram_s);
+    DRAM1 : DRAM
+    --generic map()
+    port map(clk,reset,decode_cwd_s(controlNbit-19),decode_cwd_s(controlNbit-18),Dramaddr_s,Dramdata_in_s,Dramdata_out_s,readyDram_s);
 
-    IRAM : IRAM
-    generic map()
+    IRAM1 : IRAM
+    --generic map()
     port map(clk,reset,IramADDR_s,IramDATA_s,readyIram_s);
 
     DP: BasicDP
-    generic map()
+    --generic map() 
     port map (
                 clk => Clock,
                 rst => Reset,

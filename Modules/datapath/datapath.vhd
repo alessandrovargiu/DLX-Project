@@ -2,11 +2,12 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
+use work.constants.all;
 
 entity BasicDP is
-    Generic( NbitMem: integer;
-             controlNbit: integer;
-             addressNbit: integer );
+    --Generic( NbitMem: integer;
+            -- controlNbit: integer;
+            -- addressNbit: integer );
     port(   Clk:        in std_logic;
             rst:        in std_logic;
             
