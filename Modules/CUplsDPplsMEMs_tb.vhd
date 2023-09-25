@@ -127,6 +127,7 @@ end component;
     port(
         clk: in std_logic;
         rst: in std_logic;                            -- active low
+        EN: in std_logic;
         RW: in std_logic;                             -- 1 - read, 0 - write
         ADDR: in std_logic_vector(W-1 downto 0);          
         DATA_IN: in std_logic_vector(N-1 downto 0);
@@ -161,6 +162,7 @@ end component;
     --constant BNEZ1BITWISE: std_logic_vector(Nbit-1 downto 0) := "00101100010000001111111111100100" ; --        bnez r2, label ; dovrebbe saltare                                0000 0018
     constant JALBITWISE:   std_logic_vector(Nbit-1 downto 0) := "10000111111111111111111111101000";  --         jal label                   memAddress: 0000 0014
     constant STWBITWISE: std_logic_vector(Nbit-1 downto 0) :=   "00110100010000010000000000010101" ; --        stw 21(r2), r1;
+    constant LDWBITWISE: std_logic_vector(Nbit-1 downto 0) :=   "00110000001010010000000000010110" ; --         ldw r9, 22(r1) ;
 begin
 
         -- instance of DP
@@ -207,7 +209,8 @@ begin
         port map (
             clk => Clock,
             rst => reset,
-            RW => RW_i,
+            EN => controlWordOut_s(controlNbit-19),
+            RW => controlWordOut_s(controlNbit-18), --corresponds to RW control bit from control word
             ADDR => DMaddress_i,
             DATA_IN => DMdataOUT_i, --the data going as input to the DMEM is the data going as OUTPUT from dp
             DATA_OUT => DMdataIN_i, --the data going output from DMEM is INPUT to the DP

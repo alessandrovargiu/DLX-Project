@@ -12,6 +12,7 @@ entity DRAM is
     port(
         clk: in std_logic;
         rst: in std_logic;                            -- active low
+        EN: in std_logic;
         RW: in std_logic;                             -- 1 - read, 0 - write
         ADDR: in std_logic_vector(W-1 downto 0);          
         DATA_IN: in std_logic_vector(N-1 downto 0);
@@ -33,7 +34,7 @@ begin
         if(falling_edge(clk)) then --put as falling edge as the RW is set by CU on rising edge of the clock
             if(rst = '1') then
                 memory <= (others => (others => '0'));
-            else
+            elsif(EN = '1') then
                 if(RW = '1') then                       -- READ
                     DATA_OUT <= memory(to_integer(unsigned(ADDR)));
                 end if;
