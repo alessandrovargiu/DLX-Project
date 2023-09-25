@@ -155,7 +155,7 @@ begin
     DP: BasicDP
     --generic map() 
     port map (
-                clk => Clock,
+                clk => Clk,
                 rst => Reset,
                 fromHU => PC_SEL_s,
                 enable => enable_s,
