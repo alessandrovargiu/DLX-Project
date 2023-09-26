@@ -177,7 +177,7 @@ begin
     DP: BasicDP
     --generic map() 
     port map (
-                clk => clk,
+                clk => Clk,
                 rst => Reset,
                 fromHU => PC_SEL_s,
                 enable => enable_s,
