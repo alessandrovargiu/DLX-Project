@@ -76,7 +76,7 @@ architecture TESTPROVA of dpTestWithIram is
     );
 end component;
 
-    component CUbasic IS
+component CU_dlx IS
     GENERIC (
         MICROCODE_MEM_SIZE : INTEGER := 41; -- Microcode Memory Size
         FUNC_SIZE : INTEGER := 11; -- Func Field Size for R-Type Ops
@@ -85,14 +85,18 @@ end component;
         --ALU_SIZE : Integer := 2    --2 bits for 4 operations 0 1 2 3
     );
     PORT (
+
         --Instr_wrd: IN std_logic_vector (totbit downto 0)    
         clk : IN STD_LOGIC;
         reset : IN STD_LOGIC;
+        --pc_sel: OUT STD_LOGIC;
         -- opcode : IN  std_logic_vector(OP_CODE_SIZE - 1 downto 0);
         --func  : IN  std_logic_vector(FUNC_SIZE - 1 downto 0);
         IR_in : IN STD_LOGIC_VECTOR(Nbit - 1 DOWNTO 0);
-        --hzd_sig_ctrl: in std_logic;
-        --hzd_sig_raw: in std_logic;
+        hzd_sig_jmp: in std_logic;
+        hzd_sig_ctrl: in std_logic;
+        hzd_sig_raw: in std_logic;
+        --hzd_sig_raw_2clk: in std_logic;
         --stall : IN STD_LOGIC;
         --jump : IN STD_LOGIC;
         --control_wrd: OUT std_logic_vector (totbit downto 0)
@@ -101,9 +105,34 @@ end component;
         execute_cwd : OUT STD_LOGIC_VECTOR (CW_SIZE-1-5 DOWNTO 0);
         memory_cwd : out STD_LOGIC_VECTOR (CW_SIZE-1-17 DOWNTO 0);
         wb_cwd : OUT STD_LOGIC_VECTOR (CW_SIZE-1-20 DOWNTO 0);
-        controlWordOut: out std_logic_vector(CW_size - 1 downto 0)
+        IR_ID: OUT std_logic_vector(Nbit-1 downto 0);
+        IR_EX: OUT std_logic_vector(Nbit-1 downto 0);
+        IR_MEM: OUT std_logic_vector(Nbit-1 downto 0);
+        IR_WB: OUT std_logic_vector(Nbit-1 downto 0)
+        
     );
 end component;
+
+--    component CUbasic IS
+--    GENERIC (
+--        MICROCODE_MEM_SIZE : INTEGER := 41; -- Microcode Memory Size
+--      FUNC_SIZE : INTEGER := 11; -- Func Field Size for R-Type Ops
+--        OP_CODE_SIZE : INTEGER := 6; -- Op Code Size
+--        CW_SIZE : INTEGER := 25 -- output signals of CU
+--    );
+--    PORT (    
+--        clk : IN STD_LOGIC;
+--        reset : IN STD_LOGIC;
+
+--        IR_in : IN STD_LOGIC_VECTOR(Nbit - 1 DOWNTO 0);
+
+--        decode_cwd : OUT STD_LOGIC_VECTOR(CW_SIZE-1 DOWNTO 0);
+--        execute_cwd : OUT STD_LOGIC_VECTOR (CW_SIZE-1-5 DOWNTO 0);
+--        memory_cwd : out STD_LOGIC_VECTOR (CW_SIZE-1-17 DOWNTO 0);
+--        wb_cwd : OUT STD_LOGIC_VECTOR (CW_SIZE-1-20 DOWNTO 0);
+--        controlWordOut: out std_logic_vector(CW_size - 1 downto 0)
+--    );
+--end component;
 
     component IRAM is
         generic (
@@ -151,6 +180,8 @@ end component;
     signal execute_cwd_i :  STD_LOGIC_VECTOR (CW_SIZE-1-5 DOWNTO 0);
     signal memory_cwd_i :  STD_LOGIC_VECTOR (CW_SIZE-1-17 DOWNTO 0);
     signal wb_cwd_i :  STD_LOGIC_VECTOR (CW_SIZE-1-20 DOWNTO 0);
+    signal IR_ID_s, IR_EX_s, IR_MEM_s, IR_WB_s: std_logic_vector(Nbit-1 downto 0);
+    signal hzd_sig_ctrl_s, hzd_sig_raw_s, hzd_sig_jmp_s: std_logic ;
 
     
     constant ADDI1BITWISE: std_logic_vector(Nbit-1 downto 0) := "00000100000000010000000000000001" ; -- label: addi r1, r0, 1                      assumed starting memAddress: 0000 0000
@@ -163,6 +194,7 @@ end component;
     constant JALBITWISE:   std_logic_vector(Nbit-1 downto 0) := "10000111111111111111111111101000";  --         jal label                   memAddress: 0000 0014
     constant STWBITWISE: std_logic_vector(Nbit-1 downto 0) :=   "00110100010000010000000000010101" ; --        stw 21(r2), r1;
     constant LDWBITWISE: std_logic_vector(Nbit-1 downto 0) :=   "00110000001010010000000000010110" ; --         ldw r9, 22(r1) ;
+
 begin
 
         -- instance of DP
@@ -181,18 +213,37 @@ begin
                 DMdataOUT => DMdataOUT_i
                );
 
-        CU: CUbasic
+        CUwithHU: CU_dlx
         generic map( 41, 11, 6, 25)
         port map (
             clk => Clock,
             reset => Reset,
             IR_in => Imdata_i,
+            hzd_sig_jmp => hzd_sig_jmp_s,
+            hzd_sig_ctrl => hzd_sig_ctrl_s,
+            hzd_sig_raw => hzd_sig_raw_s,
             decode_cwd => decode_cwd_i,
             execute_cwd => execute_cwd_i,
             memory_cwd => memory_cwd_i,
             wb_cwd => wb_cwd_i,
-            controlWordOut => controlWordOut_s
+            IR_ID => IR_ID_s,
+            IR_EX => IR_EX_s,
+            IR_MEM => IR_MEM_s,
+            IR_WB => IR_WB_s 
         );
+
+        --CU: CUbasic
+        --generic map( 41, 11, 6, 25)
+        --port map (
+        --    clk => Clock,
+        --    reset => Reset,
+        --    IR_in => Imdata_i,
+        --    decode_cwd => decode_cwd_i,
+        --    execute_cwd => execute_cwd_i,
+        --    memory_cwd => memory_cwd_i,
+        --    wb_cwd => wb_cwd_i,
+        --    controlWordOut => controlWordOut_s
+        --);
 
         Imem: IRAM
         generic map (32, 32)
@@ -221,6 +272,7 @@ begin
 	    Reset <= '1', '0' after 2.5 ns;
         enable_i <= '1' after 1.5 ns;
 
+        controlWordOut_s <= decode_cwd_i(25-1 downto 20) & execute_cwd_i(19 downto 8) & memory_cwd_i(7 downto 5) & wb_cwd_i(4 downto 0) ;
 
         DPSampleSignals: process
 

@@ -7,7 +7,8 @@ use work.constants.all;
 ENTITY CPU IS
     PORT (              
         clk : IN STD_LOGIC; -- Clock Signal (rising-edge trigger)
-        reset : IN STD_LOGIC -- Reset Signal: Asyncronous Active Low (Negative)
+        reset : IN STD_LOGIC; -- Reset Signal: Asyncronous Active Low (Negative)
+        enable: in std_logic
         --Instr_in : IN std_logic_vector (Nbit-1 downto 0)
     );
 END ENTITY CPU;
@@ -129,44 +130,82 @@ signal readyDram_s :  std_logic;
 signal readyIram_s :  std_logic;
 signal IramADDR_s :   std_logic_vector(N-1 downto 0);
 signal IramDATA_s :   std_logic_vector(M-1 downto 0);
-signal enable_s:  std_logic; 
-
-
-
+signal controlWord_s: std_logic_vector(CW_SIZE-1 downto 0);
+--signal enable_s:  std_logic; 
 
 begin
 
     CU : CU_dlx
     --generic map()
-    port map(clk,reset,IramDATA_s,hzd_sig_jmp_s,hzd_sig_ctrl_s,hzd_sig_raw_s,decode_cwd_s,execute_cwd_s,memory_cwd_s,wb_cwd_s,IR_ID_s,IR_EX_s,IR_MEM_s,IR_WB_s);  --,Inst_in
+    port map(clk => clk,
+            reset => reset,
+            IR_in => IramDATA_s,
+            hzd_sig_jmp => hzd_sig_jmp_s,
+            hzd_sig_ctrl => hzd_sig_ctrl_s,
+            hzd_sig_raw => hzd_sig_raw_s,
+            decode_cwd => decode_cwd_s,
+            execute_cwd => execute_cwd_s,
+            memory_cwd => memory_cwd_s,
+            wb_cwd => wb_cwd_s,
+            IR_ID => IR_ID_s,
+            IR_EX => IR_EX_s,
+            IR_MEM => IR_MEM_s,
+            IR_WB => IR_WB_s
+        );  --,Inst_in
 
     HU1 : HU
     --generic map()
-    port map(clk,reset,cwd_s,IR_ID_s,IR_EX_s,IR_MEM_s,IR_WB_s,branchstatus_s,PC_SEL_s,hzd_sig_jmp_s,hzd_sig_ctrl_s,hzd_sig_raw_s);
+    port map(clk,
+            reset,
+            cwd_s,
+            IR_ID_s,
+            IR_EX_s,
+            IR_MEM_s,
+            IR_WB_s,
+            branchstatus_s,
+            PC_SEL_s,
+            hzd_sig_jmp_s,
+            hzd_sig_ctrl_s,
+            hzd_sig_raw_s
+        );
 
     DRAM1 : DRAM
     --generic map()
-    port map(clk,reset,decode_cwd_s(controlNbit-19),decode_cwd_s(controlNbit-18),Dramaddr_s,Dramdata_in_s,Dramdata_out_s,readyDram_s);
+    port map(clk => clk,
+            rst => reset,
+            EN => decode_cwd_s(controlNbit-19),
+            RW => decode_cwd_s(controlNbit-18),
+            ADDR => Dramaddr_s,
+            DATA_IN => Dramdata_out_s,
+            DATA_OUT => Dramdata_in_s,
+            ready => readyDram_s
+        );
 
     IRAM1 : IRAM
     --generic map()
-    port map(clk,reset,IramADDR_s,IramDATA_s,readyIram_s);
+    port map(clk => clk,
+            rst => reset,
+            I_ADDR => IramADDR_s,
+            I_DATA => IramDATA_s,
+            ready => readyIram_s
+        );
 
     DP: BasicDP
     --generic map() 
     port map (
-                clk => Clock,
+                clk => clk,
                 rst => Reset,
                 fromHU => PC_SEL_s,
-                enable => enable_s,
+                enable => enable,
                 IMdata => Iramdata_s, --is input data from the IRAM
-                controlWord => decode_cwd_s,
-                DMdataIN => Dramdata_out_s,
+                controlWord => controlWord_s,
+                DMdataIN => Dramdata_in_s,
                 IMaddress => IramADDR_s,
                 DMaddress => Dramaddr_s,
-                DMdataOUT => Dramdata_in_s
+                DMdataOUT => Dramdata_out_s
                );
 
+    controlWord_s <= decode_cwd_s(24 downto 20) & execute_cwd_s(19 downto 8) & memory_cwd_s(7 downto 5) & wb_cwd_s(4 downto 0);
             
 end architecture;
 
