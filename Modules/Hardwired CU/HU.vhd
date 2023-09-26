@@ -42,7 +42,7 @@ BEGIN
             ID_Rd <= IR_ID(Nbit-12 downto Nbit-16);
             if(IR_ID(Nbit-1 downto Nbit-6) = ITYPE_STW) then
                 ID_Rs1 <= IR_ID(Nbit-12 downto Nbit-16);
-                ID_Rd <= IR_ID(Nbit-7 downto Nbit-11);     
+                ID_Rd <= IR_ID(Nbit-7 downto Nbit-11);
             end if;
         end if;
     end process;
