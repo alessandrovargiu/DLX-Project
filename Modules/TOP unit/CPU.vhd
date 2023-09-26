@@ -136,7 +136,7 @@ signal controlWord_s: std_logic_vector(CW_SIZE-1 downto 0);
 begin
 
     CU : CU_dlx
-    --generic map()
+    --generic map();
     port map(clk => clk,
             reset => reset,
             IR_in => IramDATA_s,
@@ -170,11 +170,11 @@ begin
         );
 
     DRAM1 : DRAM
-    --generic map()
+    --generic map();
     port map(clk => clk,
             rst => reset,
-            EN => decode_cwd_s(controlNbit-19),
-            RW => decode_cwd_s(controlNbit-18),
+            EN => controlWord_s(controlNbit-19),
+            RW => controlWord_s(controlNbit-18),
             ADDR => Dramaddr_s,
             DATA_IN => Dramdata_out_s,
             DATA_OUT => Dramdata_in_s,

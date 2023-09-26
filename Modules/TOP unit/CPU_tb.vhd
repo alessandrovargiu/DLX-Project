@@ -41,7 +41,7 @@ ClkProcess: PROCESS
         --Instr_in => Instr_in_s
     );
     
-    Reset_s <= '1', '0' after 1 ns;
+    Reset_s <= '1', '0' after 1.5 ns;
     enable_s <= '1' ;
 
     test: process
