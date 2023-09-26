@@ -137,16 +137,38 @@ signal enable_s:  std_logic;
 begin
 
     CU : CU_dlx
-    --generic map()
-    port map(clk,reset,IramDATA_s,hzd_sig_jmp_s,hzd_sig_ctrl_s,hzd_sig_raw_s,decode_cwd_s,execute_cwd_s,memory_cwd_s,wb_cwd_s,IR_ID_s,IR_EX_s,IR_MEM_s,IR_WB_s);  --,Inst_in
+    --generic map();
+    port map(clk => clk,
+            reset => reset,
+            IR_in => IramDATA_s,
+            hzd_sig_jmp => hzd_sig_jmp_s,
+            hzd_sig_ctrl => hzd_sig_ctrl_s,
+            hzd_sig_raw => hzd_sig_raw_s,
+            decode_cwd => decode_cwd_s,
+            execute_cwd => execute_cwd_s,
+            memory_cwd => memory_cwd_s,
+            wb_cwd => wb_cwd_s,
+            IR_ID => IR_ID_s,
+            IR_EX => IR_EX_s,
+            IR_MEM => IR_MEM_s,
+            IR_WB => IR_WB_s
+        );  --,Inst_in
 
     HU1 : HU
     --generic map()
     port map(clk,reset,cwd_s,IR_ID_s,IR_EX_s,IR_MEM_s,IR_WB_s,branchstatus_s,PC_SEL_s,hzd_sig_jmp_s,hzd_sig_ctrl_s,hzd_sig_raw_s);
 
     DRAM1 : DRAM
-    --generic map()
-    port map(clk,reset,decode_cwd_s(controlNbit-19),decode_cwd_s(controlNbit-18),Dramaddr_s,Dramdata_in_s,Dramdata_out_s,readyDram_s);
+    --generic map();
+    port map(clk => clk,
+            rst => reset,
+            EN => controlWord_s(controlNbit-19),
+            RW => controlWord_s(controlNbit-18),
+            ADDR => Dramaddr_s,
+            DATA_IN => Dramdata_out_s,
+            DATA_OUT => Dramdata_in_s,
+            ready => readyDram_s
+        );
 
     IRAM1 : IRAM
     --generic map()
