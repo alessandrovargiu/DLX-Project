@@ -5,17 +5,16 @@ USE ieee.std_logic_arith.ALL;
 USE work.INSTR_CODES.ALL;
 use work.constants.all;
 
-entity CPUtb is
-end CPUtb;
+entity tb is
+end tb;
 
 
-architecture CPUtest of CPUtb is
+architecture test of tb is
 
     component CPU is
         PORT (              
         clk : IN STD_LOGIC; -- Clock Signal (rising-edge trigger)
-        reset : IN STD_LOGIC; -- Reset Signal: Asyncronous Active Low (Negative)
-        enable: in std_logic
+        reset : IN STD_LOGIC -- Reset Signal: Asyncronous Active Low (Negative)
         --Instr_in : IN std_logic_vector (Nbit-1 downto 0);
     );
 END component;
@@ -36,21 +35,23 @@ ClkProcess: PROCESS
     UUT: CPU
     port map(
         clk => clk_s,
-        reset => reset_s,
-        enable => enable_s
+        reset => reset_s
         --Instr_in => Instr_in_s
     );
     
-    Reset_s <= '1', '0' after 1.5 ns;
+    Reset_s <= '1', '0' after 1 ns;
     enable_s <= '1' ;
 
     test: process
     begin
-        
-        
 
+        enable_s <= '1' after 1.5 ns;
+        reset_s <= '1';
+        wait for 1 ns;
+        reset_s <= '0';
         wait for 50 ns;
         wait;
+
 
     end process;
     end architecture;
