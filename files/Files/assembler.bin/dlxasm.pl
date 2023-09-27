@@ -86,6 +86,10 @@ if ($srcfile =~ /^(.*)\.dlx$/) {
   "sgtu"  => "r,0x3b",
   "sleu"  => "r,0x3c",
   "sgeu"  => "r,0x3d",
+# new additions
+  "xnor" => "r, 0x3f",
+  "nand" => "r, 0x4a",
+  "nor" => "r, 0x4b",
 # Floating-point instructions
   "addf"  => "f,0x00",
   "subf"  => "f,0x01",
@@ -163,6 +167,10 @@ if ($srcfile =~ /^(.*)\.dlx$/) {
   "sgtui" => "i,0x3b",
   "sleui" => "i,0x3c",
   "sgeui" => "i,0x3d",
+#new addition
+  "xnori" => "i, 0x1e",
+  "nori" => "i, 0x1f",
+  "nandi" => "i, 0x2a",
 );
 %specialreg = ("pc" => 0,
 	       "ir31" => 2,
