@@ -29,12 +29,12 @@ begin
 
     process (I_ADDR)
     begin
-        if(rst = '0') then
+        --if(rst = '0') then
             if(unsigned(I_ADDR) < M ) then
                 ready <= '1';
                 I_DATA <= memory(to_integer(unsigned(I_ADDR))) & memory(to_integer(unsigned(I_ADDR) +1 )) & memory(to_integer(unsigned(I_ADDR) +2)) & memory(to_integer(unsigned(I_ADDR) +3));        
             end if;
-        end if;
+        --end if;
     end process;
 
     process (rst)
@@ -46,7 +46,7 @@ begin
 
     begin
         if(Rst = '1') then
-            file_open(fp, "MEM_init_file.txt", READ_MODE); 
+            file_open(fp, "StoreAndLoad.mem", READ_MODE); 
             while (not endfile(fp)) loop
             readline(fp, file_line);
                 read(file_line, tmp);
