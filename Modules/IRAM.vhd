@@ -12,7 +12,6 @@ entity IRAM is
         M: integer := 32
     );
     port(
-        clk: in std_logic;
         rst: in std_logic;                            -- active low
         I_ADDR : in std_logic_vector(N-1 downto 0);     -- dimensions to be specified     
         I_DATA : out std_logic_vector(M-1 downto 0);
@@ -28,10 +27,9 @@ architecture Beh of IRAM is
 
 begin
 
-    process (clk)
-        
+    process (I_ADDR)
     begin
-        if(rising_edge(clk)) then
+        if(rst = '0') then
             if(unsigned(I_ADDR) < M ) then
                 ready <= '1';
                 I_DATA <= memory(to_integer(unsigned(I_ADDR))) & memory(to_integer(unsigned(I_ADDR) +1 )) & memory(to_integer(unsigned(I_ADDR) +2)) & memory(to_integer(unsigned(I_ADDR) +3));        
