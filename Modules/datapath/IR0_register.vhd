@@ -1,17 +1,18 @@
 library ieee;
 use ieee.std_logic_1164.all;
 
-entity myregister is
+entity IR0 is
     generic ( RegNbit: integer );
     port (  clk:    in  std_logic;
             rst:    in  std_logic;
             en:     in  std_logic;
+            fromHU: in  std_logic;
             I:      in  std_logic_vector(RegNbit-1 downto 0);
             Q:      out std_logic_vector(RegNbit-1 downto 0) );
-end myregister;
+end IR0;
 
 
-architecture behavioral of myregister is
+architecture behavioral of IR0 is
     signal mem: std_logic_vector(RegNbit-1 downto 0);
 begin
     
@@ -22,10 +23,14 @@ begin
             if( rst = '1' ) then --synchronous reset 
                 Q <= (others => '0') ;
             ELSIF ( en = '1' ) then
-                Q <= I ;
+                Q <= I;
                 mem <= I;
-            elsif ( en = '0' ) then
-                Q <= mem ;               -- memory state when enable = 0 and rst = 0 (used in stalls)
+                if(fromHU = '1') then
+                    Q <= mem;
+                    mem <= mem;
+                end if;
+                --elsif ( en = '0' ) then
+            --    Q <= mem ;               -- memory state when enable = 0 and rst = 0 (used in stalls)
             end if;
         end if;
     end process;

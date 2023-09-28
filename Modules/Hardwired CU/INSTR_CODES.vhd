@@ -200,7 +200,7 @@ package INSTR_CODES is
 	constant NOP_DECODE : std_logic_vector(4 downto 0) := "10110";
 	constant NOP_EXECUTE: std_logic_vector(11 downto 0) := "110100000000"; 
 	constant NOP_MEMORY: std_logic_vector(2 downto 0) := "000";
-	constant NOP_WB: std_logic_vector(4 downto 0) := "11000";
+	constant NOP_WB: std_logic_vector(4 downto 0) := "10000";
 	constant NOP_CWD: std_logic_vector(24 downto 0) := NOP_DECODE &  NOP_EXECUTE & NOP_MEMORY & NOP_WB;
 
 	--ADDI

@@ -19,8 +19,10 @@ entity BasicDP is
 
             IMAddress:   out std_logic_vector(addressNbit-1 downto 0);
             DMaddress:   out std_logic_vector(addressNbit-1 downto 0);
-            DMdataOut:   out std_logic_vector(NbitMem -1 downto 0)
+            DMdataOut:   out std_logic_vector(NbitMem -1 downto 0);
             
+            IR0_out:  out std_logic_vector(Nbit-1 downto 0);
+            IROutID:  out std_logic_vector(Nbit-1 downto 0)
     );
 end BasicDP;
 
@@ -155,6 +157,17 @@ signal fromMemOrFromAlu:     std_logic_vector(Nbit-1 downto 0);
                 Q:      out std_logic_vector(RegNbit-1 downto 0) );
         end component;
         
+    component IR0 is
+        generic ( RegNbit: integer );
+        port (  clk:    in  std_logic;
+            rst:    in  std_logic;
+            en:     in  std_logic;
+            fromHU: in  std_logic;
+            I:      in  std_logic_vector(RegNbit-1 downto 0);
+            Q:      out std_logic_vector(RegNbit-1 downto 0) 
+        );
+    end component;
+
     --register File (Will be substituted with the windowed one in future)
     component register_file is
         generic( nbit : integer ;
@@ -207,6 +220,7 @@ signal fromMemOrFromAlu:     std_logic_vector(Nbit-1 downto 0);
           );
 end component;
 
+    signal notfromHU: std_logic;
 ---------------------------------------------------------------------------------
 --Brief description of my interpretetion of control bits
 
@@ -274,15 +288,18 @@ port map( pcPlus4orJ, PCout, fromHU, PCinput );
 ---registers part of the IF/ID pipe 
 
 --contains current instruction
-IR_0: myregister 
+IR_0: IR0 
 generic map(Nbit)
-port map( clk, rst, enable, IMdata,  IRoutputID );  --called IRoutputID because the output of the content of the IR stage is going to the Instruction decode stage
+port map( clk, rst, enable, fromHU, IMdata,  IRoutputID );  --called IRoutputID because the output of the content of the IR stage is going to the Instruction decode stage
 
 --stores subsequent instruction address
 NPC_0: myregister 
 generic map(Nbit)
 port map(clk, rst, enable, PCout, NPCoutputID ); 
 
+notfromHU <= not(fromHU);
+IR0_out <= IRoutputID;
+IRoutID <= IRoutputEX;
 IMAddress <= PCout ;
 
 ---------------------------------------------------Decode Unit related component instances--------------------------------------------------------
@@ -315,27 +332,27 @@ port map (  CLK => clk,
             RD2 => '1',
             WR => controlWord(CWNbit-21), --enables write port
             ADD_WR => finalAddressWB, 
-            ADD_RD1 => IRoutputID(Nbit-1-OpcodeNbit downto Nbit-OpcodeNbit-RFaddrNbit), --address of source register 1
-            ADD_RD2 => IRoutputID(Nbit-1-OpcodeNbit-RFaddrNbit downto Nbit-OpcodeNbit-RFaddrNbit-RFaddrNbit), --address of source register 2
+            ADD_RD1 => IRoutputEX(Nbit-1-OpcodeNbit downto Nbit-OpcodeNbit-RFaddrNbit), --address of source register 1
+            ADD_RD2 => IRoutputEX(Nbit-1-OpcodeNbit-RFaddrNbit downto Nbit-OpcodeNbit-RFaddrNbit-RFaddrNbit), --address of source register 2
             DATAIN => RFDataIn,
             OUT1 => RFOutRegAIN,
             OUT2 => RFOutRegBIN ); 
 
 unsignedImmValueFrom16: sgn_extender
 generic map(NbitIn => 16, NbitImm => 32)
-port map( signedOrUnsigned => '0', se_in => IRoutputID(NbitImmidiateI-1 downto 0), se_out => unsignedImmfrom16); 
+port map( signedOrUnsigned => '0', se_in => IRoutputEX(NbitImmidiateI-1 downto 0), se_out => unsignedImmfrom16); 
 
 signedImmValueFrom16: sgn_extender
 generic map(NbitIn => 16, NbitImm => 32)
-port map( signedOrUnsigned => '1', se_in => IRoutputID(NbitImmidiateI-1 downto 0), se_out => signedImmfrom16); 
+port map( signedOrUnsigned => '1', se_in => IRoutputEX(NbitImmidiateI-1 downto 0), se_out => signedImmfrom16); 
 
 unsignedImmValueFrom26: sgn_extender
 generic map(NbitIn => 26, NbitImm => 32)
-port map( signedOrUnsigned => '0', se_in => IRoutputID(NbitImmidiateJ-1 downto 0), se_out => unsignedImmfrom26); 
+port map( signedOrUnsigned => '0', se_in => IRoutputEX(NbitImmidiateJ-1 downto 0), se_out => unsignedImmfrom26); 
 
 signedImmValueFrom26: sgn_extender
 generic map(NbitIn => 26, NbitImm => 32)
-port map( signedOrUnsigned => '1', se_in => IRoutputID(NbitImmidiateJ-1 downto 0), se_out => signedImmfrom26); 
+port map( signedOrUnsigned => '1', se_in => IRoutputEX(NbitImmidiateJ-1 downto 0), se_out => signedImmfrom26); 
 
 ImmidiateChoice: MUX41
 generic map (Nbit)  --usually inputs of 32 bits
@@ -347,7 +364,7 @@ port map (input1 => unsignedImmfrom16, --00
           Y      => extendedImmediateIn );
 
 -- registers part of the ID/EX pipe stage 
-
+    notfromHU <= not(fromHU);
 --still storing the NPC with respect to the processed instr.
 NPC_1: myregister
 generic map(Nbit)
@@ -358,7 +375,7 @@ port map(clk => clk, rst => rst, en => '1', I => NPCoutputID, Q => NPCoutputEX);
 IR_1: myregister  
 generic map(Nbit)
 --port map(clk => clk, rst => rst, en => controlWord(CWNbit-3), I => IRoutputID, Q => IRoutputEX );
-port map(clk => clk, rst => rst, en => '1', I => IRoutputID, Q => IRoutputEX );
+port map(clk => clk, rst => rst, en => notfromHU, I => IRoutputID, Q => IRoutputEX );
 
 RegA: myregister 
 generic map(Nbit)
@@ -379,13 +396,13 @@ port map(clk => clk, rst => rst, en => '1', I => extendedImmediateIn, Q => exten
 rt: myregister 
 generic map(RegNbit => RFaddrNbit)
 --port map( clk => clk, rst => rst, en => controlWord(CWNbit-3), I => IRoutputID(Nbit-1-OpcodeNbit-RFaddrNbit-RFaddrNbit downto FuncNbit), Q => rt_dest );
-port map( clk => clk, rst => rst, en => '1', I => IRoutputID(Nbit-1-OpcodeNbit-RFaddrNbit-RFaddrNbit downto FuncNbit), Q => rt_dest );
+port map( clk => clk, rst => rst, en => '1', I => IRoutputEX(Nbit-1-OpcodeNbit-RFaddrNbit-RFaddrNbit downto FuncNbit), Q => rt_dest );
 
 --rd is the convention for expressing the destination address of an immidiate Itype instruction
 rd: myregister 
 generic map(RFaddrNbit)
 --port map(clk => clk, rst => rst, en => controlWord(CWNbit-3), I => IRoutputID(Nbit-1-OpcodeNbit-RFaddrNbit downto Nbit-OpcodeNbit-RFaddrNbit-RFaddrNbit), Q => rd_dest );
-port map(clk => clk, rst => rst, en => '1', I => IRoutputID(Nbit-1-OpcodeNbit-RFaddrNbit downto Nbit-OpcodeNbit-RFaddrNbit-RFaddrNbit), Q => rd_dest );
+port map(clk => clk, rst => rst, en => '1', I => IRoutputEX(Nbit-1-OpcodeNbit-RFaddrNbit downto Nbit-OpcodeNbit-RFaddrNbit-RFaddrNbit), Q => rd_dest );
 
 ------------------------------------------------------Execution Unit related component instances------------------------------------------------------------
 
