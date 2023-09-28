@@ -100,7 +100,6 @@ component IRAM is
         M: integer := 32
     );
     port(
-        clk: in std_logic;
         rst: in std_logic;                            -- active low
         I_ADDR : in std_logic_vector(N-1 downto 0);     -- dimensions to be specified     
         I_DATA : out std_logic_vector(M-1 downto 0);
@@ -183,7 +182,7 @@ begin
 
     IRAM1 : IRAM
     --generic map()
-    port map(clk => clk,
+    port map(
             rst => reset,
             I_ADDR => IramADDR_s,
             I_DATA => IramDATA_s,
