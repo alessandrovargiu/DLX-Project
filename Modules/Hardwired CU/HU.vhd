@@ -97,7 +97,7 @@ BEGIN
                     hzd_sig_raw <= '0';
                     PC_SEL <= '0';
                     end if;
-                 else
+                else
                     hzd_sig_raw <= '0';
                     PC_SEL <= '0';
                 end if;
