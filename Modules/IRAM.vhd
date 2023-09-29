@@ -46,7 +46,7 @@ begin
 
     begin
         if(Rst = '1') then
-            file_open(fp, "StoreAndLoad.mem", READ_MODE); 
+            file_open(fp, "simpleRawHzd.mem", READ_MODE); 
             while (not endfile(fp)) loop
             readline(fp, file_line);
                 read(file_line, tmp);

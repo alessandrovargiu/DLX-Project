@@ -72,8 +72,9 @@ component BasicDp is
 
             IMAddress:   out std_logic_vector(addressNbit-1 downto 0);
             DMaddress:   out std_logic_vector(addressNbit-1 downto 0);
-            DMdataOut:   out std_logic_vector(NbitMem -1 downto 0)
-            
+            DMdataOut:   out std_logic_vector(NbitMem -1 downto 0);
+            IR0_out:  out std_logic_vector(Nbit-1 downto 0);
+            IROutID:  out std_logic_vector(Nbit-1 downto 0)
     );
 end component;
 
@@ -130,6 +131,7 @@ signal readyIram_s :  std_logic;
 signal IramADDR_s :   std_logic_vector(N-1 downto 0);
 signal IramDATA_s :   std_logic_vector(M-1 downto 0);
 signal controlWord_s: std_logic_vector(CW_SIZE-1 downto 0);
+signal IR0_out_s: std_logic_vector(Nbit-1 downto 0);
 --signal enable_s:  std_logic; 
 
 begin
@@ -138,7 +140,7 @@ begin
     --generic map();
     port map(clk => clk,
             reset => reset,
-            IR_in => IramDATA_s,
+            IR_in => IR0_out_s,
             hzd_sig_jmp => hzd_sig_jmp_s,
             hzd_sig_ctrl => hzd_sig_ctrl_s,
             hzd_sig_raw => hzd_sig_raw_s,
@@ -201,7 +203,9 @@ begin
                 DMdataIN => Dramdata_in_s,
                 IMaddress => IramADDR_s,
                 DMaddress => Dramaddr_s,
-                DMdataOUT => Dramdata_out_s
+                DMdataOUT => Dramdata_out_s,
+                IROutID => open,
+                IR0_out => IR0_out_s
                );
 
     controlWord_s <= decode_cwd_s(24 downto 20) & execute_cwd_s(19 downto 8) & memory_cwd_s(7 downto 5) & wb_cwd_s(4 downto 0);
