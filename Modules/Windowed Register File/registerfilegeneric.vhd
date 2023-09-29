@@ -35,7 +35,7 @@ begin
 -- write your RF code 
 	WrProc: PROCESS (Clk, reset, enable, WR, RD1, RD2, ADD_WR, ADD_RD1, ADD_RD2, DATAIN) 
   		BEGIN
-   			IF (rising_edge(Clk)) THEN
+   			IF (falling_edge(Clk)) THEN
 				IF (reset = '1') THEN
             			    REGISTERS <= (OTHERS => (OTHERS =>'0'));
 				else
