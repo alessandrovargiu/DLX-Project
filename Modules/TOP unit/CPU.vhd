@@ -148,7 +148,7 @@ begin
             execute_cwd => execute_cwd_s,
             memory_cwd => memory_cwd_s,
             wb_cwd => wb_cwd_s,
-            IR_ID => open,
+            IR_ID => IR_ID_s,
             IR_EX => IR_EX_s,
             IR_MEM => IR_MEM_s,
             IR_WB => IR_WB_s
@@ -204,7 +204,7 @@ begin
                 IMaddress => IramADDR_s,
                 DMaddress => Dramaddr_s,
                 DMdataOUT => Dramdata_out_s,
-                IROutID => IR_ID_s,
+                IROutID => open,
                 IR0_out => IR0_out_s
                );
 
