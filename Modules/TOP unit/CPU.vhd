@@ -97,14 +97,13 @@ end component;
 
 component IRAM is 
     generic (
-        N: integer := 32;-- constants here
-        M: integer := 32
+        RAM_DEPTH: integer := 48;-- constants here
+        I_SIZE: integer := 32
     );
     port(
         rst: in std_logic;                            -- active low
-        I_ADDR : in std_logic_vector(N-1 downto 0);     -- dimensions to be specified     
-        I_DATA : out std_logic_vector(M-1 downto 0);
-        ready : out std_logic                         -- active high
+        Addr : in std_logic_vector(N-1 downto 0);     -- dimensions to be specified     
+        Dout : out std_logic_vector(M-1 downto 0)
     );
 end component;
  
@@ -183,12 +182,11 @@ begin
         );
 
     IRAM1 : IRAM
-    --generic map()
+    --generic map(RAM_DEPTH, I_SIZE)
     port map(
-            rst => reset,
-            I_ADDR => IramADDR_s,
-            I_DATA => IramDATA_s,
-            ready => readyIram_s
+            Rst => reset,
+            Addr => IramADDR_s,
+            Dout => IramDATA_s
         );
 
     DP: BasicDP

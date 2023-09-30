@@ -1,64 +1,54 @@
-library IEEE;
-use IEEE.std_logic_1164.all;
-use ieee.std_logic_unsigned.all;
-use ieee.numeric_std.all;
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.std_logic_arith.all;
 use std.textio.all;
 use ieee.std_logic_textio.all;
 
 
+-- Instruction memory for DLX
+-- Memory filled by a process which reads from a file
+-- file name is "test.asm.mem"
 entity IRAM is
-    generic (
-        N: integer := 32;-- constants here
-        M: integer := 32
+  generic (
+    RAM_DEPTH : integer := 48;
+    I_SIZE : integer := 32);
+  port (
+    Rst  : in  std_logic;
+    Addr : in  std_logic_vector(I_SIZE - 1 downto 0);
+    Dout : out std_logic_vector(I_SIZE - 1 downto 0)
     );
-    port(
-        rst: in std_logic;                            -- active low
-        I_ADDR : in std_logic_vector(N-1 downto 0);     -- dimensions to be specified     
-        I_DATA : out std_logic_vector(M-1 downto 0);
-        ready : out std_logic                         -- active high
-    );
-end entity;
 
-architecture Beh of IRAM is
+end IRAM;
 
-    constant wdLength : integer := 8;
-    type mem is array (0 to M) of std_logic_vector(WDlength-1 downto 0); --penso dovrebbe essere che ha 2^M segnali
-    signal memory : mem ;
+architecture IRam_Bhe of IRAM is
 
-begin
+  type RAMtype is array (0 to RAM_DEPTH - 1) of integer;-- std_logic_vector(I_SIZE - 1 downto 0);
 
-    process (I_ADDR)
-    begin
-        --if(rst = '0') then
-            if(unsigned(I_ADDR) < M ) then
-                ready <= '1';
-                I_DATA <= memory(to_integer(unsigned(I_ADDR))) & memory(to_integer(unsigned(I_ADDR) +1 )) & memory(to_integer(unsigned(I_ADDR) +2)) & memory(to_integer(unsigned(I_ADDR) +3));        
-            end if;
-        --end if;
-    end process;
+  signal IRAM_mem : RAMtype;
 
-    process (rst)
-        
-        file fp : text;
-        variable file_line : line;
-        variable i : integer := 0;
-        variable tmp : std_logic_vector(WDlength-1 downto 0);
+begin  -- IRam_Bhe
 
-    begin
-        if(Rst = '1') then
-            file_open(fp, "simpleRawHzd.mem", READ_MODE); 
-            while (not endfile(fp)) loop
-            readline(fp, file_line);
-                read(file_line, tmp);
-                memory(i) <= std_logic_vector(unsigned(tmp));
-                i := i + 1;
-            end loop;
-        file_close(fp);
-        end if;
-    end process;
+  Dout <= conv_std_logic_vector(IRAM_mem(conv_integer(unsigned(Addr))),I_SIZE);
 
-end Beh;
+  -- purpose: This process is in charge of filling the Instruction RAM with the firmware
+  -- type   : combinational
+  -- inputs : Rst
+  -- outputs: IRAM_mem
+  FILL_MEM_P: process (Rst)
+    file mem_fp: text;
+    variable file_line : line;
+    variable index : integer := 0;
+    variable tmp_data_u : std_logic_vector(I_SIZE-1 downto 0);
+  begin  -- process FILL_MEM_P
+    if (Rst = '0') then
+      file_open(mem_fp,"/home/osiris/Desktop/DLX-Project/Modules/MEM_init_file.mem",READ_MODE);
+      while (not endfile(mem_fp)) loop
+        readline(mem_fp,file_line);
+        hread(file_line,tmp_data_u);
+        IRAM_mem(index) <= conv_integer(unsigned(tmp_data_u));       
+        index := index + 1;
+      end loop;
+    end if;
+  end process FILL_MEM_P;
 
-
-
-
+end IRam_Bhe;
