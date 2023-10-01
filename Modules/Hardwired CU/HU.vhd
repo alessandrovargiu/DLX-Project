@@ -36,7 +36,7 @@ BEGIN
             ID_Rs1 <= IR_ID(Nbit-7 downto Nbit-11);
             ID_Rs2 <= IR_ID(Nbit-12 downto Nbit-16);
             ID_Rd <= IR_ID(Nbit-17 downto Nbit-21);
-        elsif(IR_ID(Nbit-1 downto Nbit-6) /= "000000") then
+        elsif(IR_ID(Nbit-1 downto Nbit-6) /= NOP) then
             ID_Rs1 <= IR_ID(Nbit-7 downto Nbit-11);
             ID_Rs2 <= "00000";
             ID_Rd <= IR_ID(Nbit-12 downto Nbit-16);

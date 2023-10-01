@@ -35,7 +35,8 @@ package INSTR_CODES is
 	constant NOP : std_logic_vector(OP_CODE_SIZE - 1 downto 0) :=  "010101"; 
 	constant NOP_IR : std_logic_vector(Nbit-1 downto 0) := NOP & "00000000000000000000000000";
 -- I-Type instruction -> OPCODE field
-    constant ITYPE_ADDI1 : std_logic_vector(OP_CODE_SIZE - 1 downto 0) :=  "001000";    -- ADDI1 RS1,RD,INP1
+	-- I-Type instruction format :  | opcode | Rs1 | Rd | immediate |   
+	constant ITYPE_ADDI1 : std_logic_vector(OP_CODE_SIZE - 1 downto 0) :=  "001000";    -- ADDI1 RS1,RD,INP1
     constant ITYPE_SUBI1 : std_logic_vector(OP_CODE_SIZE - 1 downto 0) :=  "001010";
 	constant ITYPE_ANDI1 : std_logic_vector(OP_CODE_SIZE - 1 downto 0) :=  "001100";
 	constant ITYPE_ORI1 : std_logic_vector(OP_CODE_SIZE - 1 downto 0) :=   "001101";
