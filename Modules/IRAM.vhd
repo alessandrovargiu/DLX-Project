@@ -29,6 +29,7 @@ architecture IRam_Bhe of IRAM is
 begin  -- IRam_Bhe
 
   Dout <= conv_std_logic_vector(IRAM_mem(conv_integer(unsigned(Addr))),I_SIZE);
+  
 
   -- purpose: This process is in charge of filling the Instruction RAM with the firmware
   -- type   : combinational
@@ -40,7 +41,7 @@ begin  -- IRam_Bhe
     variable index : integer := 0;
     variable tmp_data_u : std_logic_vector(I_SIZE-1 downto 0);
   begin  -- process FILL_MEM_P
-    if (Rst = '0') then
+    if (Rst = '1') then
       file_open(mem_fp,"/home/osiris/Desktop/DLX-Project/Modules/MEM_init_file.mem",READ_MODE);
       while (not endfile(mem_fp)) loop
         readline(mem_fp,file_line);
