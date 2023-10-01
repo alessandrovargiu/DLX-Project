@@ -273,7 +273,7 @@ port map( clk, rst, enable, PCinput, PCout ) ; --storage of current address
 
 NextAddressGenerator: rca
 generic map(Nbit)
-port map ( PCout, x"00000004" , '0', Adder1Out, co );  --generates NPC
+port map ( PCout, x"00000001" , '0', Adder1Out, co );  --generates NPC
 
 --mux choosing if giving as output PC+4 or address of jump
 NextPCchoice0: Mux21 
