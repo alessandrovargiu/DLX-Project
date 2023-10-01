@@ -30,8 +30,12 @@ ARCHITECTURE beh OF HU IS
     signal WB_Rd: std_logic_vector(4 downto 0);
 BEGIN
 
-    fetch: process(IR_ID)
+    fetch: process(IR_ID, IR_EX, IR_MEM)
     begin
+        ID_Rs1 <= (others =>'0');
+        ID_Rs2 <= (others =>'0');
+        EX_Rd <= (others =>'0');
+        MEM_Rd <= (others =>'0');
         if(IR_ID(Nbit-1 downto Nbit-6) = RTYPE) then
             ID_Rs1 <= IR_ID(Nbit-7 downto Nbit-11);
             ID_Rs2 <= IR_ID(Nbit-12 downto Nbit-16);
@@ -45,25 +49,42 @@ BEGIN
                 ID_Rd <= IR_ID(Nbit-7 downto Nbit-11);
             end if;
         end if;
+        if(IR_EX(Nbit-1 downto Nbit-6) = RTYPE) then 
+            EX_Rd <= IR_EX(Nbit-17 downto Nbit-21);
+        elsif(IR_EX(Nbit-1 downto Nbit-6) /= NOP) then
+            EX_Rd <= IR_EX(Nbit-12 downto Nbit-16);
+            if(IR_EX(Nbit-1 downto Nbit-6) = ITYPE_STW) then
+                EX_Rd <= IR_EX(Nbit-7 downto Nbit-11);
+            end if;
+        end if;
+        if(IR_MEM(Nbit-1 downto Nbit-6) = RTYPE) then 
+            MEM_Rd <= IR_MEM(Nbit-17 downto Nbit-21);
+        elsif(IR_MEM(Nbit-1 downto Nbit-6) /= NOP) then
+            MEM_Rd <= IR_MEM(Nbit-12 downto Nbit-16);
+            if(IR_MEM(Nbit-1 downto Nbit-6) = ITYPE_STW) then
+                MEM_Rd <= IR_MEM(Nbit-7 downto Nbit-11);
+            end if;
+        end if;
+        
     end process;
 
-    pipe: process(clk)
-    begin
-        if(rst = '0' AND rising_edge(clk)) then
-            EX_Rd <= "00000";
-            MEM_Rd <= "00000";
-            WB_Rd <= "00000";
-            if(IR_EX(Nbit-1 downto Nbit-6) /= NOP) then
-                EX_Rd <= ID_Rd;
-            end if;
-            --if(IR_MEM(Nbit-1 downto Nbit-6) /= NOP) then
-                MEM_Rd <= EX_Rd;
-            --end if;
-           -- if(IR_WB(Nbit-1 downto Nbit-6) /= NOP) then
-                WB_Rd <= MEM_Rd;
-           -- end if; 
-        end if;
-    end process;
+    --pipe: process(clk)
+    --begin
+    --    if(rst = '0' AND rising_edge(clk)) then
+    --        EX_Rd <= "00000";
+    --        MEM_Rd <= "00000";
+    --        WB_Rd <= "00000";
+    --        if(IR_EX(Nbit-1 downto Nbit-6) /= NOP) then
+    --            EX_Rd <= ID_Rd;
+    --        end if;
+    --        --if(IR_MEM(Nbit-1 downto Nbit-6) /= NOP) then
+    --            MEM_Rd <= EX_Rd;
+    --        --end if;
+    --       -- if(IR_WB(Nbit-1 downto Nbit-6) /= NOP) then
+    --            WB_Rd <= MEM_Rd;
+    --       -- end if; 
+    --    end if;
+    --end process;
     
     ------------------- RAW hazard detection ------------------
     -- hazard check done on ID stage 
