@@ -86,7 +86,7 @@ BEGIN
                 hzd_sig_ctrl <= '0';
                 hzd_sig_jmp <= '0';
                 PC_SEL <= '0';  
-                if(((IR_ID(Nbit-1 downto Nbit-6) /= "000010") AND IR_EX(Nbit-1 downto Nbit-6) /= "000010") OR ((IR_ID(Nbit-1 downto Nbit-6) /= "000010") AND IR_MEM(Nbit-1 downto Nbit-6) /= "000010") ) then  --OR ((IR_ID(Nbit-1 downto Nbit-6) /= "000010") ) AND IR_WB(Nbit-1 downto Nbit-6) /= "000010"
+                if(((IR_ID(Nbit-1 downto Nbit-6) /= NOP) AND IR_EX(Nbit-1 downto Nbit-6) /= NOP) OR ((IR_ID(Nbit-1 downto Nbit-6) /= NOP) AND IR_MEM(Nbit-1 downto Nbit-6) /= "000010") ) then  --OR ((IR_ID(Nbit-1 downto Nbit-6) /= "000010") ) AND IR_WB(Nbit-1 downto Nbit-6) /= "000010"
                     if((ID_Rs1 = EX_Rd OR ID_Rs2 = EX_Rd) AND EX_Rd /= std_logic_vector(to_unsigned(0, 5))) then
                         hzd_sig_raw <= '1';
                         PC_SEL <= '1';
