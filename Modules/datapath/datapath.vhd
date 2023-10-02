@@ -222,6 +222,16 @@ signal fromMemOrFromAlu:     std_logic_vector(Nbit-1 downto 0);
           );
 end component;
 
+component myregisterB is
+    generic ( RegNbit: integer );
+    port (  clk:    in  std_logic;
+            rst:    in  std_logic;
+            en:     in  std_logic;
+            I:      in  std_logic_vector(RegNbit-1 downto 0);
+            I_EX_opcode:    in  std_logic_vector(5 downto 0);
+            Q:      out std_logic_vector(RegNbit-1 downto 0) );
+end component;
+
     signal notfromHU: std_logic;
 ---------------------------------------------------------------------------------
 --Brief description of my interpretetion of control bits
@@ -389,10 +399,10 @@ generic map(Nbit)
 --port map(clk => clk, rst => rst, en => controlWord(CWNbit-3), I => RFOutRegBIn, Q => RegBoutEX ); 
 port map(clk => clk, rst => rst, en => '1', I => RFOutRegBIn, Q => RegBoutEX ); 
 
-ImmReg: myregister
+ImmReg: myregisterB
 generic map(Nbit)
 --port map(clk => clk, rst => rst, en => controlWord(CWNbit-3), I => extendedImmediateIn, Q => extendedImmediateOut ); 
-port map(clk => clk, rst => rst, en => '1', I => extendedImmediateIn, Q => extendedImmediateOut ); 
+port map(clk => clk, rst => rst, en => '1',I_EX_opcode => IRoutputEX (Nbit-1 downto Nbit-6), I => extendedImmediateIn, Q => extendedImmediateOut ); 
 
 --rt is the convention for expressing the destination address of an register Rtype instruction
 rt: myregister 
