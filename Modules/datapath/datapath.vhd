@@ -12,6 +12,7 @@ entity BasicDP is
             rst:        in std_logic;
             
             fromHU:      in std_logic;
+            hzd_sig_jmp: in std_logic;
             enable:      in std_logic;
             IMdata:      in std_logic_vector(NbitMem-1 downto 0);  --is the instruction entering the dp and is input to the IR pipeline register in IF/ID bank
             controlWord: in std_logic_vector(controlNbit-1 downto 0);
@@ -163,6 +164,7 @@ signal fromMemOrFromAlu:     std_logic_vector(Nbit-1 downto 0);
             rst:    in  std_logic;
             en:     in  std_logic;
             fromHU: in  std_logic;
+            hzd_sig_jmp: in std_logic;
             I:      in  std_logic_vector(RegNbit-1 downto 0);
             Q:      out std_logic_vector(RegNbit-1 downto 0) 
         );
@@ -300,7 +302,7 @@ port map( pcPlus4orJ, PCout, fromHU, PCinput );
 --contains current instruction
 IR_0: IR0 
 generic map(Nbit)
-port map( clk, rst, enable, fromHU, IMdata,  IRoutputID );  --called IRoutputID because the output of the content of the IR stage is going to the Instruction decode stage
+port map( clk, rst, enable, fromHU, hzd_sig_jmp, IMdata,  IRoutputID );  --called IRoutputID because the output of the content of the IR stage is going to the Instruction decode stage
 
 --stores subsequent instruction address
 NPC_0: myregister 

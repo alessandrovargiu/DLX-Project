@@ -65,6 +65,7 @@ component BasicDp is
             rst:        in std_logic;
             
             fromHU:      in std_logic;
+            hzd_sig_jmp: in std_logic;
             enable:      in std_logic;
             IMdata:      in std_logic_vector(NbitMem-1 downto 0);  --is the instruction entering the dp and is input to the IR pipeline register in IF/ID bank
             controlWord: in std_logic_vector(controlNbit-1 downto 0);
@@ -195,6 +196,7 @@ begin
                 clk => clk,
                 rst => Reset,
                 fromHU => PC_SEL_s,
+                hzd_sig_jmp => hzd_sig_jmp_s,
                 enable => enable,
                 IMdata => Iramdata_s, --is input data from the IRAM
                 controlWord => controlWord_s,
