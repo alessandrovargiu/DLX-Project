@@ -1,5 +1,6 @@
 library ieee;
 use ieee.std_logic_1164.all;
+USE work.INSTR_CODES.ALL;
 
 entity IR0 is
     generic ( RegNbit: integer );
@@ -7,6 +8,7 @@ entity IR0 is
             rst:    in  std_logic;
             en:     in  std_logic;
             fromHU: in  std_logic;
+            hzd_sig_jmp: in std_logic;
             I:      in  std_logic_vector(RegNbit-1 downto 0);
             Q:      out std_logic_vector(RegNbit-1 downto 0) );
 end IR0;
@@ -28,6 +30,9 @@ begin
                 if(fromHU = '1') then
                     Q <= mem;
                     mem <= mem;
+                    if( hzd_sig_jmp = '1') then
+                    Q <= NOP_IR ;
+                    end if;
                 end if;
                 --elsif ( en = '0' ) then
             --    Q <= mem ;               -- memory state when enable = 0 and rst = 0 (used in stalls)
