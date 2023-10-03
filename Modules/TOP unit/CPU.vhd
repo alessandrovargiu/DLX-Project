@@ -74,6 +74,7 @@ component BasicDp is
             IMAddress:   out std_logic_vector(addressNbit-1 downto 0);
             DMaddress:   out std_logic_vector(addressNbit-1 downto 0);
             DMdataOut:   out std_logic_vector(NbitMem -1 downto 0);
+            B_status: out std_logic;
             IR0_out:  out std_logic_vector(Nbit-1 downto 0);
             IROutID:  out std_logic_vector(Nbit-1 downto 0)
     );
@@ -204,6 +205,7 @@ begin
                 IMaddress => IramADDR_s,
                 DMaddress => Dramaddr_s,
                 DMdataOUT => Dramdata_out_s,
+                B_status => branchstatus_s,
                 IROutID => open,
                 IR0_out => IR0_out_s
                );
