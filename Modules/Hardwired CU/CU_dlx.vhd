@@ -289,6 +289,8 @@ BEGIN
                             decode_cwd_s <= NOP_cwd;
                             IR_ID_s <= NOP_IR;
                         end if;
+
+                        hzd_s <= '0';
                         if(hzd_sig_ctrl = '1') then          --flush pipe
                             -- decode flush
                             decode_cwd_s <= NOP_cwd;
