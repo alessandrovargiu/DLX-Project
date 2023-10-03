@@ -20,6 +20,8 @@ entity BasicDP is
             IMAddress:   out std_logic_vector(addressNbit-1 downto 0);
             DMaddress:   out std_logic_vector(addressNbit-1 downto 0);
             DMdataOut:   out std_logic_vector(NbitMem -1 downto 0);
+
+            B_status: out std_logic;
             
             IR0_out:  out std_logic_vector(Nbit-1 downto 0);
             IROutID:  out std_logic_vector(Nbit-1 downto 0)
@@ -454,7 +456,7 @@ port map('0', notcondin, controlWord(CWNbit-16), muxTemporary2 ); --if this sele
 
 FinalMux4Jump: oneBitMux21
 port map(  muxTemporary2, muxTemporary1, ControlWord(CWNbit-17), branchStatus );--if this selection bit is 0, it means that we are not suppose to jump (for instance if the analyzed instruction is an addi) or the analyzed instruction is a BNEZ
-
+B_status <= branchstatus;
 
 --Execution Unit Pipe registers
 

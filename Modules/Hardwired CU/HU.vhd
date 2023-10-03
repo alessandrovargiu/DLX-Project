@@ -96,7 +96,7 @@ BEGIN
           if(rst = '0' AND falling_edge(clk)) then
             if(branchStatus = '1') then
                 hzd_sig_ctrl <= '1';
-                PC_SEL <= '1';             
+                PC_SEL <= '0';             
             elsif (IR_ID(Nbit-1 downto Nbit-6) = JTYPE_JMP ) then --or IR_EX(Nbit-1 downto Nbit-6) = JTYPE_JMP )   or IR_MEM(Nbit-1 downto Nbit-6) = JTYPE_JMP) THEN
                 hzd_sig_jmp <= '1';
                 PC_SEL <= '1';
