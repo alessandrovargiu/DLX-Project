@@ -66,8 +66,8 @@ package INSTR_CODES is
 
 
 	-- J-Type instruction format: | opcode | value |
-	constant JTYPE_JMP : std_logic_vector(OP_CODE_SIZE - 1 downto 0) :=  "100000";
-	constant JTYPE_JAL : std_logic_vector(OP_CODE_SIZE - 1 downto 0) :=  "100001";
+	constant JTYPE_JMP : std_logic_vector(OP_CODE_SIZE - 1 downto 0) :=  "000010";
+	constant JTYPE_JAL : std_logic_vector(OP_CODE_SIZE - 1 downto 0) :=  "000011";
 
 	--- CONTROL WORD
 

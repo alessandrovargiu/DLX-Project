@@ -30,9 +30,9 @@ begin
                 if(fromHU = '1') then
                     Q <= mem;
                     mem <= mem;
-                    if( hzd_sig_jmp = '1') then
-                    Q <= NOP_IR ;
-                    end if;
+                    --if( hzd_sig_jmp = '1') then
+                    --Q <= NOP_IR ;
+                    --end if;
                 end if;
                 --elsif ( en = '0' ) then
             --    Q <= mem ;               -- memory state when enable = 0 and rst = 0 (used in stalls)
