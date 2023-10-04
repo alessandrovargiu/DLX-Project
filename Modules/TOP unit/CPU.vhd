@@ -83,7 +83,7 @@ end component;
 component DRAM is
     generic (
         W: integer := 32;
-        N: integer := 32
+        RAM_DEPTH: integer := 32
     );
     port(
         clk: in std_logic;
