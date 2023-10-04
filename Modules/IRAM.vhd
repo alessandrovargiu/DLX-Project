@@ -47,11 +47,15 @@ end process;
     variable tmp_data_u : std_logic_vector(I_SIZE-1 downto 0);
   begin  -- process FILL_MEM_P
     if (Rst = '1') then
-      file_open(mem_fp,"MEM_init_file.txt",READ_MODE);
+      file_open(mem_fp,"MEM_init_file.mem",READ_MODE);
       while (not endfile(mem_fp)) loop
         readline(mem_fp,file_line);
         hread(file_line,tmp_data_u);
         IRAM_mem(index) <= conv_integer(unsigned(tmp_data_u));       
+        index := index + 1;
+      end loop;
+      while (index < RAM_DEPTH) loop
+        IRAM_mem(index) <= 0;
         index := index + 1;
       end loop;
     end if;
