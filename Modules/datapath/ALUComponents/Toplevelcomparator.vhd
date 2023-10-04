@@ -35,7 +35,8 @@ begin
         when "010" => res_s1 <= res_s5(2);
         when "011" => res_s1 <= res_s5(3);
         when "100" => res_s1 <= res_s5(4);
-        when others => res_s1 <= 'X';
+	when "101" => res_s1 <= not res_s5(0);
+	when others => res_s1 <= 'X';
     end case;
     end process;
     res(Nbit-1 downto 1)<=(others=>'0'); -- to extend to Nbit

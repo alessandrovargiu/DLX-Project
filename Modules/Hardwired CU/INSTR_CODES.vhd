@@ -157,7 +157,7 @@ package INSTR_CODES is
 --
 	--SNE  (it's a SEQ with 0 as result)
 	constant SNE_DECODE : std_logic_vector(4 downto 0) := "11111";
-	constant SNE_EXECUTE: std_logic_vector(11 downto 0) := "101100011000"; 
+	constant SNE_EXECUTE: std_logic_vector(11 downto 0) := "101110111000"; 
 	constant SNE_MEMORY: std_logic_vector(2 downto 0) := "000";
 	constant SNE_WB: std_logic_vector(4 downto 0) := "11000";
 	constant SNE_CWD: std_logic_vector(24 downto 0) := SNE_DECODE &  SNE_EXECUTE & SNE_MEMORY & SNE_WB;
