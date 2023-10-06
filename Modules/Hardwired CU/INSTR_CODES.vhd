@@ -164,8 +164,8 @@ package INSTR_CODES is
 
 	--SLT
 	constant SLT_DECODE : std_logic_vector(4 downto 0) := "11111";
-	constant SLT_EXECUTE: std_logic_vector(9 downto 0) := "1011011110"; 
-	constant SLT_MEMORY: std_logic_vector(4 downto 0) := "01000";
+	constant SLT_EXECUTE: std_logic_vector(11 downto 0) := "101101111000"; 
+	constant SLT_MEMORY: std_logic_vector(2 downto 0) := "000";
 	constant SLT_WB: std_logic_vector(4 downto 0) := "11000";
 	constant SLT_CWD: std_logic_vector(24 downto 0) := SLT_DECODE &  SLT_EXECUTE & SLT_MEMORY & SLT_WB;
 
