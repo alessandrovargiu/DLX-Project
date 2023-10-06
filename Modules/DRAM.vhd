@@ -8,7 +8,7 @@ use ieee.std_logic_textio.all;
 entity DRAM is
     generic (
         W: integer := 32;
-        N: integer := 32
+        RAM_DEPTH: integer := 32
     );
     port(
         clk: in std_logic;
@@ -16,14 +16,14 @@ entity DRAM is
         EN: in std_logic;
         RW: in std_logic;                             -- 1 - read, 0 - write
         ADDR: in std_logic_vector(W-1 downto 0);          
-        DATA_IN: in std_logic_vector(N-1 downto 0);
-        DATA_OUT: out std_logic_vector(N-1 downto 0);
+        DATA_IN: in std_logic_vector(W-1 downto 0);
+        DATA_OUT: out std_logic_vector(W-1 downto 0);
         ready : out std_logic                         -- active high
     );
 end entity;
 architecture Beh of DRAM is
 
-    type mem is array (0 to N*N) of integer;
+    type mem is array (0 to RAM_DEPTH) of integer;
     signal memory : mem;
 
 begin
@@ -37,22 +37,26 @@ begin
     begin
         if(falling_edge(clk)) then --put as falling edge as the RW is set by CU on rising edge of the clock
             if(rst = '1') then
-                --file_open(mem_fp, "/home/osiris/Desktop/DLX-Project/Modules/DMEM_init_file.mem", READ_MODE);    
-                --while(not endfile(mem_fp)) loop
-                  --  readline(mem_fp, file_line);
-                    --hread(file_line, data);
-                    --memory(index) <= conv_integer(unsigned(data));
-                    --index := index + 1;
-                --end loop;
+                file_open(mem_fp, "/home/osiris/Desktop/DLX-Project/Modules/DMEM_init_file.mem", READ_MODE);    
+                while(not endfile(mem_fp)) loop
+                    readline(mem_fp, file_line);
+                    hread(file_line, data);
+                    memory(index) <= conv_integer(unsigned(data));
+                    index := index + 1;
+                end loop;
+                while (index < RAM_DEPTH) loop
+                    memory(index) <= 0;
+                    index := index + 1;
+                end loop;
             elsif(EN = '1') then
                 if(RW = '1') then                       -- READ
-                    DATA_OUT <= conv_std_logic_vector(memory(conv_integer(unsigned(ADDR))), N);
+                    DATA_OUT <= conv_std_logic_vector(memory(conv_integer(unsigned(ADDR))), W);
                 end if;
                 if(RW = '0') then                       -- WRITE
                     memory(conv_integer(unsigned(ADDR))) <= conv_integer(unsigned(DATA_IN));
-                    end if;
-                    end if;
                 end if;
-            end process;
+            end if;
+        end if;
+    end process;
         
-        end Beh;
+end Beh;
