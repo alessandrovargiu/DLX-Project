@@ -30,10 +30,10 @@ begin
                          mask08 <= "0000000000000000" & A(23 downto 0) ;
                          mask16 <= "000000000000000000000000" & A(15 downto 0);
                          mask24 <= "00000000000000000000000000000000" & A(7 downto 0);
-            when "11" => mask00 <= (39 downto 32 => A(Nbit-1)) & A;  --Nbit-1 downto (Nbit-8)
-                         mask08 <= (39 downto 24 => A(Nbit-1)) & A(23 downto 0);
-                         mask16 <= (39 downto 16 => A(Nbit-1)) & A(15 downto 0);
-                         mask24 <= (39 downto 8 => A(Nbit-1)) & A(7 downto 0);
+            when "11" => mask00 <= (7 downto 0 => A(Nbit-1)) & A;  --Nbit-1 downto (Nbit-8)
+                         mask08 <= (15 downto 0 => A(Nbit-1)) & A(23 downto 0);
+                         mask16 <= (23 downto 0 => A(Nbit-1)) & A(15 downto 0);
+                         mask24 <= (31 downto 0 => A(Nbit-1)) & A(7 downto 0);
             when others => mask00 <= (others=>'0');
                            mask08 <= (others=>'0');
                            mask16 <= (others=>'0');
