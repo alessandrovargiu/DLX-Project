@@ -190,7 +190,7 @@ package INSTR_CODES is
 	constant SLL_CWD: std_logic_vector(24 downto 0) := SLL_DECODE &  SLL_EXECUTE & SLL_MEMORY & SLL_WB;
 	--SRA
 	constant SRA_DECODE : std_logic_vector(4 downto 0) := "11111";
-	constant SRA_EXECUTE: std_logic_vector(11 downto 0) := "101101100100"; 
+	constant SRA_EXECUTE: std_logic_vector(11 downto 0) := "101101110100"; 
 	constant SRA_MEMORY: std_logic_vector(2 downto 0) := "000";
 	constant SRA_WB: std_logic_vector(4 downto 0) := "11000";
 	constant SRA_CWD: std_logic_vector(24 downto 0) := SRA_DECODE &  SRA_EXECUTE & SRA_MEMORY & SRA_WB;
@@ -332,7 +332,7 @@ package INSTR_CODES is
 
 	--SRAI
 	constant SRAI_DECODE : std_logic_vector(4 downto 0) := "10100";
-	constant SRAI_EXECUTE: std_logic_vector(11 downto 0) := "110101100100"; 
+	constant SRAI_EXECUTE: std_logic_vector(11 downto 0) := "110101110100"; 
 	constant SRAI_MEMORY: std_logic_vector(2 downto 0) := "000";
 	constant SRAI_WB: std_logic_vector(4 downto 0) := "11000";
 	constant SRAI_CWD: std_logic_vector(24 downto 0) := SRAI_DECODE &  SRAI_EXECUTE & SRAI_MEMORY & SRAI_WB;
