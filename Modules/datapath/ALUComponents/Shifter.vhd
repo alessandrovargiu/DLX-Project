@@ -27,13 +27,13 @@ begin
                          mask16 <= A(Nbit-1-16 downto 0) & "000000000000000000000000";
                          mask24 <= A(Nbit-1-24 downto 0) & "00000000000000000000000000000000";
             when "01" => mask00 <= "00000000" & A(Nbit - 1 downto 0); --logic right
-                         mask08 <= "0000000000000000" & A(Nbit - 1 downto 8) ;
-                         mask16 <= "000000000000000000000000" & A(Nbit - 1 downto 16);
-                         mask24 <= "00000000000000000000000000000000" & A(Nbit - 1 downto 24);
-            when "10" => mask00 <= (7 downto 0 => A(Nbit-1)) & A;  --Nbit-1 downto (Nbit-8)
-                         mask08 <= (15 downto 0 => A(Nbit-1)) & A(Nbit-1 downto 8);
-                         mask16 <= (23 downto 0 => A(Nbit-1)) & A(Nbit-1 downto 16);
-                         mask24 <= (31 downto 0 => A(Nbit-1)) & A(Nbit-1 downto 24);
+                         mask08 <= "0000000000000000" & A(23 downto 0) ;
+                         mask16 <= "000000000000000000000000" & A(15 downto 0);
+                         mask24 <= "00000000000000000000000000000000" & A(7 downto 0);
+            when "11" => mask00 <= (7 downto 0 => A(Nbit-1)) & A;  --Nbit-1 downto (Nbit-8)
+                         mask08 <= (15 downto 0 => A(Nbit-1)) & A(23 downto 0);
+                         mask16 <= (23 downto 0 => A(Nbit-1)) & A(15 downto 0);
+                         mask24 <= (31 downto 0 => A(Nbit-1)) & A(7 downto 0);
             when others => mask00 <= (others=>'0');
                            mask08 <= (others=>'0');
                            mask16 <= (others=>'0');
@@ -50,17 +50,50 @@ begin
             when others => mask <= (others=>'X');
         end case;
     end process;
-    level3: process (B,mask)
+    level3: process (B,mask,OP)
     begin
         case B(2 downto 0) is
-            when "000" => S <= mask((Nbit - 1) + 8 downto 8);
-            when "001" => S <= mask((Nbit - 1) + 7 downto 7);
-            when "010" => S <= mask((Nbit - 1) + 6 downto 6);
-            when "011" => S <= mask((Nbit - 1) + 5 downto 5);
-            when "100" => S <= mask((Nbit - 1) + 4 downto 4);
-            when "101" => S <= mask((Nbit - 1) + 3 downto 3);
-            when "110" => S <= mask((Nbit - 1) + 2 downto 2);
-            when "111" => S <= mask((Nbit - 1) + 1 downto 1);
+            when "000" => if (OP(0) = '0') then 
+                            S <= mask((Nbit - 1) + 8 downto 8);
+                          else 
+                            S <= mask((Nbit - 1) downto 0);
+                            end if;
+            when "001" => if (OP(0)='0') then
+                            S <= mask((Nbit - 1) + 7 downto 7);
+                          else 
+                            S <= mask((Nbit - 1) + 1 downto 1);
+                          end if;
+            when "010" => if (OP(0)='0') then
+                            S <= mask((Nbit - 1) + 6 downto 6);
+                          else
+                            S <= mask((Nbit - 1) + 2 downto 2);
+                            end if;
+
+            when "011" => if (OP(0)='0') then
+                            S <= mask((Nbit - 1) + 5 downto 5);
+                          else
+                            S <= mask((Nbit - 1) + 3 downto 3);
+                            end if;
+            when "100" => if (OP(0)='0') then
+                            S <= mask((Nbit - 1) + 4 downto 4);
+                          else
+                            S <= mask((Nbit - 1) + 4 downto 4);
+                            end if;
+            when "101" => if (OP(0)='0') then
+                            S <= mask((Nbit - 1) + 3 downto 3);
+                          else
+                            S <= mask((Nbit - 1) + 5 downto 5);
+                            end if;
+            when "110" => if (OP(0)='0') then
+                            S <= mask((Nbit - 1) + 2 downto 2);
+                          else
+                            S <= mask((Nbit - 1) + 6 downto 6);
+                            end if;
+            when "111" => if (OP(0)='0') then   
+                            S <= mask((Nbit - 1) + 1 downto 1);
+                          else
+                            S <= mask((Nbit - 1) + 7 downto 7);
+                            end if;
             when others => S <= (others => 'X');
         end case;
     end process;
