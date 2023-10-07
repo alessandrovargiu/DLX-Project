@@ -7,7 +7,7 @@ use work.constants.all;
 
 ENTITY CU_dlx IS
     GENERIC (
-        MICROCODE_MEM_SIZE : INTEGER := 45; -- Microcode Memory Size
+        MICROCODE_MEM_SIZE : INTEGER := 47; -- Microcode Memory Size
         FUNC_SIZE : INTEGER := 11; -- Func Field Size for R-Type Ops
         OP_CODE_SIZE : INTEGER := 6; -- Op Code Size
         CW_SIZE : INTEGER := 25 -- output signals of CU
@@ -91,9 +91,9 @@ ARCHITECTURE behavioral OF CU_dlx IS
             SRA_CWD,
             NOP_CWD,
             ADDI_CWD,
-            --ADDUI_CWD,
+            ADDUI_CWD,
             SUBI_CWD,
-            --SUBUI_CWD,
+            SUBUI_CWD,
             ANDI_CWD,
             ORI_CWD,
             XORI_CWD,
@@ -115,7 +115,6 @@ ARCHITECTURE behavioral OF CU_dlx IS
             JAL_CWD,
             BEQZ_CWD,
             BNEZ_CWD,
-            
             SGEU_CWD,
             SGTU_CWD,
             SGEUI_CWD,
