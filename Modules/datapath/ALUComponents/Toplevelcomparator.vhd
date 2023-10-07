@@ -20,10 +20,10 @@ end ToplevelComparator;
 			Cout:	In	std_logic; --input from p4 adder
             A_31:      In std_logic;
             B_31:      In std_logic;
-            res:    Out std_logic_vector(4 downto 0) --output
+            res:    Out std_logic_vector(7 downto 0) --output
             );
         end component;
-    signal res_s5: std_logic_vector (4 downto 0);
+    signal res_s5: std_logic_vector (7 downto 0);
     signal res_s1: std_logic;
 begin
     comparator1: comparator port map(Sub,Cout,A(31),B(31),res_s5);
@@ -35,7 +35,13 @@ begin
         when "010" => res_s1 <= res_s5(2);
         when "011" => res_s1 <= res_s5(3);
         when "100" => res_s1 <= res_s5(4);
-	when "101" => res_s1 <= not res_s5(0);
+	    when "101" => res_s1 <= not res_s5(0);
+
+        when "110" => res_s1 <=  res_s5(5);  -- Aunsigned>=Bunsigned
+        when "111" => res_s1 <=  res_s5(6);  -- Aunsigned> Bunsigned
+
+                                        --NON CI SONO ABBASTANZA BIT PER Aunsigned < Bunsigned
+
 	when others => res_s1 <= 'X';
     end case;
     end process;

@@ -30,6 +30,9 @@ package INSTR_CODES is
 	constant RTYPE_ADDU : std_logic_vector(FUNC_SIZE - 1 downto 0) := "00000100001";
 	constant RTYPE_SUBU : std_logic_vector(FUNC_SIZE - 1 downto 0) := "00000100011";
 
+	constant RTYPE_SGEU : std_logic_vector(FUNC_SIZE - 1 downto 0) := "00000111101";
+	constant RTYPE_SGTU : std_logic_vector(FUNC_SIZE - 1 downto 0) := "00000111011";
+
 -- R-Type instruction -> OPCODE field
     constant RTYPE : std_logic_vector(OP_CODE_SIZE - 1 downto 0) :=  "000000";          -- R-type OPCODE
 	constant NOP : std_logic_vector(OP_CODE_SIZE - 1 downto 0) :=  "010101"; 
@@ -63,6 +66,9 @@ package INSTR_CODES is
 	constant ITYPE_XNORI : std_logic_vector(OP_CODE_SIZE - 1 downto 0) :=  "011110";
 	constant ITYPE_NORI : std_logic_vector(OP_CODE_SIZE - 1 downto 0) :=  "011111";
 	constant ITYPE_NANDI : std_logic_vector(OP_CODE_SIZE - 1 downto 0) :=  "101010";
+
+	constant ITYPE_SGEUI : std_logic_vector(OP_CODE_SIZE - 1 downto 0) :=  "111101";
+	constant ITYPE_SGTUI : std_logic_vector(OP_CODE_SIZE - 1 downto 0) :=  "111011";
 
 
 	-- J-Type instruction format: | opcode | value |
@@ -162,19 +168,33 @@ package INSTR_CODES is
 	constant SNE_WB: std_logic_vector(4 downto 0) := "11000";
 	constant SNE_CWD: std_logic_vector(24 downto 0) := SNE_DECODE &  SNE_EXECUTE & SNE_MEMORY & SNE_WB;
 
-	--SLT
+	--SLT 
 	constant SLT_DECODE : std_logic_vector(4 downto 0) := "11111";
 	constant SLT_EXECUTE: std_logic_vector(11 downto 0) := "101101111000"; 
 	constant SLT_MEMORY: std_logic_vector(2 downto 0) := "000";
 	constant SLT_WB: std_logic_vector(4 downto 0) := "11000";
 	constant SLT_CWD: std_logic_vector(24 downto 0) := SLT_DECODE &  SLT_EXECUTE & SLT_MEMORY & SLT_WB;
 
-	--SGT
+	--SGT 
 	constant SGT_DECODE : std_logic_vector(4 downto 0) := "11111";
 	constant SGT_EXECUTE: std_logic_vector(11 downto 0) := "101101011000"; 
 	constant SGT_MEMORY: std_logic_vector(2 downto 0) := "000";
 	constant SGT_WB: std_logic_vector(4 downto 0) := "11000";
 	constant SGT_CWD: std_logic_vector(24 downto 0) := SGT_DECODE &  SGT_EXECUTE & SGT_MEMORY & SGT_WB;
+
+	--SGEU 
+	constant SGEU_DECODE : std_logic_vector(4 downto 0) := "11111"; --last 2 bits dont care
+	constant SGEU_EXECUTE: std_logic_vector(11 downto 0) := "101111011000"; 
+	constant SGEU_MEMORY: std_logic_vector(2 downto 0) := "000";
+	constant SGEU_WB: std_logic_vector(4 downto 0) := "11000";
+	constant SGEU_CWD: std_logic_vector(24 downto 0) := SGEU_DECODE &  SGEU_EXECUTE & SGEU_MEMORY & SGEU_WB;
+
+	--SGTU
+	constant SGTU_DECODE : std_logic_vector(4 downto 0) := "11111"; --last 2 bits are dont care
+	constant SGTU_EXECUTE: std_logic_vector(11 downto 0) := "101111111000"; 
+	constant SGTU_MEMORY: std_logic_vector(2 downto 0) := "000";
+	constant SGTU_WB: std_logic_vector(4 downto 0) := "11000";
+	constant SGTU_CWD: std_logic_vector(24 downto 0) := SGTU_DECODE &  SGTU_EXECUTE & SGTU_MEMORY & SGTU_WB;
 
 	--SRL
 	constant SRL_DECODE : std_logic_vector(4 downto 0) := "11111";
@@ -297,7 +317,7 @@ package INSTR_CODES is
 
 	--SNEI
 	constant SNEI_DECODE : std_logic_vector(4 downto 0) := "10101";
-	constant SNEI_EXECUTE: std_logic_vector(11 downto 0) := "110100011000"; 
+	constant SNEI_EXECUTE: std_logic_vector(11 downto 0) := "101110111000"; 
 	constant SNEI_MEMORY: std_logic_vector(2 downto 0) := "000";
 	constant SNEI_WB: std_logic_vector(4 downto 0) := "11000";
 	constant SNEI_CWD: std_logic_vector(24 downto 0) := SNEI_DECODE &  SNEI_EXECUTE & SNEI_MEMORY & SNEI_WB;
@@ -315,6 +335,20 @@ package INSTR_CODES is
 	constant SGTI_MEMORY: std_logic_vector(2 downto 0) := "000";
 	constant SGTI_WB: std_logic_vector(4 downto 0) := "11000";
 	constant SGTI_CWD: std_logic_vector(24 downto 0) := SGTI_DECODE &  SGTI_EXECUTE & SGTI_MEMORY & SGTI_WB;
+
+	--SGEUI
+	constant SGEUI_DECODE : std_logic_vector(4 downto 0) := "10100"; --
+	constant SGEUI_EXECUTE: std_logic_vector(11 downto 0) := "110111011000"; 
+	constant SGEUI_MEMORY: std_logic_vector(2 downto 0) := "000";
+	constant SGEUI_WB: std_logic_vector(4 downto 0) := "11000";
+	constant SGEUI_CWD: std_logic_vector(24 downto 0) := SGEUI_DECODE &  SGEUI_EXECUTE & SGEUI_MEMORY & SGEUI_WB;
+
+	--SGTUI
+	constant SGTUI_DECODE : std_logic_vector(4 downto 0) := "10100"; --
+	constant SGTUI_EXECUTE: std_logic_vector(11 downto 0) := "110111111000"; 
+	constant SGTUI_MEMORY: std_logic_vector(2 downto 0) := "000";
+	constant SGTUI_WB: std_logic_vector(4 downto 0) := "11000";
+	constant SGTUI_CWD: std_logic_vector(24 downto 0) := SGTUI_DECODE &  SGTUI_EXECUTE & SGTUI_MEMORY & SGTUI_WB;
 
 	--SRLI
 	constant SRLI_DECODE : std_logic_vector(4 downto 0) := "10100";
