@@ -130,7 +130,9 @@ ARCHITECTURE behavioral OF CU_dlx IS
         signal IR_ID_backup: std_logic_vector(CW_SIZE-1 downto 0);
         -- 1 if returning from stall cycle, 0 normal execution
         signal backup: std_logic;
-        signal hzd_s: std_logic;                           
+        signal hzd_s: std_logic; 
+        signal hzd1_s: std_logic;
+        signal hzd2_s: std_logic;                     
 BEGIN
         PROCESS (IR_IN)
         BEGIN
@@ -284,13 +286,16 @@ BEGIN
                             execute_cwd_s <= NOP_cwd(CW_SIZE-1-5 DOWNTO 0);
                             IR_EX_s <= NOP_IR;
                         end if;
-                        
+                        hzd1_s <= '0';
+                        hzd2_s <= '0';
                         if(hzd_sig_jmp = '1') then
                             decode_cwd_s <= NOP_cwd;
                             IR_ID_s <= NOP_IR;
+                            hzd1_s <= hzd_sig_jmp;
                         end if;
 
                         hzd_s <= '0';
+                        
                         if(hzd_sig_ctrl = '1') then          --flush pipe
                             -- decode flush
                             decode_cwd_s <= NOP_cwd;
@@ -304,6 +309,17 @@ BEGIN
                             decode_cwd_s <= NOP_cwd;
                             IR_ID_s <= NOP_IR;
                             hzd_s <= '0';
+                        end if;
+                        if (hzd1_s = '1') then
+                            decode_cwd_s <= NOP_cwd;
+                            IR_ID_s <= NOP_IR;
+                            hzd2_s <= '1';
+                            hzd1_s <= '0';
+                        end if;
+                        if (hzd2_s = '1') then
+                            decode_cwd_s <= NOP_cwd;
+                            IR_ID_s <= NOP_IR;
+                            hzd2_s <= '0';
                         end if;
                 end if;
             end process;
