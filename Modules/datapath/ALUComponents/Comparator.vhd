@@ -10,7 +10,7 @@ entity Comparator is
 			Cout:	In	std_logic; --input from p4 adder
             A_31:      In std_logic; 
             B_31:      In std_logic; 
-            res:    Out std_logic_vector(4 downto 0) --output
+            res:    Out std_logic_vector(7 downto 0) --output
     );
 			
 end Comparator; 
@@ -37,9 +37,24 @@ begin
     begin 
         --res(0) <= not Z; -- A!=B
         res(0) <= Z;                -- A=B
-        res(1) <= C;                -- A>=B
+        res(1) <= C ;                -- A>=B
         res(2) <= (not Z) and C;    -- A>B
         res(3) <= not C;            -- A<B
         res(4) <= (not C) or Z;     -- A<=B
+
+        --if the operands are considered to be unsigned
+        if( (A_31 xnor B_31) = '1' ) then --if 1 outcome is like the signed case
+            res(5) <= C; --A >= B
+            res(6) <= (not Z and C); --A >  B
+            res(7) <= not C ; --A < B
+        
+        --if the xnor gives 0 the output will be opposite to signed case
+        else
+            res(5) <= not C; -- A >= B
+            res(6) <= not ( (not Z) and C) ; -- A > B
+            res(7) <=  C ; -- not (not C) -- A < B
+
+        end if;   
+
     end process;
 end architecture beh;

@@ -94,7 +94,7 @@ BEGIN
     RAW: process (clk)
     begin
           if(rst = '0' AND falling_edge(clk)) then
-            if (IR_ID(Nbit-1 downto Nbit-6) = JTYPE_JMP ) then --or IR_EX(Nbit-1 downto Nbit-6) = JTYPE_JMP )   or IR_MEM(Nbit-1 downto Nbit-6) = JTYPE_JMP) THEN
+              if (IR_ID(Nbit-1 downto Nbit-6) = JTYPE_JMP ) then --or IR_EX(Nbit-1 downto Nbit-6) = JTYPE_JMP )   or IR_MEM(Nbit-1 downto Nbit-6) = JTYPE_JMP) THEN
                 hzd_sig_jmp <= '1';
                 PC_SEL <= '1';
             elsif (IR_ID(Nbit-1 downto Nbit-6) = JTYPE_JAL or IR_EX(Nbit-1 downto Nbit-6) = JTYPE_JAL or IR_MEM(Nbit-1 downto Nbit-6) = JTYPE_JAL) THEN
