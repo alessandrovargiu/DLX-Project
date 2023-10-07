@@ -35,30 +35,30 @@ seq r12, r10, r11;
 sne r13, r10, r11;
 sge r14, r10, r11;
 sle r15, r10, r11;
-subi r10, r10, #1
-bnez r10, loop
+subi r10, r10, #1;
+bnez r10, loop;
 
 jal point;
-add r0, r10, r5
+add r0, r10, r5;
 
 point:
-addi r1, r0, #1
-addui r2, r1, #65535
-addi r3, r1, #32767
-addui r4, r1, #32767 
+addi r1, r0, #1;
+addui r2, r1, #65535;
+addi r3, r1, #32767;
+addui r4, r1, #32767;
 
 # another loop with load/store
 
-lw r10, 5(r1)
-addi r4, r0, #5
-loop:
-andi r3, r1, #1
-xori r3, r3, #1
-slli r1, r1, #15
-srli r1, r1, #1
-or r2, r2, r3
+lw r10, 5(r1);
+addi r4, r0, #5;
+loop2:
+andi r3, r1, #1;
+xori r3, r3, #1;
+slli r1, r1, #15;
+srli r1, r1, #1;
+or r2, r2, r3;
 
-subi r4, r4, #1
-bnez r4, loop
+subi r4, r4, #1;
+bnez r4, loop2;
 
-sw 4(r2), r1
+sw 4(r2), r1;
