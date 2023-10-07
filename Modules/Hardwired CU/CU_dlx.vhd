@@ -7,7 +7,7 @@ use work.constants.all;
 
 ENTITY CU_dlx IS
     GENERIC (
-        MICROCODE_MEM_SIZE : INTEGER := 41; -- Microcode Memory Size
+        MICROCODE_MEM_SIZE : INTEGER := 45; -- Microcode Memory Size
         FUNC_SIZE : INTEGER := 11; -- Func Field Size for R-Type Ops
         OP_CODE_SIZE : INTEGER := 6; -- Op Code Size
         CW_SIZE : INTEGER := 25 -- output signals of CU
@@ -114,7 +114,12 @@ ARCHITECTURE behavioral OF CU_dlx IS
             JMP_CWD,
             JAL_CWD,
             BEQZ_CWD,
-            BNEZ_CWD
+            BNEZ_CWD,
+            
+            SGEU_CWD,
+            SGTU_CWD,
+            SGEUI_CWD,
+            SGTUI_CWD
         );
 
         SIGNAL opcode_s : STD_LOGIC_VECTOR (OP_CODE_SIZE - 1 DOWNTO 0);
@@ -173,7 +178,7 @@ BEGIN
                         cw_s <= cw_mem(10);
                     ELSIF (func_s = RTYPE_SNE) THEN
                         cw_s <= cw_mem(11);
-                     ELSIF (func_s = RTYPE_SLT) THEN
+                    ELSIF (func_s = RTYPE_SLT) THEN
                         cw_s <= cw_mem(12);
                     ELSIF (func_s = RTYPE_SGT) THEN
                         cw_s <= cw_mem(13);
@@ -187,6 +192,10 @@ BEGIN
                         cw_s <= cw_mem(0);
                     ELSIF (func_s = RTYPE_SUBU) THEN
                         cw_s <= cw_mem(1);
+                    ELSIF (func_s = RTYPE_SGEU) THEN
+                        cw_s <= cw_mem(41); 
+                    ELSIF (func_s = RTYPE_SGTU) THEN
+                        cw_s <= cw_mem(42);
                     ELSE
                         cw_s <= cw_mem(17); --nop
                     END IF;
@@ -242,6 +251,11 @@ BEGIN
                     cw_s <= cw_mem(39);
                ELSIF (opcode_s = ITYPE_BNEZ) THEN
                     cw_s <= cw_mem(40);
+                ELSIF (opcode_s = ITYPE_SGEUI) THEN
+                    cw_s <= cw_mem(43);
+                ELSIF (opcode_s = ITYPE_SGTUI) THEN
+                    cw_s <= cw_mem(44);
+
                 ELSE
                     cw_s <= cw_mem(17); --nop
                 END IF;
