@@ -17,7 +17,7 @@ ARCHITECTURE behavioral OF CPU IS
 
 component CU_dlx is
         GENERIC (
-            MICROCODE_MEM_SIZE : INTEGER := 45; -- Microcode Memory Size
+            MICROCODE_MEM_SIZE : INTEGER := 47; -- Microcode Memory Size
             FUNC_SIZE : INTEGER := 11; -- Func Field Size for R-Type Ops
             OP_CODE_SIZE : INTEGER := 6; -- Op Code Size
             CW_SIZE : INTEGER := 25 -- output signals of CU  
