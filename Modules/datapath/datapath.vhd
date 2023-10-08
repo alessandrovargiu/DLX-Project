@@ -13,7 +13,7 @@ entity BasicDP is
             
             fromHU:      in std_logic;
             hzd_sig_jmp: in std_logic;
-            hzd_sig_ctrl: in std_logic;
+            --hzd_sig_ctrl: in std_logic;
             enable:      in std_logic;
             IMdata:      in std_logic_vector(NbitMem-1 downto 0);  --is the instruction entering the dp and is input to the IR pipeline register in IF/ID bank
             controlWord: in std_logic_vector(controlNbit-1 downto 0);
@@ -156,7 +156,7 @@ signal fromMemOrFromAlu:     std_logic_vector(Nbit-1 downto 0);
         generic ( RegNbit: integer );
         port (  clk:    in std_logic;
                 rst:    in std_logic;
-                hzd_sig_ctrl: in std_logic;
+              --  hzd_sig_ctrl: in std_logic;
                 en:     in std_logic;
                 I:      in std_logic_vector(RegNbit-1 downto 0);
                 Q:      out std_logic_vector(RegNbit-1 downto 0) );
@@ -230,7 +230,7 @@ component myregisterB is
     generic ( RegNbit: integer );
     port (  clk:    in  std_logic;
             rst:    in  std_logic;
-            hzd_sig_ctrl: in std_logic;
+            --hzd_sig_ctrl: in std_logic;
             en:     in  std_logic;
             I:      in  std_logic_vector(RegNbit-1 downto 0);
             I_EX_opcode:    in  std_logic_vector(5 downto 0);
@@ -286,7 +286,7 @@ begin
 --contains current address
 PC: myregister 
 generic map(Nbit)
-port map( clk, rst,'0', enable, PCinput, PCout ) ; --storage of current address
+port map( clk, rst, enable, PCinput, PCout ) ; --storage of current address
 
 NextAddressGenerator: rca
 generic map(Nbit)
@@ -312,7 +312,7 @@ port map( clk, rst, enable, fromHU, hzd_sig_jmp, IMdata,  IRoutputID );  --calle
 --stores subsequent instruction address
 NPC_0: myregister 
 generic map(Nbit)
-port map(clk, rst,'0', enable, PCout, NPCoutputID ); 
+port map(clk, rst, enable, PCout, NPCoutputID ); 
 
 notfromHU <= not(fromHU);
 IR0_out <= IRoutputID;
@@ -386,40 +386,40 @@ port map (input1 => unsignedImmfrom16, --00
 NPC_1: myregister
 generic map(Nbit)
 --port map(clk => clk, rst => rst, en => controlWord(CWNbit-3), I => NPCoutputID, Q => NPCoutputEX);
-port map(clk => clk, rst => rst, hzd_sig_ctrl=> hzd_sig_ctrl, en => '1', I => NPCoutputID, Q => NPCoutputEX);
+port map(clk => clk, rst => rst, en => '1', I => NPCoutputID, Q => NPCoutputEX);
 
 --forse e' da togliere la propagazione del istruzione ad ogni pipe register?
 IR_1: myregister  
 generic map(Nbit)
 --port map(clk => clk, rst => rst, en => controlWord(CWNbit-3), I => IRoutputID, Q => IRoutputEX );
-port map(clk => clk, rst => rst, hzd_sig_ctrl=> hzd_sig_ctrl, en => notfromHU, I => IRoutputID, Q => IRoutputEX );
+port map(clk => clk, rst => rst, en => notfromHU, I => IRoutputID, Q => IRoutputEX );
 
 RegA: myregister 
 generic map(Nbit)
 --port map(clk => clk, rst => rst, en => controlWord(CWNbit-3), I => RFOutRegAIn, Q => RegAoutEX );
-port map(clk => clk, rst => rst, hzd_sig_ctrl=> hzd_sig_ctrl, en => '1', I => RFOutRegAIn, Q => RegAoutEX );
+port map(clk => clk, rst => rst,  en => '1', I => RFOutRegAIn, Q => RegAoutEX );
 
 RegB: myregister
 generic map(Nbit)
 --port map(clk => clk, rst => rst, en => controlWord(CWNbit-3), I => RFOutRegBIn, Q => RegBoutEX ); 
-port map(clk => clk, rst => rst, hzd_sig_ctrl=> hzd_sig_ctrl, en => '1', I => RFOutRegBIn, Q => RegBoutEX ); 
+port map(clk => clk, rst => rst,  en => '1', I => RFOutRegBIn, Q => RegBoutEX ); 
 
 ImmReg: myregisterB
 generic map(Nbit)
 --port map(clk => clk, rst => rst, en => controlWord(CWNbit-3), I => extendedImmediateIn, Q => extendedImmediateOut ); 
-port map(clk => clk, rst => rst, hzd_sig_ctrl=> hzd_sig_ctrl, en => '1',I_EX_opcode => IRoutputEX (Nbit-1 downto Nbit-6), I => extendedImmediateIn, Q => extendedImmediateOut ); 
+port map(clk => clk, rst => rst, en => '1',I_EX_opcode => IRoutputEX (Nbit-1 downto Nbit-6), I => extendedImmediateIn, Q => extendedImmediateOut ); 
 
 --rt is the convention for expressing the destination address of an register Rtype instruction
 rt: myregister 
 generic map(RegNbit => RFaddrNbit)
 --port map( clk => clk, rst => rst, en => controlWord(CWNbit-3), I => IRoutputID(Nbit-1-OpcodeNbit-RFaddrNbit-RFaddrNbit downto FuncNbit), Q => rt_dest );
-port map( clk => clk, rst => rst, hzd_sig_ctrl=> hzd_sig_ctrl, en => '1', I => IRoutputEX(Nbit-1-OpcodeNbit-RFaddrNbit-RFaddrNbit downto FuncNbit), Q => rt_dest );
+port map( clk => clk, rst => rst, en => '1', I => IRoutputEX(Nbit-1-OpcodeNbit-RFaddrNbit-RFaddrNbit downto FuncNbit), Q => rt_dest );
 
 --rd is the convention for expressing the destination address of an immidiate Itype instruction
 rd: myregister 
 generic map(RFaddrNbit)
 --port map(clk => clk, rst => rst, en => controlWord(CWNbit-3), I => IRoutputID(Nbit-1-OpcodeNbit-RFaddrNbit downto Nbit-OpcodeNbit-RFaddrNbit-RFaddrNbit), Q => rd_dest );
-port map(clk => clk, rst => rst, hzd_sig_ctrl=> hzd_sig_ctrl, en => '1',  I => IRoutputEX(Nbit-1-OpcodeNbit-RFaddrNbit downto Nbit-OpcodeNbit-RFaddrNbit-RFaddrNbit), Q => rd_dest );
+port map(clk => clk, rst => rst, en => '1',  I => IRoutputEX(Nbit-1-OpcodeNbit-RFaddrNbit downto Nbit-OpcodeNbit-RFaddrNbit-RFaddrNbit), Q => rd_dest );
 
 ------------------------------------------------------Execution Unit related component instances------------------------------------------------------------
 
@@ -468,12 +468,12 @@ B_status <= branchstatus;
 IR_2: myregister
 generic map(Nbit)
 --port map(clk, rst, controlWord(CWNbit-9), IRoutputEX, IRoutputMEM );
-port map(clk, rst, hzd_sig_ctrl, '1', IRoutputEX, IRoutputMEM );
+port map(clk, rst, '1', IRoutputEX, IRoutputMEM );
 
 NPC_2: myregister
 generic map(Nbit)
 --port map(clk => clk, rst => rst, en => controlWord(CWNbit-9), I => NPCoutputEX, Q => NPCoutputMEM);
-port map(clk => clk, rst => rst, hzd_sig_ctrl=> hzd_sig_ctrl, en => '1', I => NPCoutputEX, Q => NPCoutputMEM);
+port map(clk => clk, rst => rst, en => '1', I => NPCoutputEX, Q => NPCoutputMEM);
 
 --pipe flip flop storing if regA is equal to 0
 --BranchCondition: FlipFlop 
@@ -489,17 +489,17 @@ port map(clk => clk, rst => rst, hzd_sig_ctrl=> hzd_sig_ctrl, en => '1', I => NP
 ALUOUT_reg_0: myregister 
 generic map(Nbit)
 --port map ( clk, rst, controlWord(CWNbit-9), ALUOutEX, ALURegOutMEM ); --(ALURegOutEX is signal going as input to the ALUREG pipe register in the EX/MEM bank)
-port map ( clk, rst, hzd_sig_ctrl,'1', ALUOutEX, ALURegOutMEM );
+port map ( clk, rst,'1', ALUOutEX, ALURegOutMEM );
 
 ForMemStore: myregister
 generic map(Nbit)
 --port map(clk, rst, controlWord(CWNbit-9), regBoutEX, regBoutMEM);
-port map(clk, rst, hzd_sig_ctrl, '1', regBoutEX, regBoutMEM);
+port map(clk, rst, '1', regBoutEX, regBoutMEM);
 
 destinationAddressReg1: myregister
 generic map(RFaddrNbit)
 --port map(clk, rst, controlWord(CWNbit-9), RFWritePortAddressEX, RFWritePortAddressMEM);
-port map(clk, rst, hzd_sig_ctrl, '1', RFWritePortAddressEX, RFWritePortAddressMEM);
+port map(clk, rst, '1', RFWritePortAddressEX, RFWritePortAddressMEM);
 
 -----------------------------------------------------Memory Unit component instances----------------------------------------------------------------------------
 
@@ -511,27 +511,27 @@ DMdataOUT <= RegBoutMEM;
 IR_3: myregister
 generic map(Nbit)
 --port map(clk, rst, controlWord(CWNbit-17), IRoutputMEM, IRoutputWB);
-port map(clk, rst, hzd_sig_ctrl, '1', IRoutputMEM, IRoutputWB);
+port map(clk, rst, '1', IRoutputMEM, IRoutputWB);
 
 NPC_3: myregister
 generic map(Nbit)
 --port map(clk => clk, rst => rst, en => controlWord(CWNbit-17), I => NPCoutputMEM, Q => NPCoutputWB);
-port map(clk => clk, rst => rst, hzd_sig_ctrl=> hzd_sig_ctrl, en => '1', I => NPCoutputMEM, Q => NPCoutputWB);
+port map(clk => clk, rst => rst, en => '1', I => NPCoutputMEM, Q => NPCoutputWB);
 
 LMDReg: myregister
 generic map(Nbit)
 --port map( clk, rst, controlWord(CWNbit-17), DMdata, LMDRegOutWB);
-port map( clk, rst, hzd_sig_ctrl, '1', DMdataIN, LMDRegOutWB);
+port map( clk, rst, '1', DMdataIN, LMDRegOutWB);
 
 ALUout_reg_1: myregister
 generic map(Nbit)
 --port map( clk, rst, controlWord(CWNbit-17), ALUregOutMEM, ALUregOutWB);
-port map( clk, rst, hzd_sig_ctrl, '1', ALUregOutMEM, ALUregOutWB);
+port map( clk, rst, '1', ALUregOutMEM, ALUregOutWB);
 
 destinationAddressReg2: myregister
 generic map(RFaddrNbit)
 --port map(clk, rst, controlWord(CWNbit-17), RFWritePortAddressMEM, RFWritePortAddressWB);
-port map(clk, rst, '1', hzd_sig_ctrl, RFWritePortAddressMEM, RFWritePortAddressWB);
+port map(clk, rst, '1', RFWritePortAddressMEM, RFWritePortAddressWB);
 
 -----------------------------------------------------Write Back component instances---------------------------------------------------------------------------
 

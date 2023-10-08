@@ -27,8 +27,12 @@ begin
             ELSIF ( en = '1' ) then
                 Q <= I ;
                 mem <= I;
-                if (I_EX_opcode = ITYPE_BEQZ OR I_EX_opcode = ITYPE_BNEZ OR I_EX_opcode = JTYPE_JMP OR I_EX_opcode = JTYPE_JAL ) then
+                if (I_EX_opcode = JTYPE_JMP OR I_EX_opcode = JTYPE_JAL ) then
                     Q <= I(regNbit-1) & I(regNbit-1) & I(regNbit-1 downto 2);
+                    mem <= I(regNbit-1) & I(regNbit-1) & I(regNbit-1 downto 2);
+                
+                elsif(I_EX_opcode = ITYPE_BEQZ OR I_EX_opcode = ITYPE_BNEZ ) then
+                    Q <= std_logic_vector(unsigned(I(regNbit-1) & I(regNbit-1) & I(regNbit-1 downto 2)) - 1) ;
                     mem <= I(regNbit-1) & I(regNbit-1) & I(regNbit-1 downto 2);
                 end if;
             elsif ( en = '0' ) then

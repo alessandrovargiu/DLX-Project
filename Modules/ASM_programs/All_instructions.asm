@@ -28,7 +28,7 @@
 ;slli r7, r3, #5;
 
 # small loop with RAW
-addi r10, r0, #1; 
+addi r10, r0, #2; 
 addi r11, r0, #2;
 loop:
 seq r12, r10, r11;
@@ -43,9 +43,9 @@ add r0, r10, r5;
 
 point:
 addi r1, r0, #1;
-addui r2, r1, #65535;
-addi r3, r1, #32767;
-addui r4, r1, #32767;
+addui r2, r1, #10;
+addi r3, r1, #11;
+addui r4, r1, #33;
 
 # another loop with load/store
 
