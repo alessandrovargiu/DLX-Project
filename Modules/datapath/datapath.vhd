@@ -13,6 +13,7 @@ entity BasicDP is
             
             fromHU:      in std_logic;
             hzd_sig_jmp: in std_logic;
+            --hzd_sig_ctrl: in std_logic;
             enable:      in std_logic;
             IMdata:      in std_logic_vector(NbitMem-1 downto 0);  --is the instruction entering the dp and is input to the IR pipeline register in IF/ID bank
             controlWord: in std_logic_vector(controlNbit-1 downto 0);
@@ -155,6 +156,7 @@ signal fromMemOrFromAlu:     std_logic_vector(Nbit-1 downto 0);
         generic ( RegNbit: integer );
         port (  clk:    in std_logic;
                 rst:    in std_logic;
+              --  hzd_sig_ctrl: in std_logic;
                 en:     in std_logic;
                 I:      in std_logic_vector(RegNbit-1 downto 0);
                 Q:      out std_logic_vector(RegNbit-1 downto 0) );
@@ -228,6 +230,7 @@ component myregisterB is
     generic ( RegNbit: integer );
     port (  clk:    in  std_logic;
             rst:    in  std_logic;
+            --hzd_sig_ctrl: in std_logic;
             en:     in  std_logic;
             I:      in  std_logic_vector(RegNbit-1 downto 0);
             I_EX_opcode:    in  std_logic_vector(5 downto 0);
@@ -394,12 +397,12 @@ port map(clk => clk, rst => rst, en => notfromHU, I => IRoutputID, Q => IRoutput
 RegA: myregister 
 generic map(Nbit)
 --port map(clk => clk, rst => rst, en => controlWord(CWNbit-3), I => RFOutRegAIn, Q => RegAoutEX );
-port map(clk => clk, rst => rst, en => '1', I => RFOutRegAIn, Q => RegAoutEX );
+port map(clk => clk, rst => rst,  en => '1', I => RFOutRegAIn, Q => RegAoutEX );
 
 RegB: myregister
 generic map(Nbit)
 --port map(clk => clk, rst => rst, en => controlWord(CWNbit-3), I => RFOutRegBIn, Q => RegBoutEX ); 
-port map(clk => clk, rst => rst, en => '1', I => RFOutRegBIn, Q => RegBoutEX ); 
+port map(clk => clk, rst => rst,  en => '1', I => RFOutRegBIn, Q => RegBoutEX ); 
 
 ImmReg: myregisterB
 generic map(Nbit)
@@ -416,7 +419,7 @@ port map( clk => clk, rst => rst, en => '1', I => IRoutputEX(Nbit-1-OpcodeNbit-R
 rd: myregister 
 generic map(RFaddrNbit)
 --port map(clk => clk, rst => rst, en => controlWord(CWNbit-3), I => IRoutputID(Nbit-1-OpcodeNbit-RFaddrNbit downto Nbit-OpcodeNbit-RFaddrNbit-RFaddrNbit), Q => rd_dest );
-port map(clk => clk, rst => rst, en => '1', I => IRoutputEX(Nbit-1-OpcodeNbit-RFaddrNbit downto Nbit-OpcodeNbit-RFaddrNbit-RFaddrNbit), Q => rd_dest );
+port map(clk => clk, rst => rst, en => '1',  I => IRoutputEX(Nbit-1-OpcodeNbit-RFaddrNbit downto Nbit-OpcodeNbit-RFaddrNbit-RFaddrNbit), Q => rd_dest );
 
 ------------------------------------------------------Execution Unit related component instances------------------------------------------------------------
 
@@ -486,7 +489,7 @@ port map(clk => clk, rst => rst, en => '1', I => NPCoutputEX, Q => NPCoutputMEM)
 ALUOUT_reg_0: myregister 
 generic map(Nbit)
 --port map ( clk, rst, controlWord(CWNbit-9), ALUOutEX, ALURegOutMEM ); --(ALURegOutEX is signal going as input to the ALUREG pipe register in the EX/MEM bank)
-port map ( clk, rst, '1', ALUOutEX, ALURegOutMEM );
+port map ( clk, rst,'1', ALUOutEX, ALURegOutMEM );
 
 ForMemStore: myregister
 generic map(Nbit)

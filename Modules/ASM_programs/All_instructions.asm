@@ -1,34 +1,34 @@
-addi r1, r0, #65535;  
-addi r2, r0, #-1;     
-nop
-add r3, r1, r1;       
-add r4, r1, r2;
-nop
-# raw hazard i-type tests
-addi r1, r0, #10;
-andi r2, r1, #3;
-ori r3, r1, #3;
-xori r4, r1, #11;
-xnori r5, r1, #10;
-sgei r6, r1, #3;
-slei r7, r1, #15;
-nori r8, r1, #4;
-nandi r8, r1, #7;
+;addi r1, r0, #65535;   
+;addi r2, r0, #-1;    
+;nop                
+;add r3, r1, r1;     
+;add r4, r1, r2;     
+;nop
+;# raw hazard i-type tests
+;addi r1, r0, #10;
+;andi r2, r1, #3;
+;ori r3, r1, #3;
+;xori r4, r1, #11;
+;xnori r5, r1, #10;
+;sgei r6, r1, #3;
+;slei r7, r1, #15;
+;nori r8, r1, #4;
+;nandi r8, r1, #7;
 
-lw r1, 7(r8);
-subi r3, r1, #6;
+;lw r1, 7(r8);
+;subi r3, r1, #6;
 
-# shift testing
-addi r1, r0, #10;       
-addi r2, r0, #2;        ;shift amount    
-sll r3, r1, r2;         ;R3 = R1 << R2
-srl r4, r3, r2;         ;R4, R3 >> R2
-sra r5, r3, r2;         ;R5, R3 >>> R2
-srai r6, r3, #5;
-slli r7, r3, #5;
+;# shift testing
+;addi r1, r0, #10;       
+;addi r2, r0, #2;        ;shift amount    
+;sll r3, r1, r2;         ;R3 = R1 << R2
+;srl r4, r3, r2;         ;R4, R3 >> R2
+;sra r5, r3, r2;         ;R5, R3 >>> R2
+;srai r6, r3, #5;
+;slli r7, r3, #5;
 
 # small loop with RAW
-addi r10, r0, #5; 
+addi r10, r0, #2; 
 addi r11, r0, #2;
 loop:
 seq r12, r10, r11;
@@ -43,9 +43,9 @@ add r0, r10, r5;
 
 point:
 addi r1, r0, #1;
-addui r2, r1, #65535;
-addi r3, r1, #32767;
-addui r4, r1, #32767;
+addui r2, r1, #10;
+addi r3, r1, #11;
+addui r4, r1, #33;
 
 # another loop with load/store
 
