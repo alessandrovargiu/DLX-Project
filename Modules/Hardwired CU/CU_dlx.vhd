@@ -72,57 +72,54 @@ end entity;
 ARCHITECTURE behavioral OF CU_dlx IS
         TYPE mem_array IS ARRAY (INTEGER RANGE 0 TO MICROCODE_MEM_SIZE - 1) OF STD_LOGIC_VECTOR(CW_SIZE - 1 DOWNTO 0); --rivedere size
         SIGNAL cw_mem : mem_array := (
-            ADD_CWD,
-            SUB_CWD,
-            AND_CWD,
-            OR_CWD,
-            XOR_CWD,
-            XNOR_CWD,
-            NOR_CWD,
-            NAND_CWD,
-            SGE_CWD,
-            SLE_CWD,
-            SEQ_CWD,
-            SNE_CWD,
-            SLT_CWD,
-            SGT_CWD,
-            SRL_CWD,
-            SLL_CWD,
-            SRA_CWD,
-            NOP_CWD,
-            ADDI_CWD,
-            SUBI_CWD,
-            ADDUI_CWD,
-            SUBI_CWD,
-            SUBUI_CWD,
-            ANDI_CWD,
-            ORI_CWD,
-            XORI_CWD,
-            XNORI_CWD,
-            NORI_CWD,
-            NANDI_CWD,
-            SGEI_CWD,
-            SLEI_CWD,
-            SEQI_CWD,
-            SNEI_CWD,
-            SLTI_CWD,
-            SGTI_CWD,
-            SRLI_CWD,
-            SLLI_CWD,
-            SRAI_CWD,
-            LDW_CWD,
-            STW_CWD,
-            JMP_CWD,
-            JAL_CWD,
-            BEQZ_CWD,
-            BNEZ_CWD,
-            SGEU_CWD,
-            SGTU_CWD,
-            SGEUI_CWD,
-            SGTUI_CWD,
+            ADD_CWD, --0
+            SUB_CWD, --1
+            AND_CWD,--2
+            OR_CWD,--3
+            XOR_CWD,--4
+            XNOR_CWD,--5
+            NOR_CWD,--6
+            NAND_CWD,--7
+            SGE_CWD,--8
+            SLE_CWD,--9
+            SEQ_CWD,--10
+            SNE_CWD,--11
+            SLT_CWD,--12
+            SGT_CWD,--13
+            SRL_CWD,--14
+            SLL_CWD,--15
+            SRA_CWD,--16
+            NOP_CWD,--17
+            ADDI_CWD,--18
+            SUBI_CWD,--19
+            ANDI_CWD,--20
+            ORI_CWD,--21
+            XORI_CWD,--22
+            XNORI_CWD,--23
+            NORI_CWD,--24
+            NANDI_CWD,--25
+            SGEI_CWD,--26
+            SLEI_CWD,--27
+            SEQI_CWD,--28
+            SNEI_CWD,--29
+            SLTI_CWD,--30
+            SGTI_CWD,--31
+            SRLI_CWD,--32
+            SLLI_CWD,--33
+            SRAI_CWD,--34
+            LDW_CWD,--35
+            STW_CWD,--36
+            JMP_CWD,--37
+            JAL_CWD,--38
+            BEQZ_CWD,--39
+            BNEZ_CWD,--40
+            SGEU_CWD,--41
+            SGTU_CWD,--42
+            SGEUI_CWD,--43
+            SGTUI_CWD,--44
 
-            ADDUI_CWD,
-            SUBUI_CWD
+            ADDUI_CWD,--45
+            SUBUI_CWD--46
         );
 
         SIGNAL opcode_s : STD_LOGIC_VECTOR (OP_CODE_SIZE - 1 DOWNTO 0);
