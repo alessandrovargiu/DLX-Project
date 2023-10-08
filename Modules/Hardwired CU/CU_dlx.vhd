@@ -91,9 +91,10 @@ ARCHITECTURE behavioral OF CU_dlx IS
             SRA_CWD,
             NOP_CWD,
             ADDI_CWD,
-            
             SUBI_CWD,
-            
+            ADDUI_CWD,
+            SUBI_CWD,
+            SUBUI_CWD,
             ANDI_CWD,
             ORI_CWD,
             XORI_CWD,
@@ -115,7 +116,6 @@ ARCHITECTURE behavioral OF CU_dlx IS
             JAL_CWD,
             BEQZ_CWD,
             BNEZ_CWD,
-            
             SGEU_CWD,
             SGTU_CWD,
             SGEUI_CWD,
