@@ -100,10 +100,20 @@ BEGIN
             elsif (IR_ID(Nbit-1 downto Nbit-6) = JTYPE_JAL and BranchStatus = '0') then
                 hzd_sig_jmp <= '1';  
                 PC_SEL <= '1';
+            elsif (IR_ID(Nbit-1 downto Nbit-6) = ITYPE_JR and BranchStatus = '0') then
+                if (ID_Rs1 = EX_Rd OR ID_Rs1 = MEM_Rd ) then
+                    hzd_sig_raw <= '1';
+                    PC_SEL <= '1';
+                else
+                    hzd_sig_raw <= '0';
+                    hzd_sig_jmp <= '1';  
+                    PC_SEL <= '1';
+                end if;
             elsif(branchStatus = '1' AND (IR_EX(Nbit-1 downto Nbit-6) = ITYPE_BEQZ or IR_EX(Nbit-1 downto Nbit-6) = ITYPE_BNEZ) ) then
                 hzd_sig_ctrl <= '1';
                 PC_SEL <= '0';
             else
+                hzd_sig_raw <= '1';
                 hzd_sig_ctrl <= '0';
                 hzd_sig_jmp <= '0';
                 PC_SEL <= '0';  
