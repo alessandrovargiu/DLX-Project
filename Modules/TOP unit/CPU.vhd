@@ -17,7 +17,7 @@ ARCHITECTURE behavioral OF CPU IS
 
 component CU_dlx is
         GENERIC (
-            MICROCODE_MEM_SIZE : INTEGER := 47; -- Microcode Memory Size
+            MICROCODE_MEM_SIZE : INTEGER := 48; -- Microcode Memory Size
             FUNC_SIZE : INTEGER := 11; -- Func Field Size for R-Type Ops
             OP_CODE_SIZE : INTEGER := 6; -- Op Code Size
             CW_SIZE : INTEGER := 25 -- output signals of CU  
@@ -84,7 +84,7 @@ end component;
 component DRAM is
     generic (
         W: integer := 32;
-        RAM_DEPTH: integer := 32
+        RAM_DEPTH: integer := 1000
     );
     port(
         clk: in std_logic;
@@ -100,7 +100,7 @@ end component;
 
 component IRAM is 
     generic (
-        RAM_DEPTH: integer := 100;-- constants here
+        RAM_DEPTH: integer := 1200;-- constants here
         I_SIZE: integer := 32
     );
     port(
