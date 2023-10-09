@@ -69,6 +69,8 @@ package INSTR_CODES is
 
 	constant ITYPE_SGEUI : std_logic_vector(OP_CODE_SIZE - 1 downto 0) :=  "111101";
 	constant ITYPE_SGTUI : std_logic_vector(OP_CODE_SIZE - 1 downto 0) :=  "111011";
+	
+	constant ITYPE_JR :	   std_logic_vector(OP_CODE_SIZE - 1 downto 0) :=  "010010";
 
 
 	-- J-Type instruction format: | opcode | value |
@@ -400,7 +402,12 @@ package INSTR_CODES is
 	constant BNEZ_WB: std_logic_vector(4 downto 0) :=  "00000";
 	constant BNEZ_CWD: std_logic_vector(24 downto 0) := BNEZ_DECODE &  BNEZ_EXECUTE & BNEZ_MEMORY & BNEZ_WB;
 
-
+	--JR
+	constant JR_DECODE : std_logic_vector(4 downto 0) := "00111"; 
+	constant JR_EXECUTE: std_logic_vector(11 downto 0) := "100100000001"; --s3 dont care
+	constant JR_MEMORY: std_logic_vector(2 downto 0) := "000";
+	constant JR_WB: std_logic_vector(4 downto 0) := "00000";
+	constant JR_CWD: std_logic_vector(24 downto 0) := JR_DECODE &  JR_EXECUTE & JR_MEMORY & JR_WB;
 
 	--JTYPE
 

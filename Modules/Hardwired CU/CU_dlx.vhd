@@ -7,7 +7,7 @@ use work.constants.all;
 
 ENTITY CU_dlx IS
     GENERIC (
-        MICROCODE_MEM_SIZE : INTEGER := 47; -- Microcode Memory Size
+        MICROCODE_MEM_SIZE : INTEGER := 48; -- Microcode Memory Size
         FUNC_SIZE : INTEGER := 11; -- Func Field Size for R-Type Ops
         OP_CODE_SIZE : INTEGER := 6; -- Op Code Size
         CW_SIZE : INTEGER := 25 -- output signals of CU
@@ -119,7 +119,9 @@ ARCHITECTURE behavioral OF CU_dlx IS
             SGTUI_CWD,--44
 
             ADDUI_CWD,--45
-            SUBUI_CWD--46
+            SUBUI_CWD,--46
+
+            JR_CWD --47
         );
 
         SIGNAL opcode_s : STD_LOGIC_VECTOR (OP_CODE_SIZE - 1 DOWNTO 0);
@@ -257,6 +259,8 @@ BEGIN
                     cw_s <= cw_mem(43);
                 ELSIF (opcode_s = ITYPE_SGTUI) THEN
                     cw_s <= cw_mem(44);
+                ELSIF (opcode_s = ITYPE_JR ) THEN
+                    cw_s <= cw_mem(47);
 
                 ELSE
                     cw_s <= cw_mem(17); --nop
