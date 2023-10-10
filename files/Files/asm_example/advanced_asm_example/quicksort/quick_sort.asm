@@ -27,7 +27,7 @@ main:
 		;lw r1, array(r0)		# set left pointer to array elements
 		;lw r2, array_N(r0)		# set right pointer to array elements
 	
-		addi r1, r0, #0              # set left pointer to array elements.this address is stored in 0th location in dram at beggining
+		addi r1, r0, #0              # set left pointer to array elements (custom)
 		addi r2, r0, #12 
 
 
