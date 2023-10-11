@@ -113,7 +113,7 @@ BEGIN
                 hzd_sig_ctrl <= '1';
                 PC_SEL <= '0';
             else
-                hzd_sig_raw <= '1';
+                hzd_sig_raw <= '0';
                 hzd_sig_ctrl <= '0';
                 hzd_sig_jmp <= '0';
                 PC_SEL <= '0';  
@@ -125,8 +125,8 @@ BEGIN
                         hzd_sig_raw <= '1';
                         PC_SEL <= '1';
                     else
-                    hzd_sig_raw <= '0';
-                    PC_SEL <= '0';
+                        hzd_sig_raw <= '0';
+                        PC_SEL <= '0';
                     end if;
                 else
                     hzd_sig_raw <= '0';

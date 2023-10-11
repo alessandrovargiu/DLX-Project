@@ -322,7 +322,7 @@ port map( clk, rst, enable, fromHU, hzd_sig_jmp, IMdata,  IRoutputID );  --calle
 --stores subsequent instruction address
 NPC_0: myregister 
 generic map(Nbit)
-port map(clk, rst, enable, PCout, NPCoutputID ); 
+port map(clk, rst, '1', Adder1Out, NPCoutputID ); 
 
 notfromHU <= not(fromHU);
 IR0_out <= IRoutputID;

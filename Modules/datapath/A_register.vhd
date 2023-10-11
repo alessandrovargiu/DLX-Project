@@ -27,7 +27,7 @@ begin
             ELSIF ( en = '1' ) then
                 Q <= I ;
                 mem <= I;
-                if (I_EX_opcode = ITYPE_JR ) then
+                if (I_EX_opcode = ITYPE_JR) then 
                     Q <= I(regNbit-1) & I(regNbit-1) & I(regNbit-1 downto 2);
                     mem <= I(regNbit-1) & I(regNbit-1) & I(regNbit-1 downto 2);
                 end if;
