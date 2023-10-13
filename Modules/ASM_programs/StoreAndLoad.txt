@@ -1,9 +1,0 @@
-the StoreAndLoad.mem file corresponds to following hazard free program:
-
-addi r1, r0, 1;                 FDEMW
-addi r2, r0, 2;                  FDEMW
-subi r3, r0, 0;                   FDEMW
-ori  r4, ro, 2;                    FDEMW
-add  r5, r1, r2;                    FDEMW
-stw  21(r2), r1;                     FDEMW
-ldw r9, 22(r1);                       FDEMW
