@@ -237,6 +237,18 @@ component myregisterB is
             Q:      out std_logic_vector(RegNbit-1 downto 0) );
 end component;
 
+component myregisterA is
+    generic ( RegNbit: integer );
+    port (  clk:    in  std_logic;
+            rst:    in  std_logic;
+            en:     in  std_logic;
+            I:      in  std_logic_vector(RegNbit-1 downto 0);
+            I_EX_opcode:    in  std_logic_vector(5 downto 0);
+            I_EX_Rs1:   in std_logic_vector(4 downto 0);
+            Q:      out std_logic_vector(RegNbit-1 downto 0) );
+end component;
+
+
     signal notfromHU: std_logic;
 ---------------------------------------------------------------------------------
 --Brief description of my interpretetion of control bits
@@ -394,10 +406,10 @@ generic map(Nbit)
 --port map(clk => clk, rst => rst, en => controlWord(CWNbit-3), I => IRoutputID, Q => IRoutputEX );
 port map(clk => clk, rst => rst, en => notfromHU, I => IRoutputID, Q => IRoutputEX );
 
-RegA: myregister 
+RegA: myregisterA
 generic map(Nbit)
 --port map(clk => clk, rst => rst, en => controlWord(CWNbit-3), I => RFOutRegAIn, Q => RegAoutEX );
-port map(clk => clk, rst => rst,  en => '1', I => RFOutRegAIn, Q => RegAoutEX );
+port map(clk => clk, rst => rst,  en => '1', I => RFOutRegAIn, I_EX_opcode => IRoutputEX (Nbit-1 downto Nbit-6), I_EX_Rs1 =>IRoutputEX (Nbit-7 downto Nbit-11), Q => RegAoutEX );
 
 RegB: myregister
 generic map(Nbit)
