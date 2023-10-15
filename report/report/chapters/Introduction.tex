@@ -1,0 +1,24 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% This will help you in writing your homebook
+% Remember that the character % is a comment in latex
+%
+% 
+\chapter{Abstract}
+\label{Abstract}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% you can organize a chapter using sections -> \section{Simulating an inverter}
+% or subsections -> \subsection{simulating a particular type of inverter}
+
+DLX is a RISC architecture, a simplified version of the Stanford MIPS CPU.
+It is a 32-bit load/store architecture. The goal of this project is to build a DLX implementation
+from scratch, using VHDL language. There are three main blocks that compose this architecture.
+
+First (not in order of relevance), the Control Unit. The basis for our model was the microprogrammed Control Unit, which makes
+use of a microcode memory that contains the control bits for each instruction.
+The Datapath is another important block of the DLX. Some internal blocks, like the P4 Adder were previously created during the course laboratories
+and were used for this final project. Another example is the T2 Shifter, which was shown in the course lectures and we decided to implement it.
+The Hazard Unit is another component that works alongside the Control Unit, to manage the various types of hazards that could occur during the
+execution of instructions in the pipeline. Later in this paper, all of its features will be explained.
+
+
