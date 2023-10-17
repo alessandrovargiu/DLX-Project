@@ -208,9 +208,9 @@ begin
                 hzd_sig_jmp => hzd_sig_jmp_s,
                 --hzd_sig_ctrl => hzd_sig_ctrl_s,
                 enable => enable,
-                IMdata => Iramdata_s, --is input data from the IRAM
+                IMdata => Iramdata, --is input data from the IRAM
                 controlWord => controlWord_s,
-                DMdataIN => Dramdata_in_s,
+                DMdataIN => Dramdata_in,
                 IMaddress => IramADDR_s,
                 DMaddress => Dramaddr_s,
                 DMdataOUT => Dramdata_out_s,
@@ -219,8 +219,12 @@ begin
                 IR0_out => IR0_out_s
                );
 
+    IramADDR <= IramADDR_s;
+    DramADDR <= DramADDR_s;
+    DramDATA_OUT <= DramDATA_out_s;
     controlWord_s <= decode_cwd_s(24 downto 20) & execute_cwd_s(19 downto 8) & memory_cwd_s(7 downto 5) & wb_cwd_s(4 downto 0);
-    cw_mem_bits <= controlword_s(controlnbit-18) & controlword_s(controlnbit-20);        
+    cw_mem_bits <= controlword_s(controlnbit-18) & controlword_s(controlnbit-19);        
+
 end architecture;
 
 configuration CFG_CPU of CPU is

@@ -15,12 +15,12 @@ Component CPU IS
         CLK : IN STD_LOGIC; -- Clock Signal (rising-edge trigger)
         reset : IN STD_LOGIC; -- Reset Signal: Asyncronous Active Low (Negative)
         enable: in std_logic;
-	IramDATA: in std_logic_vector(31 downto 0);
-	IramADDR: out std_logic_vector (31 downto 0);
-	DramDATA_OUT: out std_Logic_vector (31 downto 0);
-	DramADDR: out std_logic_vector (31 downto 0);
-	DramDATA_IN: in std_logic_vector (31 downto 0);
-	cw_mem_bits: out std_logic_vector (1 downto 0) 
+		IramDATA: in std_logic_vector(31 downto 0);
+		IramADDR: out std_logic_vector (31 downto 0);
+		DramDATA_OUT: out std_Logic_vector (31 downto 0);
+		DramADDR: out std_logic_vector (31 downto 0);
+		DramDATA_IN: in std_logic_vector (31 downto 0);
+		cw_mem_bits: out std_logic_vector (1 downto 0) 
     );
 END component;
 
@@ -102,7 +102,7 @@ begin
 	test: process
 	begin
 	   reset_s <= '1';
-	   wait for 0.5 ns;
+	   wait for 1.5 ns;
 	   reset_s <= '0';
 	   enable_s <= '1';
 	wait;
