@@ -6,21 +6,14 @@ use work.constants.all;
 
 ENTITY CPU IS
     PORT (              
-        CLK : IN STD_LOGIC; -- Clock Signal (rising-edge trigger)
+        clk : IN STD_LOGIC; -- Clock Signal (rising-edge trigger)
         reset : IN STD_LOGIC; -- Reset Signal: Asyncronous Active Low (Negative)
-        enable: in std_logic;
-		IramDATA: in std_logic_vector(31 downto 0);
-		IramADDR: out std_logic_vector (31 downto 0);
-		DramDATA_OUT: out std_Logic_vector (31 downto 0);
-		DramADDR: out std_logic_vector (31 downto 0);
-		DramDATA_IN: in std_logic_vector (31 downto 0);
-		cw_mem_bits: out std_logic_vector (1 downto 0)
-		
+        enable: in std_logic
         --Instr_in : IN std_logic_vector (Nbit-1 downto 0)
     );
 END ENTITY CPU;
 
-ARCHITECTURE DLX_arch OF CPU IS
+ARCHITECTURE behavioral OF CPU IS
 
 component CU_dlx is
         GENERIC (
@@ -88,34 +81,34 @@ component BasicDp is
     );
 end component;
 
---component DRAM is
-    --generic (
-     --   W: integer := 32;
-     --   RAM_DEPTH: integer := 1000
-    --);
-   -- port(
-     --   clk: in std_logic;
-     --   rst: in std_logic;
-      --  EN: in std_logic;                            -- active low
-      --  RW: in std_logic;                             -- 1 - read, 0 - write
-      --  ADDR: in std_logic_vector(W-1 downto 0);          
-      --  DATA_IN: in std_logic_vector(N-1 downto 0);
-       -- DATA_OUT: out std_logic_vector(N-1 downto 0);
-       -- ready : out std_logic                         -- active high
-    --);
---end component;
+component DRAM is
+    generic (
+        W: integer := 32;
+        RAM_DEPTH: integer := 1000
+    );
+    port(
+        clk: in std_logic;
+        rst: in std_logic;
+        EN: in std_logic;                            -- active low
+        RW: in std_logic;                             -- 1 - read, 0 - write
+        ADDR: in std_logic_vector(W-1 downto 0);          
+        DATA_IN: in std_logic_vector(N-1 downto 0);
+        DATA_OUT: out std_logic_vector(N-1 downto 0);
+        ready : out std_logic                         -- active high
+    );
+end component;
 
---component IRAM is 
-    --generic (
-     --   RAM_DEPTH: integer := 1200;-- constants here
-      --  I_SIZE: integer := 32
-    --);
-    --port(
-    --    rst: in std_logic;                            -- active low
-     --   Addr : in std_logic_vector(N-1 downto 0);     -- dimensions to be specified     
-     --   Dout : out std_logic_vector(M-1 downto 0)
-   -- );
---end component;
+component IRAM is 
+    generic (
+        RAM_DEPTH: integer := 1200;-- constants here
+        I_SIZE: integer := 32
+    );
+    port(
+        rst: in std_logic;                            -- active low
+        Addr : in std_logic_vector(N-1 downto 0);     -- dimensions to be specified     
+        Dout : out std_logic_vector(M-1 downto 0)
+    );
+end component;
  
 signal decode_cwd_s : STD_LOGIC_VECTOR(CW_SIZE-1 DOWNTO 0);
 signal execute_cwd_s :STD_LOGIC_VECTOR (CW_SIZE-1-5 DOWNTO 0);
@@ -135,8 +128,8 @@ signal RW_s:  std_logic;                             -- 1 - read, 0 - write
 signal DramADDR_s:  std_logic_vector(W-1 downto 0);          
 signal DramDATA_IN_s:  std_logic_vector(N-1 downto 0);
 signal DramDATA_OUT_s:  std_logic_vector(N-1 downto 0);
---signal readyDram_s :  std_logic;
---signal readyIram_s :  std_logic;
+signal readyDram_s :  std_logic;
+signal readyIram_s :  std_logic;
 signal IramADDR_s :   std_logic_vector(N-1 downto 0);
 signal IramDATA_s :   std_logic_vector(M-1 downto 0);
 signal controlWord_s: std_logic_vector(CW_SIZE-1 downto 0);
@@ -179,25 +172,25 @@ begin
             hzd_sig_raw_s
         );
 
-    --DRAM1 : DRAM
+    DRAM1 : DRAM
     --generic map();
-    --port map(clk => clk,
-     --       rst => reset,
-      --      EN => controlWord_s(controlNbit-19),
-      --      RW => controlWord_s(controlNbit-18),
-       --     ADDR => Dramaddr_s,
-       --     DATA_IN => Dramdata_out_s,
-       --     DATA_OUT => Dramdata_in_s,
-       --     ready => readyDram_s
-       -- );
+    port map(clk => clk,
+            rst => reset,
+            EN => controlWord_s(controlNbit-19),
+            RW => controlWord_s(controlNbit-18),
+            ADDR => Dramaddr_s,
+            DATA_IN => Dramdata_out_s,
+            DATA_OUT => Dramdata_in_s,
+            ready => readyDram_s
+        );
 
-    --IRAM1 : IRAM
+    IRAM1 : IRAM
     --generic map(RAM_DEPTH, I_SIZE)
-    --port map(
-        --    Rst => reset,
-         --   Addr => IramADDR_s,
-         --   Dout => IramDATA_s
-        --);
+    port map(
+            Rst => reset,
+            Addr => IramADDR_s,
+            Dout => IramDATA_s
+        );
 
     DP: BasicDP
     --generic map() 
@@ -208,9 +201,9 @@ begin
                 hzd_sig_jmp => hzd_sig_jmp_s,
                 --hzd_sig_ctrl => hzd_sig_ctrl_s,
                 enable => enable,
-                IMdata => Iramdata, --is input data from the IRAM
+                IMdata => Iramdata_s, --is input data from the IRAM
                 controlWord => controlWord_s,
-                DMdataIN => Dramdata_in,
+                DMdataIN => Dramdata_in_s,
                 IMaddress => IramADDR_s,
                 DMaddress => Dramaddr_s,
                 DMdataOUT => Dramdata_out_s,
@@ -219,18 +212,11 @@ begin
                 IR0_out => IR0_out_s
                );
 
-    IramADDR <= IramADDR_s;
-    DramADDR <= DramADDR_s;
-    DramDATA_OUT <= DramDATA_out_s;
     controlWord_s <= decode_cwd_s(24 downto 20) & execute_cwd_s(19 downto 8) & memory_cwd_s(7 downto 5) & wb_cwd_s(4 downto 0);
-    cw_mem_bits <= controlword_s(controlnbit-18) & controlword_s(controlnbit-19);        
-
+            
 end architecture;
 
-configuration CFG_CPU of CPU is
-    for DLX_arch 
-    end for;
-end configuration;
+
 
 
 
