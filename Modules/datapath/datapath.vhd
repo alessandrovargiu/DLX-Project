@@ -241,6 +241,18 @@ component myregisterA is
     generic ( RegNbit: integer );
     port (  clk:    in  std_logic;
             rst:    in  std_logic;
+            en:     in  std_logic;
+            I:      in  std_logic_vector(RegNbit-1 downto 0);
+            I_EX_opcode:    in  std_logic_vector(5 downto 0);
+            I_EX_Rs1:   in std_logic_vector(4 downto 0);
+            Q:      out std_logic_vector(RegNbit-1 downto 0) );
+end component;
+
+
+component myregisterA is
+    generic ( RegNbit: integer );
+    port (  clk:    in  std_logic;
+            rst:    in  std_logic;
             --hzd_sig_ctrl: in std_logic;
             en:     in  std_logic;
             I:      in  std_logic_vector(RegNbit-1 downto 0);

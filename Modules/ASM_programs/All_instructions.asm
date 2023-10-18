@@ -49,7 +49,7 @@ addui r4, r1, #33;
 
 # another loop with load/store
 
-lw r10, 5(r1);
+lw r10, 4(r1);
 addi r4, r0, #5;
 loop2:
 andi r3, r1, #1;
@@ -61,4 +61,4 @@ or r2, r2, r3;
 subi r4, r4, #1;
 bnez r4, loop2;
 
-sw 4(r2), r1;
+sw 4(r2), r2;

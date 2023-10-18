@@ -20,11 +20,17 @@
 # used to set up initial parameters for recursive quicksort call	
 main:
 
-		addi r30, r0, stack 	# set stack pointer to base of stack
-
-		lw r1, array_0(r0)		# set left pointer to array elements
-		lw r2, array_N(r0)		# set right pointer to array elements
+		;addi r30, r0, stack 	# set stack pointer to base of stack
+		addi r30, r0, #500 ; our stack is in the dram and it starts on this address.
 	
+
+		;lw r1, array(r0)		# set left pointer to array elements
+		;lw r2, array_N(r0)		# set right pointer to array elements
+	
+		addi r1, r0, #0              # set left pointer to array elements (custom)
+		addi r2, r0, #12 
+
+
 		jal qsort				# sort array using quick sort
 		
 endless: 
@@ -43,14 +49,16 @@ qsort:
 		# save all registers that will be modified and are used again by caller
 		
 		sw (r30), r31		# push return address
-		addi r30, r30, 4
+		;addi r30, r30, 4
+		addi r30, r30, 1
 
 		sw (r30), r2		# push right limit
-		addi r30, r30, 4
+		;addi r30, r30, 4
+		addi r30, r30, 1
 
 		sw (r30), r7		# push previous saved value of right limit
-		addi r30, r30, 4
-
+		;addi r30, r30, 4
+		addi r30, r30, 1
 
 		# save current left and right limits
 		
@@ -66,19 +74,26 @@ qsort:
 
 		# set initial value (out of range) for right and left limits
 		
-		subi r1, r1, 4		# left limit is decresed by one position
-		addi r2, r2, 4		# right limit is increased by one position
-		
+		;subi r1, r1, 4		# left limit is decresed by one position
+		 subi r1, r1, 1          # left limit is decresed by one position
+
+		;addi r2, r2, 4		# right limit is increased by one position
+		addi r2, r2, 1		
+
 		# find an element less or equal to the pivot in the right side
 loop1:	
-		subi r2, r2, 4		# decrease right limit by one position
+		;subi r2, r2, 4		# decrease right limit by one position
+		subi r2, r2, 1
+
 		lw r5, (r2)			# load in r5 element pointed by right limit
 		sgt r29, r5, r3		# if current element is greater than pivot
 		bnez r29, loop1		# jump back to find another element
 
 		# find an element greater or equal to the pivot in the left side		
 loop2:	
-		addi r1, r1, 4		# increase left limits by one position
+		;addi r1, r1, 4		# increase left limits by one position
+		addi r1, r1, 1          # increase left limits by one position
+
 		lw r4, (r1)			# load in r4 element pointed by left limit
 		slt r29, r4, r3		# if current element is less than pivot
 		bnez r29, loop2		# jump back to find another element
@@ -103,20 +118,28 @@ recur:
 		
 		# recur on right sub-array
 		
-		addi r1, r2, 4		# new left limit is one position after right pointer
+		;addi r1, r2, 4		# new left limit is one position after right pointer
+		addi r1, r2, 1          # new left limit is one position after right pointer
+
 		addi r2, r7, 0		# new right limit is equal to original one
 		jal qsort			# call quick sort with new array bounds
 
 
 		# restore previous values of saved registers
 		
-		subi r30, r30, 4	# pop previous saved value of right limit
+		;subi r30, r30, 4	# pop previous saved value of right limit
+		subi r30, r30, 1        # pop previous saved value of right limit
+		
 		lw r7, (r30)
 		
-		subi r30, r30, 4	# pop right limit
+		;subi r30, r30, 4	# pop right limit
+		subi r30, r30, 1        # pop right limit		
+
 		lw r2, (r30)
 				
-		subi r30, r30, 4	# pop return address
+		;subi r30, r30, 4	# pop return address
+		subi r30, r30, 1        # pop return address
+
 		lw r31, (r30)
 
 return:
@@ -172,7 +195,8 @@ array:
 # start and end addresses of array
 # (computed taking advantage of labels)
 array_N:
-	.word array_N-4
+	;.word array_N-4
+	.word array_N-1
 array_0:
 	.word array
 
