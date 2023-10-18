@@ -1,0 +1,21 @@
+\chapter{Hazard Unit}
+\label{Hazard Unit}
+
+The Hazard Unit is used to detect 3 different type of hazard: 
+\begin{enumerate} 
+    \item Raw Hazard in which the pipeline stall to wait the value to read
+    \item Jump Hazard 
+    \item Branch Hazard
+\end{enumerate}
+
+To detect these hazards , the HU works on two processes , executed one after the other.
+\begin{enumerate} 
+    \item First process: It works on the inputs coming from the CU (IR\_ID,IR\_EX,IR\_MEM). It uses the pipeline and the opcode of the instruction (ITYPE,JTYPE,RTYPE) to take the correct registers used by the instructions (RS1,RS2,RD).This analysis creates also a pipeline of the registers to take in to account in which position of the pipeline they are in the clock cycle.
+    \item Second process: It is the process used to detect the hazard and it is divided in 2 main part:
+    \begin{enumerate}  
+        \item In the first part simply there is the detection of a jump/jr/jal in the decode stage (for jr there is also a control on the register used that it could create raw hazard).Also the detection of the branch in the execute stage thanks to the result (Branchstatus) given by comp4Branch in the Datapath.In the if of jump/jr/jal there is a AND branchstatus because of a problemcaused by a branch followed by a jump that created error.
+        \item Second part: It is used to detect raw hazard between the destination registers in execution-memory-with the source registers of the instruction in decode. All the possible combination are considered (ITYPE,RTYPE different source registers and destination registers positions)
+    \end{enumerate}
+\end{enumerate}
+
+When a hazard is detected a signal colled PC\_sel is rised to stop the pc (except for branch) and have stalls in the pipeline with the insertion of NOP in the correct position for Execution stage and Memory stage made by the CU.After the useful stalls , the hazard signal and the PC\_sel go at 0 and the code restart its correct pipeline.
