@@ -1,0 +1,48 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% This will help you in writing your homebook
+% Remember that the character % is a comment in latex
+%
+% chapter 4
+\chapter{Decode Unit}
+\label{DecodeUnit}
+
+In this part of the datapath the instruction that was previously fetched is broken down and given to several components.
+This part of the datapath contains more circuitry with respect to the fetch unit:
+
+\begin{enumerate}
+    \item Sign Extender Module and 4to1 multiplexer;
+    \item Register File;
+    \item Pipe Registers for subsequent execution phase;
+    \end{enumerate}
+
+\section {Sign Extender Module and four to one multiplexer}
+
+    The sign extender module is designed with the final goal of interpreting correctly the immidate bit field stored in an immidiate type or jump type instructions.
+    In fact, as the implemented DLX gives the possibility to distingush operations for unsigned and signed operations, this combinational block 
+    gives the possibility to extend the most significant bit of the immediate field of the immediate type instruction (sixteenth least significant bit) to the the other sixteen bits. 
+    The same is done does  for the immediate field of the Jump-Type instructions (this time containing a twentysix bit width instead of sixteen).
+    The reason for this choice is because the DLX wires all have thirtytwo bit width, hence we must extend the original immidiate value of the instruction accodingly.
+    Furthermore, there are four possible possibilities of interest that could be presented: 
+    \begin{enumerate}
+
+        \item an Immidiate-Type instruction interpreting the immediate field as signed: in this case depending on the Most significant bit of the immediate
+        bit field, the sixteen additional most signinfiant bits will be either zero, or one. in this scenario we are extending a sixteen bit immediate to a thritytwo bit value
+        
+        \item an Immidiate-Type instruction interpreting the immediate field as unsigned: in this case regardless of the Most significant bit of the immediate
+        bit field, the sixteen additional most signinfiant bits will be zero. in this scenario we are extending a sixteen bit immediate to a thritytwo bit value
+     
+        \item a Jump-type instruction interpreting the immediate field as as signed: in this case depending on the Most significant bit of the immediate
+        bit field, the six additional most signinfiant bits will be either zero, or one. in this scenario we are extending a twenty six bit immediate to a thritytwo bit value
+
+        \item a Jump-type instruction interpreting the immediate field as unsigned: This scenario is not implemented in the datapth as the jump instructions always consider
+        a signed value of the immediate field. However for a future improvement of the DLX it could be used for a type of jump instruction that can only jump forward.
+
+        \end{enumerate}
+
+    All these scenarios are performed in parallel in the decode unit, and thanks to a four to one multiplexer, the correct specific scenario is selected for obtaining
+    the appropriate extension. Furthermore, the selection bits of the multplexer individuating the correct extension scenario come from two control bits from the control unit.
+
+\section {the Register file}
+
+    
+    
