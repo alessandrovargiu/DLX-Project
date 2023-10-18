@@ -6,7 +6,7 @@ The Control Unit is an Hardwired Control Unit and controls the Datapath generati
     \item Two processes that work one after the other. The first one takes the main input of CU (IR_In) and create the relative opcode and func of the instruction which are used to specify the instruction.
     The second one takes the opcode and func of the first process (checking if RTYPE,ITYPE,JTYPE) and use them to take the correct control word from the look-up table.
     \item The last process works to pipeline the control words in the right way (as an Hardwired Control Unit do) and there is also the pipeline of the instructions that it is used for the Hazard Unit.
-    This process takes as input the three hazard signals from the HU to flash the pipeline putting NOP in the decode stage and execute stage for taken branch hazard or putting NOP in decode stage for jump and raw hazard.
+    This process takes as input the three hazard signals from the HU to flash the pipeline putting NOP in the decode stage and execute stage for taken branch hazard or putting NOP in decode stage for jump or putting NOP in execute stage and maintaining the same cw (and istruction)in the decode stage for raw hazard.
     The flash of the pipeline depends on where the hazard is taken (specified in the HU chapter), it lasts one or more cycles. 
 \end{enumerate}
 \subsection{Control Word}
