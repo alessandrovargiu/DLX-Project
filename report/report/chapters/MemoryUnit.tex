@@ -1,0 +1,15 @@
+\chapter{Memory Unit}
+\label{Memory Unit}
+Memory Unit is the fourth stage of the pipeline.It is composed by the Data Memory and the pipeline registers. There are five different registers:
+\begin{enumerate} 
+    \item Three out of five are used to pipeline the destination address, the npc and the instruction.
+    \item One is used to pipeline the result of the ALU from the execution unit.
+    \item Last one is used to store the output of the Dram in the memory unit.
+\end{enumerate} 
+\section{Dram}
+Dram contains the data for load/store instructions and the values available at the start of the execution are initialized during the reset phase thanks to "DMEMinitfile.mem" (easier debug for load and store).
+The correct instruction is executed based on RW signal(read/write signal) that it is sent by the Control Unit.
+\subsection{R/W process}
+During the process,  as inputs arrive an unique address, the data pipelined from the execution unit (RegB), RW and EN from the Control Unit. The read operation starts 
+when EN='1' and RW='1' (load instruction) instead for write operation when EN='1' and RW='0' (store instruction), both synchronous with the falling edge of the clock.
+The output ,in case of read, is sent to the pipeline register LMDreg in memory unit to be sent to writeback at the same time of the other inputs of wb unit.
