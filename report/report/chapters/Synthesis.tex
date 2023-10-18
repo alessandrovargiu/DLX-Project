@@ -1,4 +1,38 @@
 \chapter{Synthesis}
 \label{Synthesis}
-\section{Script}
+
+The synthesis process was done after the Simulation phase, in which the design was simulated to ensure correct behavior of the different units of the CPU, and the CPU itself.
+The usage of scripts to automate the synthesis steps is crucial, since it allows us to produce the design netlists and reports saving a lot of time.
+% describe scripts
 The script synthesis.tcl was created to automate the synthesis and optimization of the CPU under timing and power constraints.
+
+Various steps are performed in this phase, from generating detailed models of the design, with timing, area and power reports, to implement optimizations
+with regard to timing constraints, for example.
+
+The whole process is composed of multiple steps:
+
+\begin{enumerate}
+    \item First, all vhd files needed for the DLX synthesis are analyzed (testbenches are not used in synthesis)
+    \item The design is then elaborated and high level modeles are produced. At this point, at this point we don't have many information about area, timing and power consumption.
+    \item The wire model is set and the clock signal is created
+    \item The design is compiled and the netlists are generated, ready to be analyzed by a physical design tool.
+    \item The timing, area and power reports are saved.
+\end{enumerate}
+
+The timing report is especially important to see if the chosen clock period value is suitable for this design.
+The report shows the critical path(s) of the design and tells if the \textbf{slack} is met.
+
+This DLX design contains different optimizations with regard to combinational circuits.
+The P4 Adder, created during the course labs, was used in this design. The T2 shifter is another addition to the design, which provides speed advantage to shifting operations.
+
+Since the finding of the right clock period was a sort of trial and error process, the timing report was used to see if some other optimizations were possible.
+The first timing report shown a critical path in a RCA (Ripple Carry Adder) module, which was used in the incrementing of the program counter.
+The RCA was implemented using a structural design, which provided a lot of delay, due to the carry propagation in the circuit.
+We switched to a behavioral implementation, letting the synthesis libraries do the job for the optimal netlist. The timing performance was substantially better and we managed
+to get a clock period of 1.50 ns for the whole DLX.
+At this point the shown critical path is a series of gates which belong to the hazard unit. Since the provided Hazard Unit has a high level behavioral implementation, it was assumed that we could not
+optimize very much at a high level of abstraction.
+
+Analyzing the other reports, area and power information can be provided.
+The DLX has a total cell area of 19141.89, which is divided between combinational area (8752.19) and non-combinational area (10389.69).
+The total dynamic power is 818.39 mW, with a leakage power of 399.45 uW
