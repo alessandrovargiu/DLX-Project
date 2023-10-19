@@ -31,11 +31,11 @@ slli r7, r3, #5;                        50670005
 addi r10, r0, #5;       200A0005
 addi r11, r0, #2;       200B0002
 loop:
+subi r10, r10, #1;      294A0001
 seq r12, r10, r11;      014B6028
 sne r13, r10, r11;      014B6829
 sge r14, r10, r11;      014B702D
 sle r15, r10, r11;      014B782C
-subi r10, r10, #1;      294A0001
 bnez r10, loop;         15400020
 jal point;              0C000004
 add r0, r10, r5;        01450020
@@ -50,12 +50,12 @@ lw r10, 5(r1);      8C2A0005
 addi r4, r0, #5;    20040005
 
 loop:
+subi r4, r4, #1;    28840001
 andi r3, r1, #1;    30230001
 xori r3, r3, #1;    38630001
 slli r1, r1, #15;   5021000F
 srli r1, r1, #1;    58210001
 or r2, r2, r3;      00431025
-subi r4, r4, #1;    28840001
 bnez r4, loop;      1480FFE4
 
 

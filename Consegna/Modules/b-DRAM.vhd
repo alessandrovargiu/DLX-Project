@@ -28,7 +28,6 @@ architecture Beh of DRAM is
 
 begin
 
-    -- does this code allow for simultaneous READ/WRITE ??  to discuss
     process(clk)
         file mem_fp: text;
         variable file_line : line;

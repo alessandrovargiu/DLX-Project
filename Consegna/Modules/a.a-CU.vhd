@@ -11,25 +11,14 @@ ENTITY CU_dlx IS
         FUNC_SIZE : INTEGER := 11; -- Func Field Size for R-Type Ops
         OP_CODE_SIZE : INTEGER := 6; -- Op Code Size
         CW_SIZE : INTEGER := 25 -- output signals of CU
-        --ALU_SIZE : Integer := 2    --2 bits for 4 operations 0 1 2 3
     );
-    PORT (
-
-        --Instr_wrd: IN std_logic_vector (totbit downto 0)    
+    PORT (   
         clk : IN STD_LOGIC;
         reset : IN STD_LOGIC;
-        --pc_sel: OUT STD_LOGIC;
-        -- opcode : IN  std_logic_vector(OP_CODE_SIZE - 1 downto 0);
-        --func  : IN  std_logic_vector(FUNC_SIZE - 1 downto 0);
         IR_in : IN STD_LOGIC_VECTOR(Nbit - 1 DOWNTO 0);
         hzd_sig_jmp: in std_logic;
         hzd_sig_ctrl: in std_logic;
         hzd_sig_raw: in std_logic;
-        --hzd_sig_raw_2clk: in std_logic;
-        --stall : IN STD_LOGIC;
-        --jump : IN STD_LOGIC;
-        --control_wrd: OUT std_logic_vector (totbit downto 0)
-
         decode_cwd : OUT STD_LOGIC_VECTOR(CW_SIZE-1 DOWNTO 0);
         execute_cwd : OUT STD_LOGIC_VECTOR (CW_SIZE-1-5 DOWNTO 0);
         memory_cwd : out STD_LOGIC_VECTOR (CW_SIZE-1-17 DOWNTO 0);
@@ -38,39 +27,11 @@ ENTITY CU_dlx IS
         IR_EX: OUT std_logic_vector(Nbit-1 downto 0);
         IR_MEM: OUT std_logic_vector(Nbit-1 downto 0);
         IR_WB: OUT std_logic_vector(Nbit-1 downto 0)
-        --decode
-        --rf1: out std_logic; --read port A of register file
-        --rf2: out std_logic; --read port B of reg file
-        --en1: out std_logic; -- enables decode pipeline reg and reg file
-        --mux_sel: out std_logic_vector (1 downto 0): --to choose 16 o 26 bit extender to 32
-
-        --execution
-        --s1 : out std_logic;               -- input selection of the first multiplexer (PC+4/A)
-        --s2 : out std_logic;               -- input selection of the second multiplexer (IMM/B)
-        --s3 : out std_logic;               -- input selection of the third multplexer   (Rt itype/ Rd rtype) if address is 15-19 Rtype o Itype 10-14
-        --en2: out std_logic;               -- exe pipe regs
-        --alu: out std_logic_vector (5 downto 0); -- da vedere in base a ALU vera
-
-        -- vedere hazard e pc
-
-        --memory
-        -- wm: out std_logic; -- enables the write-in of the memory
-        --en3: out std_logic; -- enables mem regs and datamemory
-        --rm: out std_logic; -- enables the read-out of the memory
-        --j_en: out std_logic_vector (1 downto 0);
-        --wrf: out std_logic; --if writes in RF
-
-        --Write back
-        -- wf1: out std_logic;  --write port rf
-        -- en4: out std_logic;  --writeback regs - rf 
-        --s4: out std_logic;  -- ALU/MEM
-        --s5: out std_logic -- VAL/PC+4
-        --mux_sel1: out std_logic --address rf for jump and link
     );
 end entity;
 
 ARCHITECTURE behavioral OF CU_dlx IS
-        TYPE mem_array IS ARRAY (INTEGER RANGE 0 TO MICROCODE_MEM_SIZE - 1) OF STD_LOGIC_VECTOR(CW_SIZE - 1 DOWNTO 0); --rivedere size
+        TYPE mem_array IS ARRAY (INTEGER RANGE 0 TO MICROCODE_MEM_SIZE - 1) OF STD_LOGIC_VECTOR(CW_SIZE - 1 DOWNTO 0); 
         SIGNAL cw_mem : mem_array := (
             ADD_CWD, --0
             SUB_CWD, --1
@@ -126,16 +87,13 @@ ARCHITECTURE behavioral OF CU_dlx IS
 
         SIGNAL opcode_s : STD_LOGIC_VECTOR (OP_CODE_SIZE - 1 DOWNTO 0);
         SIGNAL func_s : STD_LOGIC_VECTOR (FUNC_SIZE - 1 DOWNTO 0);
-        SIGNAL cw_s : STD_LOGIC_VECTOR(CW_SIZE - 1 DOWNTO 0); --entire control word
-        --signal cw1_s   : std_logic_vector(CW_SIZE - 1 - 4 downto 0); --controllare le dimensioni
+        SIGNAL cw_s : STD_LOGIC_VECTOR(CW_SIZE - 1 DOWNTO 0); 
         SIGNAL decode_cwd_s : STD_LOGIC_VECTOR(CW_SIZE-1 DOWNTO 0);
         SIGNAL execute_cwd_s : STD_LOGIC_VECTOR(CW_SIZE-1 - 5 DOWNTO 0);
         SIGNAL memory_cwd_s : STD_LOGIC_VECTOR(CW_SIZE-1 - 17 DOWNTO 0);
         signal wb_cwd_s: std_logic_vector(CW_SIZE-1 - 20 downto 0);
         signal IR_ID_s,IR_EX_s, IR_MEM_s, IR_WB_s: std_logic_vector(Nbit-1 downto 0);
-        -- this signal is used to save the stalled instruction when hazard is present
         signal IR_ID_backup: std_logic_vector(CW_SIZE-1 downto 0);
-        -- 1 if returning from stall cycle, 0 normal execution
         signal backup: std_logic;
         signal hzd_s: std_logic; 
         signal hzd1_s: std_logic;
