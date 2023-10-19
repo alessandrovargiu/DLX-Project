@@ -1,0 +1,7 @@
+NB: for some reason the relative path format does not work in the vhdl file_open function
+which means that the absolute path is to be inputted in c-IRAM.vhd and b-DRAM.vhd
+
+1. open vsim from terminal 
+2. load all the necessary files (the list is contained in sources.f
+3. go to Tools -> Tcl -> Execute macro and open startsim.tcl
+

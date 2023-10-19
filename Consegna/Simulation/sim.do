@@ -24,3 +24,5 @@ add wave -position insertpoint  \
 sim:/tb/UUT/DP/BasicRF/REGISTERS
 add wave -position insertpoint  \
 sim:/tb/MEM2/memory
+
+
