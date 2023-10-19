@@ -27,7 +27,8 @@ ARCHITECTURE beh OF HU IS
     signal MEM_Rd: std_logic_vector(4 downto 0);
     signal WB_Rd: std_logic_vector(4 downto 0);
 BEGIN
-
+    -- fetch correct operands for each instruction and store them for all the instruction duration
+    -- to detect stalls
     fetch: process(IR_ID, IR_EX, IR_MEM)
     begin
         ID_Rs1 <= (others =>'0');
@@ -66,7 +67,7 @@ BEGIN
         
     end process;
     
-    RAW: process (clk)
+    detect_hzd: process (clk)
     begin
           if(rst = '0' AND falling_edge(clk)) then
             if (IR_ID(Nbit-1 downto Nbit-6) = JTYPE_JMP and BranchStatus = '0') then 

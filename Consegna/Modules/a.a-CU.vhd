@@ -78,10 +78,8 @@ ARCHITECTURE behavioral OF CU_dlx IS
             SGTU_CWD,--42
             SGEUI_CWD,--43
             SGTUI_CWD,--44
-
             ADDUI_CWD,--45
             SUBUI_CWD,--46
-
             JR_CWD --47
         );
 
@@ -281,6 +279,7 @@ BEGIN
                             IR_EX_s <= NOP_IR;
                             hzd_s <= hzd_sig_ctrl;
                         end if;
+                        -- extend stalls when pipe is flushed
                         if (hzd_s = '1') then
                             decode_cwd_s <= NOP_cwd;
                             IR_ID_s <= NOP_IR;
