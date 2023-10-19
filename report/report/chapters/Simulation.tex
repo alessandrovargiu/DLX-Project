@@ -17,8 +17,6 @@ The testing of the whole DLX consisted in loading the bytes of an assembly progr
 Another file is used to eventually initialize the DRAM, which can be useful in presence of load instructions, for example.
 Then, after asserting the reset signal, the program starts executing until there are no more instructions to be read.
 
-The usage of scripts was essential here, to automatically compile all the files needed and run the Modelsim simulation. A little bash script, which reads modelsim commands, is used
-to open up the GUI and automatically start the simulation. This saves a lot of setup time.
 A script which acts as an assembler is also used to read an assembly program and translate it into a sequence of bytes (which are then loaded into memory).
 
 

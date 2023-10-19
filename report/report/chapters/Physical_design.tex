@@ -2,7 +2,7 @@
 \label{physical_design}
 
 % Below is shown how you can insert a figure. If you give a label to the figure, you can refer to the figure using \ref{figure_label} as shown above. 
-	\begin{figure}[ht]
+	\begin{figure}[h!]
 	\centering
 	\includegraphics[width=\textwidth]{chapters/figures/4.horizontal_lines.jpg} 
 	\caption{Power grid distribution}
@@ -19,11 +19,11 @@ Next, the power rings for \textit{Vdd} and \textit{GND} are inserted in the mode
 The rings are then connected using vertical stripes and horizontal lines, to better distribute power into the center of the chip.
 Power Grid Placement is shown in Figure \ref{fig:power_distribution}.
 
-\begin{figure}[ht]
+\begin{figure}[h!]
 	\centering
 	\includegraphics[width=\textwidth]{chapters/figures/7.Post_CTS_optimization.jpg} 
 	\caption{Post CTS Optimization}
-	\label{fig:CTS_OPT}  % here is the figure label
+	\label{fig:CTS_OPT}  
 	\end{figure}
 
 \section{Placement and Routing}
@@ -34,11 +34,11 @@ Before the routing phase, it is important to complete the placement filling free
 The final step is the \textbf{Post routing optimization}, in which the design is optimized in order to achieve the timing constraints.
 Now the design is complete and a final verification can be performed to see if there are violations with respect to design rules and connectivity.
 
-\begin{figure}[ht]
+\begin{figure}[h!]
 	\centering
 	\includegraphics[width=\textwidth]{chapters/figures/9.Post_PostRouteOPT.jpg} 
 	\caption{Final layout}
-	\label{fig:final_design}  % here is the figure label
+	\label{fig:final_design}  
 	\end{figure}
 
 The final layout is shown in \ref{fig:final_design}
