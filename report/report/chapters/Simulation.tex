@@ -16,11 +16,16 @@ a nice GUI to visualize the waveforms.
 The testing of the whole DLX consisted in loading the bytes of an assembly program to a file, which is read by the Instruction Memory (IRAM).
 Another file is used to eventually initialize the DRAM, which can be useful in presence of load instructions, for example.
 Then, after asserting the reset signal, the program starts executing until there are no more instructions to be read.
+A script which acts as an assembler is used to read an assembly program and translate it into a sequence of bytes (which are then loaded into memory).
+A file called \textit{sim_howto.txt} shows the steps to run a complete simulation using Modelsim.
+Here, a waveform is shown, that shows the signals and behavior of a program.
 
-A script which acts as an assembler is also used to read an assembly program and translate it into a sequence of bytes (which are then loaded into memory).
-
-
-
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=\textwidth]{chapters/figures/waveform.png} 
+	\caption{Modelsim waveform}
+	\label{fig:wave}  % here is the figure label
+	\end{figure}
 
 
 

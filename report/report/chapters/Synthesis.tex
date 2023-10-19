@@ -3,8 +3,10 @@
 
 The synthesis process was done after the Simulation phase, in which the design was simulated to ensure correct behavior of the different units of the CPU, and the CPU itself.
 The usage of scripts to automate the synthesis steps is crucial, since it allows us to produce the design netlists and reports saving a lot of time.
-% describe scripts
-The script synthesis.tcl was created to automate the synthesis and optimization of the CPU under timing and power constraints.
+
+The script synth.sh was created to automate the synthesis and optimization of the CPU under timing and power constraints.
+It is a little bash script which starts the synopsys shell in order to perform the synthesis. The paths to the vhdl modules to be analyzed are written in sources.f,
+which is read by synthesis.do, which is another scripts that execute all the synthesis steps, once the synopsys shell is opened.
 
 Various steps are performed in this phase, from generating detailed models of the design, with timing, area and power reports, to implement optimizations
 with regard to timing constraints, for example.
@@ -35,4 +37,8 @@ optimize very much at a high level of abstraction.
 
 Analyzing the other reports, area and power information can be provided.
 The DLX has a total cell area of 19141.89, which is divided between combinational area (8752.19) and non-combinational area (10389.69).
-The total dynamic power is 818.39 mW, with a leakage power of 399.45 uW
+The total dynamic power is 818.39 mW, with a leakage power of 399.45 uW.
+Here is shown the Area report, the timing and power report are in appendix A1.
+
+\lstinputlisting{appendices/files/CFG_CPU_clk_1.5ns_area.rpt}
+
