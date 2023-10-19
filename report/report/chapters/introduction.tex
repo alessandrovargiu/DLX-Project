@@ -26,7 +26,7 @@
         \item Memory;
         \item Write Back;
         \end{enumerate}
-	\indent FUrthermore, there are three fundamental block of the implemented DLX which are involved during the pipelined execution of the program:
+	\indent Furthermore, there are three fundamental block of the implemented DLX which are involved during the pipelined execution of the program:
 	\begin{enumerate}
         \item Datapath Unit;
         \item Control Unit;
@@ -36,20 +36,20 @@
 	\subsection{ The Datapath Unit }
     \indent The inclusion of the pipeline serves to increase the throughput of the overall program serving to reduce idle times of the processor. 
     The pipeline mechanism is noted most clearly in the datapath and control unit which are the fundamental hierierchical components of the processor.
-    In Figure 2.1 the datapath with a pipelined mechanism is depicted. The figure also shows also some input signals which are entering the datapath. 
+    In Figure 2.1 the datapath with a pipelined mechanism is depicted. The figure also shows also some external input signals which are entering the datapath. 
 	These are control signals which come from another component called the Control Unit which sends appropriate control bits to the datapath depending on the instruction to be executed.
 	Another important note about Figure 2.1 is that it depicts 2 memories, the instruction memory (IRAM) and the data memory (DRAM). These two memories
 	are external components to the datapath and only interface it. Respectively, they serve an important role in the instruction fetch phase and memory phase of the instructions described later on.
     \begin{figure}[h!]
         \centering
         \includegraphics[scale = 0.15]
-		{chapters/figures/DLXdatapath}
+		{chapters/figures/DataPathUpdate}
         \caption{DLX datapath component}
         \label{fig:datapathPic}
         \end{figure}
 
 	\subsection{ The Control Unit and Hazard Unit }
-	The Control Unit and hazard unit are side components which serve to control. Moreover, the control unit is constructed to give orders to the
+	The Control Unit and Hazard Unit are side components which serve to control. Moreover, the control unit is constructed to give orders to the
 	datapath about which instructions need to be executed but it gives such orders alertive to possible hazards which could be detected by the Hazard Unit. They will be discussed in a following chapter of the document.
 
 	\section{Pro Version Features}
@@ -78,13 +78,13 @@
 		The inner components of the arithmetic Logic Unitc Unit are of advanced type. it is composed of a pentium 4 Carry LookAhead Spare Tree for more efficient addition and subtraction operations. 
 		In addition, the logicals have been designed d with the T2 Logic methodology. The relevant schematics of the introduced inner components of the arithmetic logic unit are analyzed in Execution Unit section of the report
 
-		\subsection{ Extra component, the hazard unit }
+		\subsection{ Extra component, the Hazard Unit }
 
 		This additional component is inside the DLX and it is able to make the distinguishment of the following type of hazards:
 
 		\begin{enumerate}
 			\item Read After Write Hazards 
-			\item Control Hazard for branch instructions
+			\item Control hazard for branch instructions
 			\item Jump detection
 			\end{enumerate}
 
@@ -95,5 +95,5 @@
 		The structure of this documentation consists in the thorough analysis of the components in the datapath based on the pipeline stages. 
 		Consequently an analysis on the implemented Control Unit and Hazard Unit is exposed explaining also their exhange of informatio.
 		Lastly, an insight on the synthesis and physical design process is made available. In the next section we analyze the datapath starting from the components
-		dedicated to the Fetch Unit.
+		dedicated to the Fetch Stage.
 
