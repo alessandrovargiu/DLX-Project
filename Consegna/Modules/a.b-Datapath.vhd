@@ -337,11 +337,8 @@ BasicRF: register_file
 generic map(Nbit, RFaddrNbit)   
 port map (  CLK => clk, 
             RESET => rst,
-            --ENABLE => enableRF, --enables the RF as a whole 
             ENABLE => '1',
-            --RD1 => controlWord(CWNbit-1), --enable readPort1 of RF
             RD1 => '1',
-            --RD2 => controlWord(CwNbit-2), --enable Read port2 of RF
             RD2 => '1',
             WR => controlWord(CWNbit-22), --enables write port
             ADD_WR => finalAddressWB, 
@@ -373,7 +370,10 @@ port map (input1 => unsignedImmfrom16, --00
           input2 => signedImmfrom16,  --01 
           input3 => unsignedImmfrom26, --10
           input4 => signedImmfrom26, --11
-          Sel    => controlWord(CWNbit-4 downto CWNbit-5), --chooses on these 2 criterias: 1. if the value was to be interpreted as unsigned or signed, 2. if the value was converted from 16->32 or 26->32 
+          --chooses on these 2 criterias: 
+          --1. if the value was to be interpreted as unsigned or signed 
+          --2. if the value was converted from 16->32 or 26->32 
+          Sel    => controlWord(CWNbit-4 downto CWNbit-5), 
           Y      => extendedImmediateIn );
 
 -- registers part of the ID/EX pipe stage 
@@ -381,40 +381,32 @@ port map (input1 => unsignedImmfrom16, --00
 --still storing the NPC with respect to the processed instr.
 NPC_1: myregister
 generic map(Nbit)
---port map(clk => clk, rst => rst, en => controlWord(CWNbit-3), I => NPCoutputID, Q => NPCoutputEX);
 port map(clk => clk, rst => rst, en => '1', I => NPCoutputID, Q => NPCoutputEX);
 
---forse e' da togliere la propagazione del istruzione ad ogni pipe register?
 IR_1: myregister  
 generic map(Nbit)
---port map(clk => clk, rst => rst, en => controlWord(CWNbit-3), I => IRoutputID, Q => IRoutputEX );
 port map(clk => clk, rst => rst, en => notfromHU, I => IRoutputID, Q => IRoutputEX );
 
 RegA: myregisterA
 generic map(Nbit)
---port map(clk => clk, rst => rst, en => controlWord(CWNbit-3), I => RFOutRegAIn, Q => RegAoutEX );
 port map(clk => clk, rst => rst,  en => '1',I_EX_opcode => IRoutputEX (Nbit-1 downto Nbit-6), I => RFOutRegAIn, Q => RegAoutEX );
 
 RegB: myregister
 generic map(Nbit)
---port map(clk => clk, rst => rst, en => controlWord(CWNbit-3), I => RFOutRegBIn, Q => RegBoutEX ); 
 port map(clk => clk, rst => rst,  en => '1', I => RFOutRegBIn, Q => RegBoutEX ); 
 
 ImmReg: myregisterB
 generic map(Nbit)
---port map(clk => clk, rst => rst, en => controlWord(CWNbit-3), I => extendedImmediateIn, Q => extendedImmediateOut ); 
 port map(clk => clk, rst => rst, en => '1',I_EX_opcode => IRoutputEX (Nbit-1 downto Nbit-6), I => extendedImmediateIn, Q => extendedImmediateOut ); 
 
 --rt is the convention for expressing the destination address of an register Rtype instruction
 rt: myregister 
 generic map(RegNbit => RFaddrNbit)
---port map( clk => clk, rst => rst, en => controlWord(CWNbit-3), I => IRoutputID(Nbit-1-OpcodeNbit-RFaddrNbit-RFaddrNbit downto FuncNbit), Q => rt_dest );
 port map( clk => clk, rst => rst, en => '1', I => IRoutputEX(Nbit-1-OpcodeNbit-RFaddrNbit-RFaddrNbit downto FuncNbit), Q => rt_dest );
 
---rd is the convention for expressing the destination address of an immidiate Itype instruction
+--rd is the convention for expressing the destination address of an immediate Itype instruction
 rd: myregister 
 generic map(RFaddrNbit)
---port map(clk => clk, rst => rst, en => controlWord(CWNbit-3), I => IRoutputID(Nbit-1-OpcodeNbit-RFaddrNbit downto Nbit-OpcodeNbit-RFaddrNbit-RFaddrNbit), Q => rd_dest );
 port map(clk => clk, rst => rst, en => '1',  I => IRoutputEX(Nbit-1-OpcodeNbit-RFaddrNbit downto Nbit-OpcodeNbit-RFaddrNbit-RFaddrNbit), Q => rd_dest );
 
 ------------------------------------------------------Execution Unit related component instances------------------------------------------------------------
@@ -427,18 +419,17 @@ notcondin <= not condIn; -- value stored in regAoutEx is 0, notcond is set to 0
 
 ChooseFirstOperand: Mux21
 generic map (Nbit)
-port map ( NPCoutputEX, regAoutEX, controlWord(CWNbit-6), operandA) ; --0 prendo NPC , 1 prendo A. 
-
+port map ( NPCoutputEX, regAoutEX, controlWord(CWNbit-6), operandA) ; --0 -> NPC , 1 -> A. 
 
 ChooseSecondOperand: Mux21
 generic map(Nbit)
-port map( RegBoutEX, extendedImmediateOut , controlWord(CWNbit-7), operandB ) ; -- 0 prendo B, 1 prendo imm
+port map( RegBoutEX, extendedImmediateOut , controlWord(CWNbit-7), operandB ) ; -- 0 -> B, 1 -> imm
 
 ProALuinstance: ProAlu 
 generic map(Nbit)
-port map (operandA, operandB, controlWord(CWNbit-10 downto CWNbit-15),  ALUOutEX); -- 6 bit di control per l alu
+port map (operandA, operandB, controlWord(CWNbit-10 downto CWNbit-15),  ALUOutEX); 
 
---this below serves to understand which bit range location we should look at in the instruction to understand the address of where to write our result
+--this mux below serves to understand which bit range location we should look at in the instruction to understand the address of where to write our result
 --for instance: if we have an I type instruction, the address of the register in which we store the result is located in the bit range [11,15] 
 --              if we have an R type instruction, the address of the register in which we store the result is located in the bit range [16,20]
 
@@ -450,51 +441,37 @@ generic map(RFaddrNbit)
 port map( rd_dest, rt_dest, ControlWord(CWNbit-8), RFWritePortAddressEX );
 
 Mux1forJump: oneBitMux21
-port map('1', condIn, controlWord(CWNbit-16), muxTemporary1 ); --if this selection bit is 0, we are not analyzing a branch instruction
+port map('1', condIn, controlWord(CWNbit-16), muxTemporary1 ); 
 
 Mux2forJump: oneBitMux21
-port map('0', notcondin, controlWord(CWNbit-16), muxTemporary2 ); --if this selection bit is 0, we ae not analyzing a branch instruction
+port map('0', notcondin, controlWord(CWNbit-16), muxTemporary2 ); 
 
 FinalMux4Jump: oneBitMux21
-port map(  muxTemporary2, muxTemporary1, ControlWord(CWNbit-17), branchStatus );--if this selection bit is 0, it means that we are not suppose to jump (for instance if the analyzed instruction is an addi) or the analyzed instruction is a BNEZ
+--if this selection bit is 0, it means that we are not suppose to jump (for instance if the analyzed instruction is an addi) or the analyzed instruction is a BNEZ
+port map(  muxTemporary2, muxTemporary1, ControlWord(CWNbit-17), branchStatus );
 B_status <= branchstatus;
 
 --Execution Unit Pipe registers
 
 IR_2: myregister
 generic map(Nbit)
---port map(clk, rst, controlWord(CWNbit-9), IRoutputEX, IRoutputMEM );
 port map(clk, rst, '1', IRoutputEX, IRoutputMEM );
 
 NPC_2: myregister
 generic map(Nbit)
---port map(clk => clk, rst => rst, en => controlWord(CWNbit-9), I => NPCoutputEX, Q => NPCoutputMEM);
 port map(clk => clk, rst => rst, en => '1', I => NPCoutputEX, Q => NPCoutputMEM);
-
---pipe flip flop storing if regA is equal to 0
---BranchCondition: FlipFlop 
---port map(clk, rst, controlWord(CWNbit-9), condIn, condOut) ;
---port map(clk, rst, '1', condIn, condOut) ;
-
---pipe flip flop storing if regA is not equal to 0
---BranchNotCondtion: FlipFlop
---port map(clk, rst, controlWord(CWNbit-9), notcondIn, notcondOut) ;
---port map(clk, rst, '1', notcondIn, notcondOut) ;
 
 --pipe register saving the computed result of the ALU
 ALUOUT_reg_0: myregister 
 generic map(Nbit)
---port map ( clk, rst, controlWord(CWNbit-9), ALUOutEX, ALURegOutMEM ); --(ALURegOutEX is signal going as input to the ALUREG pipe register in the EX/MEM bank)
 port map ( clk, rst,'1', ALUOutEX, ALURegOutMEM );
 
 ForMemStore: myregister
 generic map(Nbit)
---port map(clk, rst, controlWord(CWNbit-9), regBoutEX, regBoutMEM);
 port map(clk, rst, '1', regBoutEX, regBoutMEM);
 
 destinationAddressReg1: myregister
 generic map(RFaddrNbit)
---port map(clk, rst, controlWord(CWNbit-9), RFWritePortAddressEX, RFWritePortAddressMEM);
 port map(clk, rst, '1', RFWritePortAddressEX, RFWritePortAddressMEM);
 
 -----------------------------------------------------Memory Unit component instances----------------------------------------------------------------------------
@@ -506,27 +483,22 @@ DMdataOUT <= RegBoutMEM;
 
 IR_3: myregister
 generic map(Nbit)
---port map(clk, rst, controlWord(CWNbit-17), IRoutputMEM, IRoutputWB);
 port map(clk, rst, '1', IRoutputMEM, IRoutputWB);
 
 NPC_3: myregister
 generic map(Nbit)
---port map(clk => clk, rst => rst, en => controlWord(CWNbit-17), I => NPCoutputMEM, Q => NPCoutputWB);
 port map(clk => clk, rst => rst, en => '1', I => NPCoutputMEM, Q => NPCoutputWB);
 
 LMDReg: myregister
 generic map(Nbit)
---port map( clk, rst, controlWord(CWNbit-17), DMdata, LMDRegOutWB);
 port map( clk, rst, '1', DMdataIN, LMDRegOutWB);
 
 ALUout_reg_1: myregister
 generic map(Nbit)
---port map( clk, rst, controlWord(CWNbit-17), ALUregOutMEM, ALUregOutWB);
 port map( clk, rst, '1', ALUregOutMEM, ALUregOutWB);
 
 destinationAddressReg2: myregister
 generic map(RFaddrNbit)
---port map(clk, rst, controlWord(CWNbit-17), RFWritePortAddressMEM, RFWritePortAddressWB);
 port map(clk, rst, '1', RFWritePortAddressMEM, RFWritePortAddressWB);
 
 -----------------------------------------------------Write Back component instances---------------------------------------------------------------------------
@@ -536,7 +508,6 @@ RFinChoice: Mux21
 generic map(Nbit)
 port map( ALURegOutWB, LMDRegOutWB, controlWord(CWNbit-23), fromMemOrFromAlu );
 
--- costruire un mux per ricollegare questo punto: val se sel = 0, se no se sel e 1 PC+4 (che serve per mettere il PC+4 nel R31 se e' una jal) 
 StoresNPCorValue: Mux21
 generic map(Nbit)
 port map( fromMemOrFromAlu , NPCoutputWB, controlWord(CWNbit-24), RFDataIn);
@@ -545,7 +516,5 @@ port map( fromMemOrFromAlu , NPCoutputWB, controlWord(CWNbit-24), RFDataIn);
 JALChoice: Mux21  
 generic map( RFaddrNbit )
 port map (  RFWritePortAddressWB, "11111", controlWord(CWNbit-25), finalAddressWB ); 
-
- --enableRF <= (controlWord(CWNbit-22)) or (controlWord(CWNbit-3));
 
 end BasicArch;

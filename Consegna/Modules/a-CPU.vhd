@@ -65,9 +65,6 @@ component HU is
 END component;
 
 component BasicDp is
-    --Generic( NbitMem: integer;
-         --    controlNbit: integer;
-           --  addressNbit: integer );
     port(   Clk:        in std_logic;
             rst:        in std_logic;
             
