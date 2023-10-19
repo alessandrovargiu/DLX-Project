@@ -3,7 +3,7 @@
 % Remember that the character % is a comment in latex
 %
 % chapter 3
-\chapter{Fetch Unit}
+\chapter{Fetch Stage}
 \label{FetchUnit}
 
 The fetch part of the datapath serves to do the operation of obtaining the current instruction
@@ -15,9 +15,9 @@ In this small section there will be the analyzation of the components of the dat
 -qui la foto del circuito sintetizzato-
 
 
-\subsection{Datapath Related Components}
+\section{Datapath Related Components}
 
-\subsubsection{ Program Counter Register }
+\subsection{ Program Counter Register }
 First of all there is the Program Counter Register whose purpose is to store the current address of the instruction inside the Instruction Memory from
 which the instruction is fetched. Additionally, this register is synchronous reset and enable to the clock. At reset time, the PC register stores the 
 all zero value, meaning that there will always be the fetching of the instruction at the adress 0x00000000 at start up. 
@@ -31,13 +31,18 @@ counter register assume the same address value in the subsequent clock cycle, so
 Additionally, in order to compute the address of the subsequent instruction of the program, a ripple carry adder is used with a fixed operand of one added
 to the next instruction.
 
-\subsubsection{ Instruction Register }
+\subsection{ Instruction Register }
 
 This is the second important register which will store the value of the fetched instruction from the Instruction Memory. like the program counter register,
 it has a synchronous enable and a synchronous reset sensitive to rising edges of the clock. The output of this register is propagated and used for the nex important stage,
 the decode stage which is explained in the following chapter. 
 
-\subsection{External Instruction Memory}
+\subsection{ Next Program Counter }
+
+This important register is placed for the propagation of the subsequent instruction address for the following pipe stages. This way, if the instruction
+that was fetched is a jump or a branch, it will be able to compute the address of the jump later on in the execution stage.
+
+\section{External Instruction Memory}
 
 The instruction memory is the memory where all the instructions of the program are stored and it is the component from where the Instruction Register fetches the 
 instruction. Upon the presence of an active high reset signal, it loads in a raw format all the thirtytwo bit instructions composing the program. While the reset is zero,
