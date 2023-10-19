@@ -62,7 +62,7 @@ bits which make the decision as they are the selection signals of these multiple
 \begin{enumerate}
     \item The Carry Look Ahead Sparse Tree: It is a tree like structure formed of interconnected Propagate and Propagate-Generate blocks included for relying less on the dependency of the carry out done
     formed in a previous stages, for reduction of the critial path.
-    \item The Carry Select Sum Block: similar to the carry look Ahead concept; it is formed of a sries of stages made of a specific predefined amount of concatenated full adders.
+    \item The Carry Select Sum Block: similar to the Carry Look Ahead Adder concept; it is formed of a series of stages made of a specific predefined amount of concatenated full adders.
     Each stage has two parrallel chains of full adders  which perform respectively the addition on the hypothesis that the carry in bit is zero and one respectively.
     Then, the correct output of the addition between a particular subset of bits of the operands is chosen on the basis of the actual local carry produced by the sparse tree block described previously.
     
@@ -88,7 +88,15 @@ bits which make the decision as they are the selection signals of these multiple
         they will be firstly given to the pentium 4 block which will perform a subtraction. The comparator block will analize the carry out obtained from the results
         along with a flag bit called Z used set to one if the result of the subtraction is zero.
         Additionally the implemented comparator is able to perform a dual kind of operation in case the operands are treated as unisgned instead of signed.
-        Figure 5.4 reports the schematic depicting the implementation of the comparator.
+        Figure 5.4 reports the schematic depicting the implementation of the comparator for the operands which are understood as signed.
+
+        \begin{figure}[h!]
+            \centering
+            \includegraphics[scale = .6]
+            {chapters/figures/Comparator}
+            \caption{The Comparator}
+            \label{fig:T2Logic}
+            \end{figure}
 
     \subsection{ The T2 Logicals }
 
@@ -96,7 +104,7 @@ bits which make the decision as they are the selection signals of these multiple
     to the implementation of a lot of logical operations still while using few gates (meaning less transistors equivalently). The structure is composed
     of four and gates in the fisrt level of the hirierchy. Then, the second level is one additional final and gate doing the and between the outputs of the first level.
     On the basis of the control bits of the dedicated to the execute phase there is the possibility to implement the logical operation of interest.
-    Figure 5.4 depicts the circuit.
+    Figure 5.5 depicts the circuit methodology of the comparator for the situation in which the .
 
     \begin{figure}[h!]
         \centering
@@ -118,8 +126,8 @@ one of them receives 1 and a signal called 'cond' (wich is the flag indicating i
 and a signal called 'notCondIn' (which is the inversion of the of the CondIn signal ). The output of these two multiplexers are controled by one bit of the 
 control unit which is one if the instruction is a Branch instruction, while when it is zero the instruction at analysis is not a branch. 
 In the  second level of the hiriechy of the multiplexers there is one multiplexer which decides how to interpret the input it has (if it needs for instance
-to branch do to an inequality of zero or do to an equality of zero.) Also for this second level of the multiplexer hiriechy there is a dedicated control bit from the  control unit.
-Figure 5.5 depicts the multiplexer hiriechy that was discussed along with a table associating the control bits of interest to the various intructions
+to branch due to an inequality of zero or due to an equality of zero.) Also for this second level of the multiplexer hiriechy there is a dedicated control bit from the  control unit.
+Figure 5.6 depicts the multiplexer hiriechy that was discussed along with a table associating the control bits of interest to the various intructions
 
 \begin{figure}[h!]
     \centering

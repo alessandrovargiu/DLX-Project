@@ -5,7 +5,7 @@ The Control Unit is an Hardwired Control Unit and controls the Datapath generati
 
 \begin{figure}[h!]
     \centering
-    \includegraphics[scale = 0.30]
+    \includegraphics[scale = 0.60]
     {chapters/figures/CU_highlevel}
     \caption{CU}
     \end{figure}
@@ -17,7 +17,7 @@ The Control Unit is an Hardwired Control Unit and controls the Datapath generati
     \begin{enumerate}
     \item The first one takes the main input of CU (IR\_In) and consider the relative opcode and func of the instruction which are used by the second process.
     \item The second one takes the opcode and func of the first process (checking if RTYPE,ITYPE,JTYPE) and use them to take the correct control word from the look-up table.
-    \item The last one works to pipeline the control words in the right way (as an Hardwired Control Unit do) and there is also the pipeline of the instructions that it is used for the Hazard Unit.This process, also, takes as inputs the three hazard signals from the HU to flush the pipeline putting NOP in the decode stage and execute stage for branch hazard or putting NOP in decode stage for jump untill the new PC or putting NOP in execute stage and maintaining the same cw (and istruction)in the decode stage for raw hazard.The flush of the pipeline depends on where the hazard is taken (specified in the HU chapter), it lasts one or more cycles. 
+    \item The last one works to pipeline the control words in the right way (as an Hardwired Control Unit do) and there is also the pipeline of the instructions that it is used for the Hazard Unit.This process, also, takes as inputs the three hazard signals from the HU to flush the pipeline putting NOP in the decode stage and execute stage for branch hazard or putting NOP in decode stage for jump untill the new PC or putting NOP in execute stage and maintaining the same control word (and istruction)in the decode stage for raw hazard.The flush of the pipeline depends on where the hazard is taken (specified in the HU chapter), it lasts one or more cycles. 
     \end{enumerate}
 \end{enumerate}
 \subsection{Control Word}
