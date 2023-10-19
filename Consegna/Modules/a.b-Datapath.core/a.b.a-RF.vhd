@@ -31,36 +31,7 @@ architecture Behavioral of register_file is
 		signal REGISTERS : REG_ARRAY; 
 		
 begin 
--- write your RF code 
-	
 
---my description (GIo) (asynchrous read and asynchronus writing , synchronous reset)
-
-	--WrProc: PROCESS (Clk, reset, enable, WR, RD1, RD2, ADD_WR, ADD_RD1, ADD_RD2, DATAIN) 
-  	--		BEGIN
-			--IF (RD1 = '1') THEN
-			--	OUT1 <= REGISTERS(to_integer(unsigned(Add_RD1)));	
-			--else
-			--	OUT1 <= (OTHERS => 'Z');
-			--end if;
-			
-			--IF (RD2 = '1') THEN
-			--	OUT2 <= REGISTERS(to_integer(unsigned(Add_RD2)));
-			--else
-			--	OUT2 <= (OTHERS => 'Z');
-			--end if;
-
-			--if (enable = '1') then	
-			--	if( WR = '1' ) then
-			--		REGISTERS(to_integer(unsigned(Add_WR))) <= DATAIN;
-			--	end if;
-			--end if;
-
-			--IF (rising_edge(Clk)) THEN
-			--	IF (reset = '1') THEN
-            --			    REGISTERS <= (OTHERS => (OTHERS =>'0'));
-			--	end if;
-			--end if;
 
 	WrProc: PROCESS (Clk, reset, enable, WR, ADD_WR, DATAIN) 
   			BEGIN

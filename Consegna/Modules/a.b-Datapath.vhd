@@ -5,26 +5,18 @@ use ieee.numeric_std.all;
 use work.constants.all;
 
 entity BasicDP is
-    --Generic( NbitMem: integer;
-            -- controlNbit: integer;
-            -- addressNbit: integer );
     port(   Clk:        in std_logic;
             rst:        in std_logic;
-            
             fromHU:      in std_logic;
             hzd_sig_jmp: in std_logic;
-            --hzd_sig_ctrl: in std_logic;
             enable:      in std_logic;
             IMdata:      in std_logic_vector(NbitMem-1 downto 0);  --is the instruction entering the dp and is input to the IR pipeline register in IF/ID bank
             controlWord: in std_logic_vector(controlNbit-1 downto 0);
             DMdataIn:    in std_logic_vector(NbitMem-1 downto 0);
-
             IMAddress:   out std_logic_vector(addressNbit-1 downto 0);
             DMaddress:   out std_logic_vector(addressNbit-1 downto 0);
             DMdataOut:   out std_logic_vector(NbitMem -1 downto 0);
-
             B_status: out std_logic;
-            
             IR0_out:  out std_logic_vector(Nbit-1 downto 0);
             IROutID:  out std_logic_vector(Nbit-1 downto 0)
     );
@@ -124,13 +116,13 @@ signal fromMemOrFromAlu:     std_logic_vector(Nbit-1 downto 0);
         end component;
 
     component MUX41 is
-	    Generic ( MuxNbit: integer );
-	    Port (	input1:		In	std_logic_vector(MuxNbit-1 downto 0); --unsigned input of 16 bits
-			    input2:		In	std_logic_vector(MuxNbit-1 downto 0); --signed input of 16 bits
-                input3:     IN  std_logic_vector(MuxNbit-1 downto 0); --unsigned input of 26 bits
-                input4:     in  std_logic_vector(MuxNbit-1 downto 0); --signed input of 26 bits
+	    Generic ( Nbit: integer );
+	    Port (	input1:		In	std_logic_vector(Nbit-1 downto 0); --unsigned input of 16 bits
+			    input2:		In	std_logic_vector(Nbit-1 downto 0); --signed input of 16 bits
+                input3:     IN  std_logic_vector(Nbit-1 downto 0); --unsigned input of 26 bits
+                input4:     in  std_logic_vector(Nbit-1 downto 0); --signed input of 26 bits
 			    Sel:		In	std_logic_vector(1 downto 0); --these selections will be coming from the CU that will tell
-			    Y:			Out	std_logic_vector(MuxNbit-1 downto 0));
+			    Y:			Out	std_logic_vector(Nbit-1 downto 0));
         end component;
 
     --sign extender
@@ -156,7 +148,6 @@ signal fromMemOrFromAlu:     std_logic_vector(Nbit-1 downto 0);
         generic ( RegNbit: integer );
         port (  clk:    in std_logic;
                 rst:    in std_logic;
-              --  hzd_sig_ctrl: in std_logic;
                 en:     in std_logic;
                 I:      in std_logic_vector(RegNbit-1 downto 0);
                 Q:      out std_logic_vector(RegNbit-1 downto 0) );
@@ -174,7 +165,6 @@ signal fromMemOrFromAlu:     std_logic_vector(Nbit-1 downto 0);
         );
     end component;
 
-    --register File (Will be substituted with the windowed one in future)
     component register_file is
         generic( nbit : integer ;
 		         addr_bits : integer );
@@ -204,8 +194,6 @@ signal fromMemOrFromAlu:     std_logic_vector(Nbit-1 downto 0);
 
     component RCA is 
 	    generic (NbitRca: integer );
-	--generic (DRCAS : 	Time := 0 ns;
-	--         DRCAC : 	Time := 0 ns);
 	    Port (	
             A:	In	std_logic_vector(NbitRca-1 downto 0);
 			B:	In	std_logic_vector(NbitRca-1 downto 0);
@@ -230,7 +218,6 @@ component myregisterB is
     generic ( RegNbit: integer );
     port (  clk:    in  std_logic;
             rst:    in  std_logic;
-            --hzd_sig_ctrl: in std_logic;
             en:     in  std_logic;
             I:      in  std_logic_vector(RegNbit-1 downto 0);
             I_EX_opcode:    in  std_logic_vector(5 downto 0);
@@ -241,7 +228,6 @@ component myregisterA is
     generic ( RegNbit: integer );
     port (  clk:    in  std_logic;
             rst:    in  std_logic;
-            --hzd_sig_ctrl: in std_logic;
             en:     in  std_logic;
             I:      in  std_logic_vector(RegNbit-1 downto 0);
             I_EX_opcode:    in  std_logic_vector(5 downto 0);
