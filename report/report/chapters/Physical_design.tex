@@ -1,8 +1,6 @@
 \chapter{Physical Design}
 \label{physical_design}
 
-\section{Introduction}
-
 % Below is shown how you can insert a figure. If you give a label to the figure, you can refer to the figure using \ref{figure_label} as shown above. 
 	\begin{figure}[ht]
 	\centering
@@ -28,7 +26,7 @@ Power Grid Placement is shown in Figure \ref{fig:power_distribution}.
 	\label{fig:CTS_OPT}  % here is the figure label
 	\end{figure}
 
-\subsectionP{Placement and Routing}
+\section{Placement and Routing}
 In the Placement phase, the cells are placed, along with I/O pins. Post CTS (Clock-Tree-Synthesis) optimization is performed before routing.
 The result is shown in Figure \ref{fig:CTS_OPT}.
 Before the routing phase, it is important to complete the placement filling free spaces in the layout with \textit{Filler Cells}, to maintain the continuity of the N+ and P+ wells.
