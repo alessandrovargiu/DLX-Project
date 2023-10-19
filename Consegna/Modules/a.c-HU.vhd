@@ -18,12 +18,10 @@ ENTITY HU IS
         hzd_sig_jmp : out std_logic;        
         hzd_sig_ctrl : OUT STD_LOGIC;
         hzd_sig_raw : OUT STD_LOGIC
-        --hzd_sig_raw_2clk : OUT STD_LOGIC -- hazard signals
     );
 END ENTITY HU;
 
 ARCHITECTURE beh OF HU IS
-    --flush_j,flush_b: std_logic;
     signal ID_Rs1, ID_Rs2, ID_Rd: std_logic_vector(4 downto 0);
     signal EX_Rd: std_logic_vector(4 downto 0);
     signal MEM_Rd: std_logic_vector(4 downto 0);
@@ -67,30 +65,7 @@ BEGIN
         end if;
         
     end process;
-
-    --pipe: process(clk)
-    --begin
-    --    if(rst = '0' AND rising_edge(clk)) then
-    --        EX_Rd <= "00000";
-    --        MEM_Rd <= "00000";
-    --        WB_Rd <= "00000";
-    --        if(IR_EX(Nbit-1 downto Nbit-6) /= NOP) then
-    --            EX_Rd <= ID_Rd;
-    --        end if;
-    --        --if(IR_MEM(Nbit-1 downto Nbit-6) /= NOP) then
-    --            MEM_Rd <= EX_Rd;
-    --        --end if;
-    --       -- if(IR_WB(Nbit-1 downto Nbit-6) /= NOP) then
-    --            WB_Rd <= MEM_Rd;
-    --       -- end if; 
-    --    end if;
-    --end process;
     
-    ------------------- RAW hazard detection ------------------
-    -- hazard check done on ID stage 
-    -- possibility of forwarding implementation in the future
-    -- IR opcode MSB is 1 for JUMPS, 0 for all other instructions which are subject to RAW hazards
-
     RAW: process (clk)
     begin
           if(rst = '0' AND falling_edge(clk)) then

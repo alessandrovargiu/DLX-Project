@@ -42,23 +42,6 @@ begin
 
 end process;
 
-
---OLD not quite right version
-
---FormingOutput : for i in 0 to (NbitImm-1) generate  
-    
---    LSBsOfOut : if i < NbitIn generate
-
---        LSBs : se_out(i) <= se_in(i);
---    end generate LSBsOfOut;
-    
---    MSBsOfOut:  if NbitIn-1 < i and i< NbitImm generate 
---        MSBs : se_out(i) <= signedOrUnsigned; --se e' signed , gli MSBs li metto a 1. 
---    end generate MSBsOfOut;
-
--- end generate FormingOutput;
-
-
 end Behavioral ;
 
 
