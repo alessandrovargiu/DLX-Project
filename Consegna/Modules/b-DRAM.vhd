@@ -36,7 +36,7 @@ begin
     begin
         if(falling_edge(clk)) then --put as falling edge as the RW is set by CU on rising edge of the clock
             if(rst = '1') then
-                file_open(mem_fp, "/home/osiris/Desktop/DLX-Project/Modules/DMEM_init_file.mem", READ_MODE);    
+                file_open(mem_fp, "./000-common.core/001-DMEM_init_file.mem", READ_MODE);    
                 while(not endfile(mem_fp)) loop
                     readline(mem_fp, file_line);
                     hread(file_line, data);
