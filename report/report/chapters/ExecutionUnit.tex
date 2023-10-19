@@ -15,8 +15,8 @@ The DLX has these following arithmetic operations:
     \item T2 Logical ;
     \end{enumerate}
 
-Furthermore Figure 5.1 depicts the black box structure of the Arithmetic Logic Unit. there is a final four to 1 multiplexer which selects which results
-needs to be given as the ouput of the operation. This selction depends on the particular instruction's predefined control bits that are given as output from the
+Furthermore Figure 5.1 depicts the black box structure of the Arithmetic Logic Unit. There is a final four to 1 multiplexer which selects which results
+needs to be given as the ouput of the operation. This selection depends on the particular instruction's predefined control bits that are given as output from the
 control unit. The operands A and B from which the ALU performs the introduced operations are finalized thanks to two independent multiplexers. One multiplexer
 chooses if the Operand called Operand A needs to feedthrough the Next Program Counter Value, or the Value which came from OUT1 port of the register file. On the other side,
 the second multiplexer chooses if the second operand called operand B should be the value read from port OUT2 of the register file, or the Immediate field. There are 2 control
@@ -119,8 +119,28 @@ and a signal called 'notCondIn' (which is the inversion of the of the CondIn sig
 control unit which is one if the instruction is a Branch instruction, while when it is zero the instruction at analysis is not a branch. 
 In the  second level of the hiriechy of the multiplexers there is one multiplexer which decides how to interpret the input it has (if it needs for instance
 to branch do to an inequality of zero or do to an equality of zero.) Also for this second level of the multiplexer hiriechy there is a dedicated control bit from the  control unit.
-Figure 5.5 depicts the multiplexer hiriechy that was discussed while Figure 5.6 is a table associating the control bits of interest to the various intructions
+Figure 5.5 depicts the multiplexer hiriechy that was discussed along with a table associating the control bits of interest to the various intructions
 
-//INCLUDERE LE DUE FOTO APPENA FINITE
+\begin{figure}[h!]
+    \centering
+    \includegraphics[scale = 0.8]
+    {chapters/figures/BranchAndJumpDecision}
+    \caption{The two level hirierchy of the multiplexers with an explenation table}
+    \label{fig:BranchAndJumpDecision}
+    \end{figure}
 
+\section{ Execution Pipe Registers }
 
+The execution stage has the following Pipe Registers:
+\begin{enumerate}
+    \item ALUOutReg: in this pipe register the result of the alu operation is stored in the case that for instance the result needs to 
+    be written back to the register file during the write Back Stage
+    \item NPC2: this pipe register is needed for propagating the NPC address in the eventual case that the instruction of interest is
+    a jump and link instruction. In such case there will be the need to store this address in the the thirtysecond address of the register 
+    file during the write back, hence the reason we need to save it.
+    \item ForMemStRegister: this register is needed in the case the instruction is of store type. Thanks to this register the subsequent stage (the memory stage) will
+    be able to obtain the correct value to store in the external DRAM memory.
+    \item RDdestReg: In the execution stage the final decision on which is the correct destination address for writing is made (between rd or rt depending on if the instruction is immediate or register type).
+    Hence this register is needed to store this finalized address so that during the future Write Back stage, the writing of the result is performed in the correct location of the register file
+    \item IR2: needed for help during the debug process while checking the waves on Modelsim while testing the single datapath unit.
+\end{enumerate}
