@@ -1,5 +1,0 @@
-        addi r1, r0, 10;      FDEMW                     (corrisponding bin-->)    001000.00000.00001.0000000000001010
-label:  ori  r2, r0, 5 ;       FDEMW                                              001101.00000.00010.0000000000000101
-        add  r3, r1, r2;        FDDDEMW                                           000000.00001.00010.00011.00000100000
-        j label;                 FFFDDDEMW                                        100000.11111111111111111111111101  (offset calcolato per saltare alla ORi)
-        addi r5, r0, 7;             FFFDEMW                                       001000.00000.00101.0000000000000111 (non dovrebbe essere scritto nel RF)
