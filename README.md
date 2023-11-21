@@ -1,9 +1,11 @@
 # DLX-Project
 DLX architecture implementation for the MicroElectronic Systems course project at Polytechnic of Turin.
-
 DLX is an architecture for RISC processors created by Hennessy and Patterson, based on MIPS.
 
 The project consists in developing a VHDL implementation from scratch of the DLX architecture.
+
+The 'Modules' folder contains the VHDL modules for all components. The organization of the files is a bit tricky but was strictly requested by the assignment.
+The 'Simulation' and 'Synthesis' contains a couple of scripts which automate the processes and some reports about the results are provided.
 
 Main components of the architecture are:
 * Datapath
